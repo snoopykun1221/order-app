@@ -6,101 +6,62 @@
   <title>注文</title>
   <style>
     :root{
-      --bg:#0b0b0d;
-      --panel:#111114;
-      --line:#222228;
-      --text:#f3f3f3;
-      --muted:#a7a7ad;
-      --gold:#d4b56a;
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --radius: 16px;
+      --bg:#0b0b0d; --panel:#111114; --line:#222228;
+      --text:#f3f3f3; --muted:#a7a7ad; --gold:#d4b56a;
+      --shadow: 0 10px 30px rgba(0,0,0,.45); --radius:16px;
+      --danger:#ff6b6b;
     }
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
       background: radial-gradient(1200px 600px at 30% 10%, rgba(212,181,106,.10), transparent 60%),
                   radial-gradient(900px 500px at 70% 30%, rgba(212,181,106,.06), transparent 55%),
                   var(--bg);
       color:var(--text);
     }
-    .wrap{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 18px 14px 30px;
-    }
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 12px;
-    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:18px 14px 30px; }
+    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
     .brand{ display:flex; align-items:baseline; gap:10px; }
-    .brand h1{ margin:0; font-size: 22px; letter-spacing:.02em; }
+    .brand h1{ margin:0; font-size:22px; letter-spacing:.02em; }
     .badge{
-      font-size: 12px;
-      color: var(--muted);
+      font-size:12px; color:var(--muted);
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
-      padding:6px 10px;
-      border-radius: 999px;
+      padding:6px 10px; border-radius:999px;
     }
-
-    .layout{
-      display:grid;
-      grid-template-columns: 240px 1fr;
-      gap: 14px;
-    }
+    .layout{ display:grid; grid-template-columns:240px 1fr; gap:14px; }
     .sidebar{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 12px;
-      position: sticky;
-      top: 12px;
-      height: fit-content;
+      padding:12px;
+      position: sticky; top:12px; height: fit-content;
     }
     .sideTitle{
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing:.12em;
-      text-transform: uppercase;
-      margin: 6px 6px 10px;
+      font-size:12px; color:var(--muted);
+      letter-spacing:.12em; text-transform: uppercase;
+      margin:6px 6px 10px;
     }
     .cat{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      display:flex; align-items:center; justify-content:space-between;
       width:100%;
       border:1px solid transparent;
-      background: transparent;
-      color: var(--text);
-      padding: 10px 10px;
-      border-radius: 12px;
-      cursor:pointer;
-      text-align:left;
-      transition: .15s ease;
-      font-size: 17px; /* カテゴリ文字を大きめ */
+      background: transparent; color: var(--text);
+      padding:10px 10px; border-radius:12px;
+      cursor:pointer; text-align:left;
+      transition:.15s ease;
+      font-size:17px;
     }
-    .cat:hover{
-      background: rgba(212,181,106,.06);
-      border-color: rgba(212,181,106,.18);
-    }
-    .cat.active{
-      background: rgba(212,181,106,.10);
-      border-color: rgba(212,181,106,.28);
-    }
+    .cat:hover{ background: rgba(212,181,106,.06); border-color: rgba(212,181,106,.18); }
+    .cat.active{ background: rgba(212,181,106,.10); border-color: rgba(212,181,106,.28); }
     .pill{
-      font-size: 12px;
-      color: var(--gold);
+      font-size:12px; color: var(--gold);
       border:1px solid rgba(212,181,106,.25);
-      padding:2px 8px;
-      border-radius: 999px;
+      padding:2px 8px; border-radius:999px;
       background: rgba(212,181,106,.06);
     }
-
     .content{
       background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
       border:1px solid var(--line);
@@ -109,33 +70,29 @@
       overflow:hidden;
     }
     .contentHead{
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
     }
-    .contentHead h2{ margin:0; font-size: 18px; letter-spacing:.02em; }
-    .sub{ font-size: 12px; color: var(--muted); }
+    .contentHead h2{ margin:0; font-size:18px; letter-spacing:.02em; }
+    .sub{ font-size:12px; color:var(--muted); }
 
     .grid{
-      padding: 14px;
+      padding:14px;
       display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2列 */
-      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
     }
     .card{
       border:1px solid var(--line);
-      border-radius: 14px;
+      border-radius:14px;
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      padding: 12px;
-      display:flex;
-      gap: 10px;
+      padding:12px;
+      display:flex; gap:10px;
       cursor:pointer;
-      transition: .15s ease;
-      position: relative;
-      min-height: 86px;
+      transition:.15s ease;
+      position:relative;
+      min-height:86px;
     }
     .card:hover{
       transform: translateY(-1px);
@@ -143,28 +100,23 @@
       box-shadow: 0 10px 18px rgba(0,0,0,.35);
     }
     .thumb{
-      width: 64px;
-      height: 64px;
-      border-radius: 12px;
+      width:64px; height:64px;
+      border-radius:12px;
       border:1px solid rgba(212,181,106,.18);
       background: radial-gradient(circle at 30% 30%, rgba(212,181,106,.18), rgba(255,255,255,.03) 60%);
-      flex: 0 0 auto;
+      flex:0 0 auto;
     }
-    .meta{ flex:1 1 auto; min-width: 0; }
+    .meta{ flex:1 1 auto; min-width:0; }
     .name{
-      font-size: 15px;
-      font-weight: 650;
-      margin: 2px 0 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size:15px; font-weight:650;
+      margin:2px 0 6px;
+      white-space: nowrap; overflow:hidden; text-overflow: ellipsis;
     }
     .priceRow{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .price{ color: var(--gold); font-weight: 800; letter-spacing:.02em; }
-    .mini{ font-size: 12px; color: var(--muted); }
+    .price{ color: var(--gold); font-weight:900; letter-spacing:.02em; }
+    .mini{ font-size:12px; color: var(--muted); }
     .qtyTag{
-      position:absolute;
-      top:10px; right:10px;
+      position:absolute; top:10px; right:10px;
       background: rgba(212,181,106,.10);
       border: 1px solid rgba(212,181,106,.28);
       color: var(--gold);
@@ -176,17 +128,17 @@
     .card.selected .qtyTag{ display:inline-block; }
 
     .footerBar{
-      padding: 12px 14px;
-      border-top: 1px solid var(--line);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+      padding:12px 14px;
+      border-top:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
       background: rgba(0,0,0,.22);
+      position: sticky;
+      bottom: 0;
     }
     .sum{ display:flex; flex-direction:column; gap:2px; }
-    .sum .label{ font-size: 12px; color: var(--muted); }
-    .sum .val{ font-size: 16px; font-weight: 900; color: var(--gold); letter-spacing:.02em; }
+    .sum .label{ font-size:12px; color:var(--muted); }
+    .sum .val{ font-size:16px; font-weight:900; color: var(--gold); letter-spacing:.02em; }
+    .actions{ display:flex; gap:10px; }
     .btn{
       border:1px solid rgba(212,181,106,.30);
       background: linear-gradient(180deg, rgba(212,181,106,.16), rgba(212,181,106,.06));
@@ -194,14 +146,42 @@
       padding: 10px 12px;
       border-radius: 12px;
       cursor:pointer;
-      font-weight: 800;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .btn.ghost{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+    }
+    .btn.danger{
+      border:1px solid rgba(255,107,107,.35);
+      background: rgba(255,107,107,.10);
+      color: #ffd1d1;
     }
     .btn:active{ transform: translateY(1px); }
 
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(212,181,106,.25);
+      background: rgba(0,0,0,.65);
+      color: var(--text);
+      font-size: 13px;
+      display:none;
+      box-shadow: var(--shadow);
+    }
+
     @media (max-width: 820px){
-      .layout{ grid-template-columns: 1fr; }
-      .sidebar{ position: relative; top: 0; }
-      .grid{ grid-template-columns: 1fr; }
+      .layout{ grid-template-columns:1fr; }
+      .sidebar{ position:relative; top:0; }
+      .grid{ grid-template-columns:1fr; }
+      .footerBar{ flex-direction: column; align-items: stretch; }
+      .actions{ justify-content: space-between; }
     }
   </style>
 </head>
@@ -212,7 +192,7 @@
         <h1>メニュー</h1>
         <div class="badge" id="tableBadge">テーブル：未指定</div>
       </div>
-      <div class="badge">黒 × 金</div>
+      <div class="badge">商品をタップで +1</div>
     </div>
 
     <div class="layout">
@@ -225,23 +205,29 @@
         <div class="contentHead">
           <div>
             <h2 id="catTitle">おすすめ</h2>
-            <div class="sub">商品をタップすると数量が増えます（表示テスト用）</div>
+            <div class="sub">確定で「注文履歴（端末内）」に保存します</div>
           </div>
-          <div class="badge" id="hint">タップで +1</div>
+          <div class="badge" id="orderInfo">合計: ¥0</div>
         </div>
 
         <section class="grid" id="grid"></section>
 
         <div class="footerBar">
           <div class="sum">
-            <div class="label">選択中（テスト）</div>
-            <div class="val" id="pickedCount">0 点</div>
+            <div class="label">点数 / 合計</div>
+            <div class="val" id="pickedSum">0 点 / ¥0</div>
           </div>
-          <button class="btn" id="resetBtn">選択リセット</button>
+          <div class="actions">
+            <button class="btn ghost" id="resetBtn">リセット</button>
+            <button class="btn danger" id="undoBtn">1つ戻す</button>
+            <button class="btn" id="confirmBtn">確定</button>
+          </div>
         </div>
       </main>
     </div>
   </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
     const MENU_DATA = {
@@ -302,15 +288,39 @@
 
     const categories = Object.keys(MENU_DATA);
     let activeCat = categories[0];
-    const qtyByName = new Map();
+
+    // name -> {qty, price}
+    const cart = new Map();
+    // 取り消し用スタック（最後に追加したitem名）
+    const history = [];
 
     const catList = document.getElementById("catList");
     const grid = document.getElementById("grid");
     const catTitle = document.getElementById("catTitle");
-    const pickedCount = document.getElementById("pickedCount");
+    const pickedSum = document.getElementById("pickedSum");
+    const orderInfo = document.getElementById("orderInfo");
     const resetBtn = document.getElementById("resetBtn");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const undoBtn = document.getElementById("undoBtn");
+    const toast = document.getElementById("toast");
 
     function yen(n){ return "¥" + Number(n).toLocaleString("ja-JP"); }
+
+    function toastMsg(msg){
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(()=> toast.style.display="none", 1400);
+    }
+
+    function totals(){
+      let count = 0;
+      let sum = 0;
+      cart.forEach(v => {
+        count += v.qty;
+        sum += v.qty * v.price;
+      });
+      return {count, sum};
+    }
 
     function renderCats(){
       catList.innerHTML = "";
@@ -328,7 +338,8 @@
       catTitle.textContent = activeCat;
       grid.innerHTML = "";
       (MENU_DATA[activeCat]||[]).forEach(item => {
-        const qty = qtyByName.get(item.name) || 0;
+        const entry = cart.get(item.name);
+        const qty = entry ? entry.qty : 0;
 
         const card = document.createElement("div");
         card.className = "card" + (qty>0 ? " selected" : "");
@@ -343,31 +354,91 @@
           </div>
           <div class="qtyTag">× ${qty}</div>
         `;
+
         card.onclick = () => {
-          const cur = qtyByName.get(item.name) || 0;
-          qtyByName.set(item.name, cur + 1);
+          const cur = cart.get(item.name);
+          if(cur){
+            cur.qty += 1;
+          }else{
+            cart.set(item.name, { qty: 1, price: item.price });
+          }
+          history.push(item.name);
           renderGrid();
-          renderPicked();
+          renderFooter();
         };
+
         grid.appendChild(card);
       });
     }
 
-    function renderPicked(){
-      let sum = 0;
-      qtyByName.forEach(v => sum += v);
-      pickedCount.textContent = sum + " 点";
+    function renderFooter(){
+      const {count, sum} = totals();
+      pickedSum.textContent = `${count} 点 / ${yen(sum)}`;
+      orderInfo.textContent = `合計: ${yen(sum)}`;
     }
 
     resetBtn.onclick = () => {
-      qtyByName.clear();
+      cart.clear();
+      history.length = 0;
       renderGrid();
-      renderPicked();
+      renderFooter();
+      toastMsg("リセットしました");
+    };
+
+    undoBtn.onclick = () => {
+      const last = history.pop();
+      if(!last){
+        toastMsg("戻すものがありません");
+        return;
+      }
+      const cur = cart.get(last);
+      if(cur){
+        cur.qty -= 1;
+        if(cur.qty <= 0) cart.delete(last);
+      }
+      renderGrid();
+      renderFooter();
+      toastMsg("1つ戻しました");
+    };
+
+    confirmBtn.onclick = () => {
+      const {count, sum} = totals();
+      if(count === 0){
+        toastMsg("商品が選ばれていません");
+        return;
+      }
+
+      // 注文データ作成
+      const items = [];
+      cart.forEach((v, name) => items.push({ name, qty: v.qty, price: v.price }));
+      items.sort((a,b)=> a.name.localeCompare(b.name, "ja"));
+
+      const order = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        table,
+        createdAt: new Date().toISOString(),
+        totalCount: count,
+        totalPrice: sum,
+        items
+      };
+
+      // 端末内に履歴保存（あとで管理画面で読む用）
+      const key = "orderapp_orders_v1";
+      const arr = JSON.parse(localStorage.getItem(key) || "[]");
+      arr.push(order);
+      localStorage.setItem(key, JSON.stringify(arr));
+
+      toastMsg(`確定しました（${yen(sum)}）`);
+      // 確定後はカートクリア
+      cart.clear();
+      history.length = 0;
+      renderGrid();
+      renderFooter();
     };
 
     renderCats();
     renderGrid();
-    renderPicked();
+    renderFooter();
   </script>
 </body>
 </html>
