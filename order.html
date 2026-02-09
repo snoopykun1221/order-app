@@ -1,38 +1,106 @@
-<!-- Firebase SDK（script版） -->
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>注文ページ</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 24px;
+      background: #f7f7f7;
+    }
+    h1 { margin-bottom: 16px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-bottom: 16px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    th { background: #eee; }
+    .right { text-align: right; }
+    #confirmBtn {
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #errMsg {
+      color: red;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>注文内容の確認</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>商品</th>
+      <th class="right">単価</th>
+      <th class="right">数量</th>
+      <th class="right">小計</th>
+    </tr>
+  </thead>
+  <tbody id="itemsTbody">
+    <!-- 仮のサンプル商品 -->
+    <tr data-item-id="sample01">
+      <td>サンプル商品</td>
+      <td class="right" data-unit-price="1200">1,200</td>
+      <td class="right" data-qty="2">2</td>
+      <td class="right">2,400</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  合計：
+  <strong><span id="totalYen">2400</span> 円</strong>
+</p>
+
+<div id="errMsg">注文内容が正しくありません</div>
+
+<button id="confirmBtn">注文確定</button>
+
+<!-- ================= Firebase ================= -->
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 <script>
-  // ★ Firebase画面で出た firebaseConfig をそのまま貼る
+  // あなたの Firebase 設定
   const firebaseConfig = {
-    apiKey: "AIzaSy....",
-    authDomain: "order-app-xxxx.firebaseapp.com",
-    projectId: "order-app-xxxx",
-    storageBucket: "order-app-xxxx.appspot.com",
-    messagingSenderId: "....",
-    appId: "...."
+    apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+    authDomain: "order-app-ec18b.firebaseapp.com",
+    projectId: "order-app-ec18b",
+    storageBucket: "order-app-ec18b.appspot.com",
+    messagingSenderId: "756193856808",
+    appId: "1:756193856808:web:f2200287017adaf895541d"
   };
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-  // 数字変換
-  function toInt(str) {
-    return Number(String(str).replace(/,/g, "").trim());
+  function toInt(v) {
+    return Number(String(v).replace(/,/g, ""));
   }
 
-  // 注文内容をページから集める
   function buildOrder() {
     const total = toInt(document.getElementById("totalYen").textContent);
     const rows = document.querySelectorAll("#itemsTbody tr");
 
-    const items = Array.from(rows).map(tr => {
-      return {
-        id: tr.dataset.itemId,
-        price: toInt(tr.querySelector("[data-unit-price]").dataset.unitPrice),
-        qty: toInt(tr.querySelector("[data-qty]").dataset.qty)
-      };
-    });
+    const items = Array.from(rows).map(tr => ({
+      id: tr.dataset.itemId,
+      price: toInt(tr.querySelector("[data-unit-price]").dataset.unitPrice),
+      qty: toInt(tr.querySelector("[data-qty]").dataset.qty)
+    }));
 
     return {
       total,
@@ -42,57 +110,35 @@
     };
   }
 
-<button id="confirmBtn" onclick="...">確定</button>
-
   const confirmBtn = document.getElementById("confirmBtn");
-
-  confirmBtn.type = "button"; // submitさせない
+  const errMsg = document.getElementById("errMsg");
 
   confirmBtn.addEventListener("click", async () => {
     try {
       const order = buildOrder();
 
       if (!order.items.length || order.total <= 0) {
-        alert("注文内容がありません");
+        errMsg.style.display = "block";
         return;
       }
 
+      errMsg.style.display = "none";
       confirmBtn.disabled = true;
       confirmBtn.textContent = "送信中…";
 
       await db.collection("orders").add(order);
 
-      // 完了画面へ
-      location.href = "/order/complete.html";
+      alert("注文を保存しました！");
+      confirmBtn.textContent = "完了";
 
     } catch (e) {
       console.error(e);
-      alert("注文の保存に失敗しました");
+      alert("エラーが発生しました");
       confirmBtn.disabled = false;
       confirmBtn.textContent = "注文確定";
     }
   });
 </script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
-    authDomain: "order-app-ec18b.firebaseapp.com",
-    projectId: "order-app-ec18b",
-    storageBucket: "order-app-ec18b.firebasestorage.app",
-    messagingSenderId: "756193856808",
-    appId: "1:756193856808:web:f2200287017adaf895541d",
-    measurementId: "G-84PBP7PZNM"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+</body>
+</html>
