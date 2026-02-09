@@ -2,16 +2,15 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>メニュー</title>
+  <title>Redirect</title>
 </head>
 <body>
-  <h1>メニュー画面</h1>
-  <p id="table"></p>
+<script>
+  const params = new URLSearchParams(location.search);
+  const table = params.get("table") || "1";
 
-  <script>
-    const params = new URLSearchParams(location.search);
-    const table = params.get("table") ?? "未指定";
-    document.getElementById("table").textContent = "テーブル番号: " + table;
-  </script>
+  // 注文ページへ移動
+  location.href = "order.html?table=" + table;
+</script>
 </body>
 </html>
