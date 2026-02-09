@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>注文ページ</title>
+</head>
+<body>
+  <h1>注文ページ</h1>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      "<p>テーブル番号: " + (params.get("table") ?? "未指定") + "</p>"
+    );
+  </script>
+</body>
+</html>
