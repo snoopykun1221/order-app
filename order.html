@@ -1,160 +1,97 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>注文内容の確認</title>
-  <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; margin: 24px; }
-    .wrap { max-width: 920px; margin: 0 auto; }
-    h1 { font-size: 20px; margin: 0 0 16px; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border-bottom: 1px solid #e5e5e5; padding: 12px 8px; text-align: left; }
-    th { font-weight: 600; color: #333; }
-    .right { text-align: right; }
-    .totalBox { margin-top: 16px; padding: 12px; border: 1px solid #e5e5e5; border-radius: 10px; }
-    .row { display: flex; gap: 12px; justify-content: space-between; align-items: center; }
-    .muted { color: #666; font-size: 13px; }
-    .btns { margin-top: 16px; display: flex; gap: 12px; }
-    button, a.btn { appearance: none; border: 0; border-radius: 10px; padding: 12px 16px; font-weight: 600; cursor: pointer; }
-    button.primary { background: #111; color: #fff; }
-    button.primary:disabled { opacity: .5; cursor: not-allowed; }
-    a.btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: #f2f2f2; color: #111; }
-    .danger { color: #b00020; font-size: 13px; margin-top: 8px; display: none; }
-  </style>
-</head>
+<!-- Firebase SDK（script版） -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
-<body>
-  <div class="wrap">
-    <h1>注文内容の確認</h1>
+<script>
+  // ★ Firebase画面で出た firebaseConfig をそのまま貼る
+  const firebaseConfig = {
+    apiKey: "AIzaSy....",
+    authDomain: "order-app-xxxx.firebaseapp.com",
+    projectId: "order-app-xxxx",
+    storageBucket: "order-app-xxxx.appspot.com",
+    messagingSenderId: "....",
+    appId: "...."
+  };
 
-    <!--
-      ここはあなたのテンプレートに合わせて、items を差し込む想定。
-      下の <tbody> は例として静的に1行入れてあるので、
-      実運用ではサーバー側でループして生成してね。
-    -->
-    <table aria-label="注文商品一覧">
-      <thead>
-        <tr>
-          <th>商品</th>
-          <th class="right">単価</th>
-          <th class="right">数量</th>
-          <th class="right">小計</th>
-        </tr>
-      </thead>
-      <tbody id="itemsTbody">
-        <!-- 例：この行はサンプル。実際はテンプレ/サーバーで生成 -->
-        <tr data-item-id="1">
-          <td>サンプル商品</td>
-          <td class="right"><span class="price" data-unit-price="1200">1,200</span>円</td>
-          <td class="right"><span class="qty" data-qty="2">2</span></td>
-          <td class="right"><span class="subtotal">2,400</span>円</td>
-        </tr>
-      </tbody>
-    </table>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    <div class="totalBox">
-      <div class="row">
-        <div>
-          <div>合計</div>
-          <div class="muted">送料・手数料がある場合はここに追記</div>
-        </div>
-        <div style="font-size:18px;font-weight:700;">
-          <span id="totalYen">2,400</span>円
-        </div>
-      </div>
+  // 数字変換
+  function toInt(str) {
+    return Number(String(str).replace(/,/g, "").trim());
+  }
 
-      <div id="errMsg" class="danger">注文送信に必要な情報が不足しています。</div>
+  // 注文内容をページから集める
+  function buildOrder() {
+    const total = toInt(document.getElementById("totalYen").textContent);
+    const rows = document.querySelectorAll("#itemsTbody tr");
 
-      <!--
-        ★重要：ここが「注文確定＝送信」。
-        action のURLはあなたのサーバーに合わせて変更してOK。
-        例：/order/confirm, /orders, /checkout/confirm など。
-      -->
-      <form id="orderForm" action="/order/confirm" method="POST">
-        <!-- CSRFトークンが必要な環境ならここに -->
-        <!-- <input type="hidden" name="_csrf" value="{{csrfToken}}"> -->
+    const items = Array.from(rows).map(tr => {
+      return {
+        id: tr.dataset.itemId,
+        price: toInt(tr.querySelector("[data-unit-price]").dataset.unitPrice),
+        qty: toInt(tr.querySelector("[data-qty]").dataset.qty)
+      };
+    });
 
-        <!-- 合計金額（サーバー側で再計算するのが推奨。これは表示用/参考値） -->
-        <input type="hidden" name="total" id="totalInput" value="2400" />
+    return {
+      total,
+      items,
+      status: "placed",
+      createdAt: new Date().toISOString()
+    };
+  }
 
-        <!-- 商品情報：サーバーで items を受け取る形にするなら JSON でまとめるのがラク -->
-        <input type="hidden" name="items_json" id="itemsJsonInput" value="" />
+  // ★ 確定ボタン
+  const confirmBtn = document.getElementById("confirmBtn");
 
-        <!-- 二重送信防止のため、送信中は無効化する -->
-        <div class="btns">
-          <a class="btn" href="/cart">カートに戻る</a>
-          <button id="confirmBtn" class="primary" type="submit">注文確定</button>
-        </div>
-      </form>
-    </div>
-  </div>
+  confirmBtn.type = "button"; // submitさせない
 
-  <script>
-    // 表示されているテーブルから items と total を確定し、hidden に入れる
-    function toInt(str) {
-      return Number(String(str).replace(/,/g, '').trim());
-    }
+  confirmBtn.addEventListener("click", async () => {
+    try {
+      const order = buildOrder();
 
-    function buildPayloadFromTable() {
-      const rows = Array.from(document.querySelectorAll("#itemsTbody tr"));
-      const items = [];
-      let total = 0;
-
-      for (const tr of rows) {
-        const itemId = tr.getAttribute("data-item-id");
-        const unitEl = tr.querySelector("[data-unit-price]");
-        const qtyEl = tr.querySelector("[data-qty]");
-        if (!itemId || !unitEl || !qtyEl) continue;
-
-        const unitPrice = toInt(unitEl.getAttribute("data-unit-price"));
-        const qty = toInt(qtyEl.getAttribute("data-qty"));
-        const subtotal = unitPrice * qty;
-
-        const subtotalEl = tr.querySelector(".subtotal");
-        if (subtotalEl) subtotalEl.textContent = subtotal.toLocaleString("ja-JP");
-
-        total += subtotal;
-        items.push({ id: itemId, unit_price: unitPrice, qty: qty });
-      }
-
-      return { items, total };
-    }
-
-    function syncHiddenInputs() {
-      const { items, total } = buildPayloadFromTable();
-
-      document.getElementById("totalYen").textContent = total.toLocaleString("ja-JP");
-      document.getElementById("totalInput").value = String(total);
-      document.getElementById("itemsJsonInput").value = JSON.stringify(items);
-      return { items, total };
-    }
-
-    // 初期表示時に同期
-    syncHiddenInputs();
-
-    // 送信時のガード（alertだけ出して終わり、を完全排除）
-    const form = document.getElementById("orderForm");
-    const btn = document.getElementById("confirmBtn");
-    const err = document.getElementById("errMsg");
-
-    form.addEventListener("submit", (e) => {
-      const { items, total } = syncHiddenInputs();
-
-      // 最低限のチェック（足りなければ送信しない）
-      if (!items.length || !Number.isFinite(total) || total <= 0) {
-        e.preventDefault();
-        err.style.display = "block";
+      if (!order.items.length || order.total <= 0) {
+        alert("注文内容がありません");
         return;
       }
 
-      err.style.display = "none";
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = "送信中…";
 
-      // 二重送信防止：送信したらボタン無効化
-      btn.disabled = true;
-      btn.textContent = "送信中…";
-      // ※ここで alert は出さない（サーバーが成功レスポンス→完了画面で表示が正解）
-    });
-  </script>
-</body>
-</html>
+      await db.collection("orders").add(order);
+
+      // 完了画面へ
+      location.href = "/order/complete.html";
+
+    } catch (e) {
+      console.error(e);
+      alert("注文の保存に失敗しました");
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "注文確定";
+    }
+  });
+</script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+    authDomain: "order-app-ec18b.firebaseapp.com",
+    projectId: "order-app-ec18b",
+    storageBucket: "order-app-ec18b.firebasestorage.app",
+    messagingSenderId: "756193856808",
+    appId: "1:756193856808:web:f2200287017adaf895541d",
+    measurementId: "G-84PBP7PZNM"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
