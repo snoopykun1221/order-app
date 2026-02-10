@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>注文管理（Admin）</title>
+  <style>
+    body{font-family:system-ui,-apple-system,sans-serif;margin:0;background:#0b0f14;color:#e8eef6}
+    header{position:sticky;top:0;background:#0b0f14;border-bottom:1px solid #1c2633;padding:14px 16px;z-index:10}
+    h1{font-size:18px;margin:0 0 10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input,select,button{font:inherit}
+    input,select{background:#0f1620;border:1px solid #253243;color:#e8eef6;border-radius:10px;padding:10px 12px}
+    button{background:#6e56cf;border:0;color:white;border-radius:10px;padding:10px 12px;cursor:pointer}
+    button.secondary{background:#1f2a38}
+    button.danger{background:#b00020}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    main{padding:16px;max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .card{background:#0f1620;border:1px solid #253243;border-radius:14px;padding:14px}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;color:#a9b6c6;font-size:13px}
+    .items{margin-top:10px;border-top:1px solid #253243;padding-top:10px}
+    .items table{width:100%;border-collapse:collapse;font-size:14px}
+    .items th,.items td{padding:8px 6px;border-bottom:1px solid #1c2633}
+    .right{text-align:right}
+    .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;margin-top:8px}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid #253243;background:#0b0f14}
+    .pill.placed{border-color:#3a4b63}
+    .pill.preparing{border-color:#8a6cff}
+    .pill.served{border-color:#2ea043}
+    .pill.paid{border-color:#20c997}
+    .pill.canceled{border-color:#ff6b6b}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .small{font-size:12px;color:#a9b6c6}
+    .topnote{color:#a9b6c6;font-size:13px;margin-top:6px}
+    .warn{background:#1a1114;border:1px solid #3a1a22;color:#ffb4c0;padding:10px 12px;border-radius:12px;margin-top:10px}
+    a{color:#9ecbff}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>注文管理（Admin）</h1>
+    <div class="row">
+      <input id="tableFilter" placeholder="テーブル番号（例: 12）" style="width:180px" />
+      <select id="statusFilter">
+        <option value="all">全ステータス</option>
+        <option value="placed">placed（新規）</option>
+        <option value="preparing">preparing（調理中）</option>
+        <option value="served">served（提供済）</option>
+        <option value="paid">paid（会計済）</option>
+        <option value="canceled">canceled（キャンセル）</option>
+      </select>
+      <button id="refreshBtn" class="secondary">再読込</button>
+      <button id="soundBtn" class="secondary">新規通知: OFF</button>
+    </div>
+    <div class="topnote">
+      ここは「店側が見る画面」。注文の status をボタンで更新できます。
+    </div>
+    <div class="warn">
+      今はテスト運用向け（誰でもアクセスできる可能性）。後で <b>認証 + ルール</b> で必ず締めます。
+    </div>
+  </header>
+
+  <main>
+    <div class="meta">
+      <div>表示件数: <span id="count">0</span></div>
+      <div>最終更新: <span id="updatedAt">-</span></div>
+    </div>
+    <div class="grid" id="list"></div>
+  </main>
+
+  <!-- Firebase SDK（compat版） -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase設定（あなたの値）
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+      authDomain: "order-app-ec18b.firebaseapp.com",
+      projectId: "order-app-ec18b",
+      storageBucket: "order-app-ec18b.appspot.com",
+      messagingSenderId: "756193856808",
+      appId: "1:756193856808:web:f2200287017adaf895541d"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const listEl = document.getElementById("list");
+    const countEl = document.getElementById("count");
+    const updatedAtEl = document.getElementById("updatedAt");
+    const tableFilterEl = document.getElementById("tableFilter");
+    const statusFilterEl = document.getElementById("statusFilter");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const soundBtn = document.getElementById("soundBtn");
+
+    let unsub = null;
+    let soundOn = false;
+    let lastSeenCreatedAtMs = 0;
+
+    function fmtYen(n){
+      try { return Number(n||0).toLocaleString("ja-JP"); } catch { return String(n||0); }
+    }
+    function fmtTime(ts){
+      if (!ts) return "-";
+      // Firestore Timestamp or ISO string
+      if (typeof ts === "string") return ts;
+      if (ts.toDate) {
+        const d = ts.toDate();
+        return d.toLocaleString("ja-JP");
+      }
+      return String(ts);
+    }
+    function pillClass(status){
+      return ["placed","preparing","served","paid","canceled"].includes(status) ? status : "placed";
+    }
+
+    function beep(){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.type = "sine";
+        o.frequency.value = 880;
+        g.gain.value = 0.06;
+        o.start();
+        setTimeout(()=>{ o.stop(); ctx.close(); }, 120);
+      }catch(e){}
+    }
+
+    async function updateStatus(orderId, status){
+      await db.collection("orders").doc(orderId).update({
+        status,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    async function cancelOrder(orderId){
+      const ok = confirm("この注文をキャンセルにしますか？");
+      if (!ok) return;
+      await updateStatus(orderId, "canceled");
+    }
+
+    function renderCard(doc){
+      const data = doc.data() || {};
+      const orderId = doc.id;
+      const tableNo = data.tableNo ?? data.table ?? data.table_number ?? "";
+      const status = data.status || "placed";
+      const createdAt = data.createdAt || data.created_at;
+      const total = data.total ?? data.amount ?? 0;
+      const items = Array.isArray(data.items) ? data.items : [];
+
+      const div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML = `
+        <div class="meta">
+          <div><b>注文ID:</b> <span class="small">${orderId}</span></div>
+          <div><b>テーブル:</b> ${tableNo || "-"}</div>
+          <div><b>作成:</b> ${fmtTime(createdAt)}</div>
+          <div><b>合計:</b> ${fmtYen(total)} 円</div>
+        </div>
+
+        <div class="status">
+          <span class="pill ${pillClass(status)}">${status}</span>
+          <span class="small">${data.updatedAt ? "更新: " + fmtTime(data.updatedAt) : ""}</span>
+        </div>
+
+        <div class="items">
+          <table>
+            <thead>
+              <tr>
+                <th>商品</th>
+                <th class="right">単価</th>
+                <th class="right">数量</th>
+                <th class="right">小計</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map(it=>{
+                const name = it.name ?? it.id ?? "item";
+                const price = Number(it.price ?? it.unitPrice ?? 0);
+                const qty = Number(it.qty ?? 0);
+                const sub = price * qty;
+                return `
+                  <tr>
+                    <td>${String(name)}</td>
+                    <td class="right">${fmtYen(price)}</td>
+                    <td class="right">${fmtYen(qty)}</td>
+                    <td class="right">${fmtYen(sub)}</td>
+                  </tr>
+                `;
+              }).join("") || `<tr><td colspan="4" class="small">items が入っていません（order.html 側のitems形式を揃えるとOK）</td></tr>`}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="secondary" data-act="placed">新規</button>
+          <button class="secondary" data-act="preparing">調理中</button>
+          <button class="secondary" data-act="served">提供済</button>
+          <button class="secondary" data-act="paid">会計済</button>
+          <button class="danger" data-act="canceled">キャンセル</button>
+        </div>
+      `;
+
+      div.querySelectorAll("button[data-act]").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const act = btn.getAttribute("data-act");
+          btn.disabled = true;
+          try{
+            if (act === "canceled") await cancelOrder(orderId);
+            else await updateStatus(orderId, act);
+          }catch(e){
+            console.error(e);
+            alert("更新に失敗しました（Consoleを確認）");
+          }finally{
+            btn.disabled = false;
+          }
+        });
+      });
+
+      return div;
+    }
+
+    function applyClientFilter(docs){
+      const t = tableFilterEl.value.trim();
+      const s = statusFilterEl.value;
+
+      return docs.filter(doc=>{
+        const data = doc.data() || {};
+        const tableNo = String(data.tableNo ?? data.table ?? data.table_number ?? "");
+        const status = String(data.status || "placed");
+
+        if (t && tableNo !== t) return false;
+        if (s !== "all" && status !== s) return false;
+        return true;
+      });
+    }
+
+    function startListen(){
+      if (unsub) unsub();
+
+      // 直近100件を見る（必要なら増やしてOK）
+      const q = db.collection("orders").orderBy("createdAt", "desc").limit(100);
+
+      unsub = q.onSnapshot((snap)=>{
+        const docsAll = snap.docs;
+        const docs = applyClientFilter(docsAll);
+
+        listEl.innerHTML = "";
+        docs.forEach(d => listEl.appendChild(renderCard(d)));
+
+        countEl.textContent = String(docs.length);
+        updatedAtEl.textContent = new Date().toLocaleString("ja-JP");
+
+        // 新規通知（音）
+        if (soundOn && docsAll.length){
+          const newest = docsAll[0].data()?.createdAt;
+          let newestMs = 0;
+          if (newest?.toMillis) newestMs = newest.toMillis();
+          else if (typeof newest === "string") newestMs = Date.parse(newest) || 0;
+
+          if (newestMs && newestMs > lastSeenCreatedAtMs){
+            if (lastSeenCreatedAtMs !== 0) beep(); // 初回読み込みは鳴らさない
+            lastSeenCreatedAtMs = newestMs;
+          }
+        }
+      }, (err)=>{
+        console.error(err);
+        alert("Firestoreの読み込みに失敗しました（Consoleを確認）");
+      });
+    }
+
+    tableFilterEl.addEventListener("input", ()=> startListen());
+    statusFilterEl.addEventListener("change", ()=> startListen());
+    refreshBtn.addEventListener("click", ()=> startListen());
+
+    soundBtn.addEventListener("click", ()=>{
+      soundOn = !soundOn;
+      soundBtn.textContent = `新規通知: ${soundOn ? "ON" : "OFF"}`;
+      if (soundOn) {
+        // 音を鳴らす権限が必要なブラウザがあるので、ここで一度鳴らして許可を通す
+        beep();
+      }
+    });
+
+    startListen();
+  </script>
+</body>
+</html>
