@@ -3,23 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>焼肉 ご注文</title>
+  <title>北海道本格ジンギスカン ひつじや｜ご注文</title>
   <style>
     :root{
       --bg:#0b0d10;
       --panel:#101318;
-      --panel2:#0f1216;
       --line:rgba(255,255,255,.08);
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.58);
       --gold:#c8a45a;
-      --gold2:#b8913f;
       --danger:#a40000;
       --danger2:#7c0000;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
     }
-
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -29,204 +26,25 @@
                   var(--bg);
       color:var(--text);
     }
+    .wrap{ max-width:1200px; margin:0 auto; padding:26px 16px 56px; }
 
-    .wrap{ max-width:1100px; margin:0 auto; padding:28px 18px 56px; }
     header{
       padding:10px 0 18px;
       border-bottom: 1px solid var(--line);
       margin-bottom:18px;
     }
     .title{
-      font-size:36px;
-      font-weight:900;
-      letter-spacing:.04em;
+      font-size:30px;
+      font-weight:1000;
+      letter-spacing:.02em;
       color:var(--gold);
       margin:0 0 6px;
+      line-height:1.15;
     }
     .sub{
       margin:0;
       color:var(--muted);
       font-size:14px;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:18px;
-    }
-    @media (min-width: 940px){
-      .grid{ grid-template-columns: 1.25fr .75fr; align-items:start; }
-    }
-
-    .menuGrid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-    }
-    @media (min-width: 680px){
-      .menuGrid{ grid-template-columns: 1fr 1fr; }
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .item{
-      padding:18px 18px 16px;
-      display:flex;
-      gap:14px;
-      justify-content:space-between;
-      align-items:center;
-      min-height:110px;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-    }
-    .item + .item{ border-top:1px solid var(--line); }
-
-    .item h3{
-      margin:0 0 6px;
-      font-size:20px;
-      font-weight:900;
-      letter-spacing:.02em;
-    }
-    .desc{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
-    .price{
-      margin:0;
-      font-size:20px;
-      font-weight:900;
-      color:var(--gold);
-    }
-
-    .addBtn{
-      border:1px solid rgba(200,164,90,.65);
-      background: transparent;
-      color: var(--gold);
-      padding:10px 16px;
-      border-radius: 12px;
-      font-weight:900;
-      cursor:pointer;
-      transition: .15s;
-      min-width: 84px;
-    }
-    .addBtn:hover{ background: rgba(200,164,90,.10); }
-    .addBtn:active{ transform: translateY(1px); }
-
-    .panelTitle{
-      padding:16px 18px;
-      font-weight:900;
-      color:var(--gold);
-      letter-spacing:.04em;
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-    }
-
-    .cartBody{ padding:14px 18px 18px; }
-    .cartList{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
-    .cartRow{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      padding:10px 10px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background: rgba(0,0,0,.20);
-    }
-    .cartName{
-      font-weight:800;
-      font-size:14px;
-      line-height:1.25;
-    }
-    .cartMeta{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:2px;
-    }
-    .qtyBox{
-      display:flex; align-items:center; gap:8px;
-      flex-shrink:0;
-    }
-    .qtyBtn{
-      width:34px; height:34px;
-      border-radius: 12px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      font-weight:900;
-      cursor:pointer;
-    }
-    .qtyBtn:hover{ background: rgba(255,255,255,.06); }
-    .qty{
-      min-width: 22px;
-      text-align:center;
-      font-weight:900;
-    }
-
-    .sumRow{
-      margin-top:14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding-top:12px;
-      border-top:1px solid var(--line);
-      color:var(--muted);
-      font-weight:800;
-    }
-    .sumVal{
-      color:var(--gold);
-      font-size:18px;
-      font-weight:1000;
-    }
-
-    .orderBtn{
-      margin-top:14px;
-      width:100%;
-      border:0;
-      background: linear-gradient(180deg, var(--danger), var(--danger2));
-      color:#fff;
-      font-weight:1000;
-      letter-spacing:.08em;
-      padding:16px 14px;
-      border-radius: 16px;
-      cursor:pointer;
-      box-shadow: 0 18px 50px rgba(164,0,0,.35);
-      transition:.15s;
-    }
-    .orderBtn:hover{ filter: brightness(1.03); }
-    .orderBtn:active{ transform: translateY(1px); }
-    .orderBtn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      box-shadow:none;
-    }
-
-    .foot{
-      margin-top:18px;
-      text-align:center;
-      color:rgba(255,255,255,.45);
-      font-size:12px;
-    }
-
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      background: rgba(16,19,24,.92);
-      border:1px solid var(--line);
-      color: var(--text);
-      padding:12px 14px;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      font-weight:800;
-      display:none;
-      max-width:min(560px, 92vw);
-      z-index:9999;
     }
     .pill{
       display:inline-flex;
@@ -241,26 +59,268 @@
       margin-top:10px;
     }
     .pill strong{ color:var(--text); }
+
+    /* Layout */
+    .layout{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+    @media (min-width: 980px){
+      .layout{ grid-template-columns: 240px 1fr 360px; align-items:start; }
+    }
+
+    /* Left category nav */
+    .navCard{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position: sticky;
+      top: 14px;
+    }
+    .navTitle{
+      padding:14px 14px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      letter-spacing:.04em;
+    }
+    .navList{ display:flex; flex-direction:column; gap:8px; padding:12px; }
+    .navBtn{
+      display:flex; justify-content:space-between; align-items:center;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      transition:.15s;
+    }
+    .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
+    .navBtn small{ color:var(--muted); font-weight:800; }
+
+    /* Mobile: category nav as horizontal chips */
+    @media (max-width: 979px){
+      .navCard{ position: static; }
+      .navList{
+        flex-direction:row;
+        overflow:auto;
+        white-space:nowrap;
+        gap:10px;
+        padding:12px;
+      }
+      .navBtn{
+        flex: 0 0 auto;
+        padding:10px 12px;
+      }
+    }
+
+    /* Cards */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panelTitle{
+      padding:14px 16px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      letter-spacing:.04em;
+    }
+
+    /* Menu area */
+    .menuWrap{ padding:14px; }
+    .section{
+      margin: 8px 0 18px;
+    }
+    .sectionHead{
+      display:flex; align-items:baseline; justify-content:space-between;
+      gap:12px;
+      padding:10px 10px 12px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
+    }
+    .sectionHead h2{
+      margin:0;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      color: var(--text);
+    }
+    .sectionHead p{
+      margin:0;
+      font-size:12px;
+      color: var(--muted);
+    }
+
+    .menuGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 720px){
+      .menuGrid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .itemCard{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(0,0,0,.20);
+      padding:14px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      min-height:106px;
+    }
+    .itemCard h3{
+      margin:0 0 6px;
+      font-size:17px;
+      font-weight:1000;
+      letter-spacing:.02em;
+    }
+    .desc{
+      margin:0 0 8px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .price{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+      color:var(--gold);
+    }
+
+    .addBtn{
+      border:1px solid rgba(200,164,90,.65);
+      background: transparent;
+      color: var(--gold);
+      padding:10px 14px;
+      border-radius: 12px;
+      font-weight:1000;
+      cursor:pointer;
+      transition: .15s;
+      min-width: 84px;
+      flex-shrink:0;
+    }
+    .addBtn:hover{ background: rgba(200,164,90,.10); }
+    .addBtn:active{ transform: translateY(1px); }
+
+    /* Cart */
+    .cartBody{ padding:14px 16px 16px; position: sticky; top: 14px; }
+    @media (max-width: 979px){
+      .cartBody{ position: static; }
+    }
+
+    .cartList{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .cartRow{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(0,0,0,.20);
+    }
+    .cartName{ font-weight:900; font-size:14px; line-height:1.25; }
+    .cartMeta{ color:var(--muted); font-size:12px; margin-top:2px; }
+
+    .qtyBox{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .qtyBtn{
+      width:34px; height:34px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .qtyBtn:hover{ background: rgba(255,255,255,.06); }
+    .qty{ min-width: 22px; text-align:center; font-weight:1000; }
+
+    .sumRow{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-weight:900;
+    }
+    .sumVal{ color:var(--gold); font-size:18px; font-weight:1000; }
+
+    .orderBtn{
+      margin-top:12px;
+      width:100%;
+      border:0;
+      background: linear-gradient(180deg, var(--danger), var(--danger2));
+      color:#fff;
+      font-weight:1000;
+      letter-spacing:.08em;
+      padding:16px 14px;
+      border-radius: 16px;
+      cursor:pointer;
+      box-shadow: 0 18px 50px rgba(164,0,0,.35);
+      transition:.15s;
+    }
+    .orderBtn:hover{ filter: brightness(1.03); }
+    .orderBtn:active{ transform: translateY(1px); }
+    .orderBtn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
+
+    .foot{ margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:12px; }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background: rgba(16,19,24,.92);
+      border:1px solid var(--line);
+      color: var(--text);
+      padding:12px 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      font-weight:900;
+      display:none;
+      max-width:min(560px, 92vw);
+      z-index:9999;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
-      <h1 class="title">焼肉 ご注文</h1>
+      <h1 class="title">北海道本格ジンギスカン　ひつじや</h1>
       <p class="sub">ごゆっくりお選びください</p>
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
       </div>
     </header>
 
-    <div class="grid">
-      <!-- メニュー -->
+    <div class="layout">
+      <!-- 左：カテゴリ -->
+      <aside class="navCard">
+        <div class="navTitle">カテゴリ</div>
+        <div id="catNav" class="navList"></div>
+      </aside>
+
+      <!-- 中：メニュー -->
       <section class="card">
         <div class="panelTitle">メニュー</div>
-        <div id="menu" class="menuGrid"></div>
+        <div class="menuWrap" id="menu"></div>
       </section>
 
-      <!-- カート -->
+      <!-- 右：カート -->
       <section class="card">
         <div class="panelTitle">ご注文内容</div>
         <div class="cartBody">
@@ -282,11 +342,10 @@
   <div id="toast" class="toast"></div>
 
   <script type="module">
-    // ========= Firebase (Web SDK v10 modular) =========
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // あなたの Firebase 設定（既に出ていたもの）
+    // ===== Firebase設定（あなたのもの）=====
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
@@ -299,19 +358,67 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ========= メニュー（ここを増やせばOK） =========
-    const MENU = [
-      { id:"kamikarubi", name:"上カルビ", desc:"厳選和牛の旨みを存分に", price:1320 },
-      { id:"specialroast", name:"特選ロース", desc:"きめ細やかな霜降り", price:1540 },
-      { id:"gyutan", name:"牛タン塩", desc:"定番の一皿", price:1100 },
-      { id:"bibimbap", name:"石焼ビビンバ", desc:"香ばしいおこげ", price:990 },
+    // ===== カテゴリ（左メニューに出す順番）=====
+    const CATEGORIES = [
+      { id:"osusume",    label:"おすすめ" },
+      { id:"ippin",      label:"一品料理" },
+      { id:"youniku",    label:"羊肉" },
+      { id:"yasai",      label:"野菜" },
+      { id:"gohan",      label:"ご飯類" },
+      { id:"alcohol",    label:"アルコール" },
+      { id:"nihonshu",   label:"日本酒" },
+      { id:"wine",       label:"ワイン" },
+      { id:"nonal",      label:"ノンアルコール" },
+      { id:"other",      label:"その他" },
     ];
 
-    // ========= ユーティリティ =========
+    // ===== メニュー（ここ増やしていけば完成）=====
+    // category は上のCATEGORIESのidと一致させる
+    const MENU = [
+      // おすすめ
+      { id:"jingisukan_set", category:"osusume", name:"ひつじや特選ジンギスカン", desc:"まずはこれ。迷ったら王道。", price:1480 },
+      { id:"gyutan_like",    category:"osusume", name:"肩ロース（おすすめ）", desc:"肉厚、旨み強め。", price:1580 },
+
+      // 一品料理
+      { id:"kimchi",         category:"ippin",   name:"キムチ盛り合わせ", desc:"箸休めに最高。", price:690 },
+      { id:"namul",          category:"ippin",   name:"ナムル盛り合わせ", desc:"さっぱり、定番。", price:590 },
+
+      // 羊肉
+      { id:"lamb_shoulder",  category:"youniku", name:"ラム肩ロース", desc:"ジンギスカンの主役。", price:1320 },
+      { id:"lamb_leg",       category:"youniku", name:"ラムもも", desc:"赤身で食べやすい。", price:1180 },
+
+      // 野菜
+      { id:"onion",          category:"yasai",   name:"玉ねぎ", desc:"甘みが出る。", price:220 },
+      { id:"moyashi",        category:"yasai",   name:"もやし", desc:"タレと相性抜群。", price:220 },
+
+      // ご飯類
+      { id:"rice",           category:"gohan",   name:"ライス", desc:"普通盛り", price:250 },
+      { id:"bibimbap",       category:"gohan",   name:"石焼ビビンバ", desc:"香ばしいおこげ", price:990 },
+
+      // アルコール
+      { id:"beer",           category:"alcohol", name:"生ビール", desc:"とりあえず。", price:650 },
+      { id:"highball",       category:"alcohol", name:"ハイボール", desc:"肉に合う。", price:520 },
+
+      // 日本酒
+      { id:"nihonshu_hot",   category:"nihonshu",name:"日本酒（熱燗）", desc:"", price:650 },
+      { id:"nihonshu_cold",  category:"nihonshu",name:"日本酒（冷酒）", desc:"", price:720 },
+
+      // ワイン
+      { id:"wine_red",       category:"wine",    name:"グラスワイン（赤）", desc:"", price:650 },
+      { id:"wine_white",     category:"wine",    name:"グラスワイン（白）", desc:"", price:650 },
+
+      // ノンアルコール
+      { id:"oolong",         category:"nonal",   name:"ウーロン茶", desc:"", price:320 },
+      { id:"cola",           category:"nonal",   name:"コーラ", desc:"", price:320 },
+
+      // その他
+      { id:"ice",            category:"other",   name:"アイス（バニラ）", desc:"食後に。", price:420 },
+    ];
+
+    // ===== util =====
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
-
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
@@ -333,15 +440,15 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ========= カート状態（テーブルごとに保存） =========
+    // ===== cart (tableごとに保持) =====
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
-    /** cart: { [id]: {id,name,price,qty} } */
     let cart = {};
     try{
       const saved = localStorage.getItem(CART_KEY);
       if (saved) cart = JSON.parse(saved) || {};
     } catch {}
 
+    const catNavEl = document.getElementById("catNav");
     const menuEl = document.getElementById("menu");
     const cartListEl = document.getElementById("cartList");
     const totalEl = document.getElementById("total");
@@ -350,34 +457,61 @@
     function saveCart(){
       try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
     }
-
     function cartItems(){
       return Object.values(cart).filter(x => x.qty > 0);
     }
-
     function calcTotal(){
       return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
     }
 
+    // ===== render: left nav =====
+    function renderNav(){
+      catNavEl.innerHTML = CATEGORIES.map(c => {
+        const count = MENU.filter(m => m.category === c.id).length;
+        return `<a class="navBtn" href="#cat-${c.id}"><span>${c.label}</span><small>${count}</small></a>`;
+      }).join("");
+    }
+
+    // ===== render: menu sections =====
     function renderMenu(){
-      menuEl.innerHTML = MENU.map(m => `
-        <div class="card" style="box-shadow:none;">
-          <div class="item">
-            <div>
+      const byCat = new Map();
+      for (const c of CATEGORIES) byCat.set(c.id, []);
+      for (const m of MENU) {
+        if (!byCat.has(m.category)) byCat.set(m.category, []);
+        byCat.get(m.category).push(m);
+      }
+
+      menuEl.innerHTML = CATEGORIES.map(c => {
+        const items = byCat.get(c.id) || [];
+        const grid = items.map(m => `
+          <div class="itemCard">
+            <div style="min-width:0;">
               <h3>${m.name}</h3>
-              <p class="desc">${m.desc}</p>
+              <p class="desc">${m.desc || ""}</p>
               <p class="price">${yen(m.price)}</p>
             </div>
             <button class="addBtn" data-add="${m.id}">追加</button>
           </div>
-        </div>
-      `).join("");
+        `).join("");
+
+        return `
+          <div class="section" id="cat-${c.id}">
+            <div class="sectionHead">
+              <h2>${c.label}</h2>
+              <p>${items.length} 品</p>
+            </div>
+            <div class="menuGrid">
+              ${grid || `<div style="color:var(--muted);padding:6px 10px;">（準備中）</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderCart(){
       const items = cartItems();
       if (!items.length){
-        cartListEl.innerHTML = `<li class="muted" style="padding:6px 2px;">（まだ商品が選ばれていません）</li>`;
+        cartListEl.innerHTML = `<li style="color:var(--muted);padding:6px 2px;">（まだ商品が選ばれていません）</li>`;
       } else {
         cartListEl.innerHTML = items.map(x => `
           <li class="cartRow" data-id="${x.id}">
@@ -417,7 +551,7 @@
       renderCart();
     }
 
-    // ========= イベント =========
+    // ===== events =====
     menuEl.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-add]");
       if (!btn) return;
@@ -441,7 +575,6 @@
       orderBtn.textContent = "送信中…";
 
       try{
-        // Firestore ルールに合わせて keys を必ず揃える
         await addDoc(collection(db, "orders"), {
           table: table,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
@@ -454,18 +587,18 @@
         cart = {};
         saveCart();
         renderCart();
-
         toast("注文を送信しました。ありがとうございます！");
       } catch(err){
         console.error(err);
-        toast("送信に失敗しました（ルール/設定を確認）");
+        toast("送信に失敗しました（設定/ルールを確認）");
       } finally {
         orderBtn.textContent = "この内容で注文";
         orderBtn.disabled = !tableOk || calcTotal() === 0;
       }
     });
 
-    // ========= 初期描画 =========
+    // ===== init =====
+    renderNav();
     renderMenu();
     renderCart();
   </script>
