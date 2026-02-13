@@ -2,87 +2,472 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>テーブル選択</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>焼肉 ご注文</title>
   <style>
     :root{
-      --bg:#0b0b0d;
-      --line:#222228;
-      --text:#f3f3f3;
-      --muted:#a7a7ad;
-      --gold:#d4b56a;
-      --shadow: 0 10px 30px rgba(0,0,0,.45);
-      --radius: 16px;
+      --bg:#0b0d10;
+      --panel:#101318;
+      --panel2:#0f1216;
+      --line:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.58);
+      --gold:#c8a45a;
+      --gold2:#b8913f;
+      --danger:#a40000;
+      --danger2:#7c0000;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius:18px;
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 600px at 30% 10%, rgba(212,181,106,.10), transparent 60%),
-                  radial-gradient(900px 500px at 70% 30%, rgba(212,181,106,.06), transparent 55%),
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(200,164,90,.12), transparent 70%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
-      padding: 18px 14px;
+      color:var(--text);
     }
-    .box{
-      max-width: 560px;
-      margin: 0 auto;
+
+    .wrap{ max-width:1100px; margin:0 auto; padding:28px 18px 56px; }
+    header{
+      padding:10px 0 18px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom:18px;
+    }
+    .title{
+      font-size:36px;
+      font-weight:900;
+      letter-spacing:.04em;
+      color:var(--gold);
+      margin:0 0 6px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:18px;
+    }
+    @media (min-width: 940px){
+      .grid{ grid-template-columns: 1.25fr .75fr; align-items:start; }
+    }
+
+    .menuGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    @media (min-width: 680px){
+      .menuGrid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      background: rgba(255,255,255,.02);
-      padding: 16px;
+      overflow:hidden;
     }
-    h1{ margin:0 0 6px; font-size: 22px; }
-    .sub{ color:var(--muted); font-size: 13px; margin-bottom: 14px; }
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    a.btn{
-      text-decoration:none;
+    .item{
+      padding:18px 18px 16px;
       display:flex;
-      align-items:center;
+      gap:14px;
       justify-content:space-between;
-      padding: 14px 14px;
-      border-radius: 14px;
-      border:1px solid rgba(212,181,106,.28);
-      background: linear-gradient(180deg, rgba(212,181,106,.16), rgba(212,181,106,.06));
+      align-items:center;
+      min-height:110px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+    }
+    .item + .item{ border-top:1px solid var(--line); }
+
+    .item h3{
+      margin:0 0 6px;
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+    .desc{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .price{
+      margin:0;
+      font-size:20px;
+      font-weight:900;
+      color:var(--gold);
+    }
+
+    .addBtn{
+      border:1px solid rgba(200,164,90,.65);
+      background: transparent;
+      color: var(--gold);
+      padding:10px 16px;
+      border-radius: 12px;
+      font-weight:900;
+      cursor:pointer;
+      transition: .15s;
+      min-width: 84px;
+    }
+    .addBtn:hover{ background: rgba(200,164,90,.10); }
+    .addBtn:active{ transform: translateY(1px); }
+
+    .panelTitle{
+      padding:16px 18px;
+      font-weight:900;
+      color:var(--gold);
+      letter-spacing:.04em;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+
+    .cartBody{ padding:14px 18px 18px; }
+    .cartList{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .cartRow{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(0,0,0,.20);
+    }
+    .cartName{
+      font-weight:800;
+      font-size:14px;
+      line-height:1.25;
+    }
+    .cartMeta{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+    .qtyBox{
+      display:flex; align-items:center; gap:8px;
+      flex-shrink:0;
+    }
+    .qtyBtn{
+      width:34px; height:34px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
       color: var(--text);
-      font-weight: 800;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .qtyBtn:hover{ background: rgba(255,255,255,.06); }
+    .qty{
+      min-width: 22px;
+      text-align:center;
+      font-weight:900;
+    }
+
+    .sumRow{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-weight:800;
+    }
+    .sumVal{
+      color:var(--gold);
+      font-size:18px;
+      font-weight:1000;
+    }
+
+    .orderBtn{
+      margin-top:14px;
+      width:100%;
+      border:0;
+      background: linear-gradient(180deg, var(--danger), var(--danger2));
+      color:#fff;
+      font-weight:1000;
+      letter-spacing:.08em;
+      padding:16px 14px;
+      border-radius: 16px;
+      cursor:pointer;
+      box-shadow: 0 18px 50px rgba(164,0,0,.35);
+      transition:.15s;
+    }
+    .orderBtn:hover{ filter: brightness(1.03); }
+    .orderBtn:active{ transform: translateY(1px); }
+    .orderBtn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .foot{
+      margin-top:18px;
+      text-align:center;
+      color:rgba(255,255,255,.45);
+      font-size:12px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background: rgba(16,19,24,.92);
+      border:1px solid var(--line);
+      color: var(--text);
+      padding:12px 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      font-weight:800;
+      display:none;
+      max-width:min(560px, 92vw);
+      z-index:9999;
     }
     .pill{
-      font-size: 12px;
-      color: var(--gold);
-      border:1px solid rgba(212,181,106,.25);
-      padding:2px 8px;
-      border-radius: 999px;
-      background: rgba(212,181,106,.06);
-      font-weight: 900;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
     }
-    @media (max-width: 520px){
-      .grid{ grid-template-columns: 1fr; }
-    }
+    .pill strong{ color:var(--text); }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>テーブルを選択</h1>
-    <div class="sub">テーブル番号を押すと注文ページが開きます</div>
+  <div class="wrap">
+    <header>
+      <h1 class="title">焼肉 ご注文</h1>
+      <p class="sub">ごゆっくりお選びください</p>
+      <div id="tablePill" class="pill" style="display:none;">
+        テーブル <strong id="tableNo">-</strong>
+      </div>
+    </header>
 
-    <div class="grid" id="tables"></div>
+    <div class="grid">
+      <!-- メニュー -->
+      <section class="card">
+        <div class="panelTitle">メニュー</div>
+        <div id="menu" class="menuGrid"></div>
+      </section>
+
+      <!-- カート -->
+      <section class="card">
+        <div class="panelTitle">ご注文内容</div>
+        <div class="cartBody">
+          <ul id="cartList" class="cartList"></ul>
+
+          <div class="sumRow">
+            <span>合計</span>
+            <span id="total" class="sumVal">¥0</span>
+          </div>
+
+          <button id="orderBtn" class="orderBtn" disabled>この内容で注文</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="foot">※ 表示価格は税込です</div>
   </div>
 
-  <script>
-    const wrap = document.getElementById("tables");
-    for(let i=1;i<=10;i++){
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.href = "order.html?table=" + i;
-      a.innerHTML = `<span>テーブル ${i}</span><span class="pill">注文へ</span>`;
-      wrap.appendChild(a);
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    // ========= Firebase (Web SDK v10 modular) =========
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // あなたの Firebase 設定（既に出ていたもの）
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+      authDomain: "order-app-ec18b.firebaseapp.com",
+      projectId: "order-app-ec18b",
+      storageBucket: "order-app-ec18b.firebasestorage.app",
+      messagingSenderId: "756193856808",
+      appId: "1:756193856808:web:f2200287017adaf895541d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ========= メニュー（ここを増やせばOK） =========
+    const MENU = [
+      { id:"kamikarubi", name:"上カルビ", desc:"厳選和牛の旨みを存分に", price:1320 },
+      { id:"specialroast", name:"特選ロース", desc:"きめ細やかな霜降り", price:1540 },
+      { id:"gyutan", name:"牛タン塩", desc:"定番の一皿", price:1100 },
+      { id:"bibimbap", name:"石焼ビビンバ", desc:"香ばしいおこげ", price:990 },
+    ];
+
+    // ========= ユーティリティ =========
+    const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
+    const qs = new URLSearchParams(location.search);
+    const tableParam = qs.get("table");
+
+    const table = Number(tableParam);
+    const tableOk = Number.isFinite(table) && table > 0;
+
+    const tablePill = document.getElementById("tablePill");
+    const tableNoEl = document.getElementById("tableNo");
+
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(()=> t.style.display = "none", 2200);
     }
+
+    if (tableOk) {
+      tablePill.style.display = "inline-flex";
+      tableNoEl.textContent = String(table);
+    } else {
+      toast("URLに ?table=1 のようにテーブル番号を付けてください");
+    }
+
+    // ========= カート状態（テーブルごとに保存） =========
+    const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
+    /** cart: { [id]: {id,name,price,qty} } */
+    let cart = {};
+    try{
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) cart = JSON.parse(saved) || {};
+    } catch {}
+
+    const menuEl = document.getElementById("menu");
+    const cartListEl = document.getElementById("cartList");
+    const totalEl = document.getElementById("total");
+    const orderBtn = document.getElementById("orderBtn");
+
+    function saveCart(){
+      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
+    }
+
+    function cartItems(){
+      return Object.values(cart).filter(x => x.qty > 0);
+    }
+
+    function calcTotal(){
+      return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
+    }
+
+    function renderMenu(){
+      menuEl.innerHTML = MENU.map(m => `
+        <div class="card" style="box-shadow:none;">
+          <div class="item">
+            <div>
+              <h3>${m.name}</h3>
+              <p class="desc">${m.desc}</p>
+              <p class="price">${yen(m.price)}</p>
+            </div>
+            <button class="addBtn" data-add="${m.id}">追加</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCart(){
+      const items = cartItems();
+      if (!items.length){
+        cartListEl.innerHTML = `<li class="muted" style="padding:6px 2px;">（まだ商品が選ばれていません）</li>`;
+      } else {
+        cartListEl.innerHTML = items.map(x => `
+          <li class="cartRow" data-id="${x.id}">
+            <div style="min-width:0;">
+              <div class="cartName">${x.name}</div>
+              <div class="cartMeta">${yen(x.price)} / 1点</div>
+            </div>
+            <div class="qtyBox">
+              <button class="qtyBtn" data-minus="${x.id}">−</button>
+              <div class="qty">${x.qty}</div>
+              <button class="qtyBtn" data-plus="${x.id}">＋</button>
+            </div>
+          </li>
+        `).join("");
+      }
+
+      const total = calcTotal();
+      totalEl.textContent = yen(total);
+      orderBtn.disabled = !tableOk || total === 0;
+    }
+
+    function addItem(id){
+      const m = MENU.find(x => x.id === id);
+      if (!m) return;
+      if (!cart[id]) cart[id] = { id:m.id, name:m.name, price:m.price, qty:0 };
+      cart[id].qty += 1;
+      saveCart();
+      renderCart();
+      toast(`${m.name} を追加しました`);
+    }
+
+    function changeQty(id, delta){
+      if (!cart[id]) return;
+      cart[id].qty = Math.max(0, cart[id].qty + delta);
+      if (cart[id].qty === 0) delete cart[id];
+      saveCart();
+      renderCart();
+    }
+
+    // ========= イベント =========
+    menuEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-add]");
+      if (!btn) return;
+      addItem(btn.dataset.add);
+    });
+
+    cartListEl.addEventListener("click", (e) => {
+      const minus = e.target.closest("[data-minus]");
+      const plus  = e.target.closest("[data-plus]");
+      if (minus) changeQty(minus.dataset.minus, -1);
+      if (plus)  changeQty(plus.dataset.plus, +1);
+    });
+
+    orderBtn.addEventListener("click", async () => {
+      if (!tableOk) { toast("テーブル番号が無効です"); return; }
+      const items = cartItems();
+      const total = calcTotal();
+      if (!items.length || total <= 0) { toast("商品を選んでください"); return; }
+
+      orderBtn.disabled = true;
+      orderBtn.textContent = "送信中…";
+
+      try{
+        // Firestore ルールに合わせて keys を必ず揃える
+        await addDoc(collection(db, "orders"), {
+          table: table,
+          items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
+          total: total,
+          status: "new",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        cart = {};
+        saveCart();
+        renderCart();
+
+        toast("注文を送信しました。ありがとうございます！");
+      } catch(err){
+        console.error(err);
+        toast("送信に失敗しました（ルール/設定を確認）");
+      } finally {
+        orderBtn.textContent = "この内容で注文";
+        orderBtn.disabled = !tableOk || calcTotal() === 0;
+      }
+    });
+
+    // ========= 初期描画 =========
+    renderMenu();
+    renderCart();
   </script>
 </body>
 </html>
