@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>北海道本格ジンギスカン ひつじや｜ご注文</title>
   <style>
     :root{
@@ -15,6 +15,12 @@
       --danger2:#7c0000;
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
+
+      /* === ① スマホ密度調整（情報量UP） === */
+      --pad-desktop: 26px;
+      --pad-mobile: 14px;
+      --title-desktop: 30px;
+      --title-mobile: 26px;
     }
     *{ box-sizing:border-box; }
     body{
@@ -24,16 +30,19 @@
                   radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
       color:var(--text);
+      font-size: 14px; /* ① 全体基準を少し小さく */
+      overflow-x: hidden;
     }
-    .wrap{ max-width:1200px; margin:0 auto; padding:26px 16px 56px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 56px; }
 
     header{
       padding:10px 0 18px;
       border-bottom: 1px solid var(--line);
       margin-bottom:18px;
+      position: relative;
     }
     .title{
-      font-size:30px;
+      font-size:var(--title-desktop);
       font-weight:1000;
       letter-spacing:.02em;
       color:var(--gold);
@@ -69,7 +78,7 @@
       .layout{ grid-template-columns: 240px 1fr 360px; align-items:start; }
     }
 
-    /* Left category nav */
+    /* Left category nav (PC) */
     .navCard{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
@@ -98,24 +107,14 @@
       text-decoration:none;
       font-weight:900;
       transition:.15s;
+      cursor: pointer;
     }
     .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
     .navBtn small{ color:var(--muted); font-weight:800; }
 
-    /* Mobile: category nav as horizontal chips */
+    /* === ② スマホ: 左ナビはドロワーに収納（横チップは廃止） === */
     @media (max-width: 979px){
-      .navCard{ position: static; }
-      .navList{
-        flex-direction:row;
-        overflow:auto;
-        white-space:nowrap;
-        gap:10px;
-        padding:12px;
-      }
-      .navBtn{
-        flex: 0 0 auto;
-        padding:10px 12px;
-      }
+      .navCard{ display:none; } /* スマホは常時表示しない */
     }
 
     /* Cards */
@@ -137,7 +136,7 @@
 
     /* Menu area */
     .menuWrap{ padding:14px; }
-    .section{ margin: 8px 0 18px; }
+    .section{ margin: 8px 0 18px; scroll-margin-top: 70px; }
     .sectionHead{
       display:flex; align-items:baseline; justify-content:space-between;
       gap:12px;
@@ -199,16 +198,18 @@
       justify-content:space-between;
     }
 
-    /* 数量セレクト */
+    /* === ④ 数量セレクトを大きく === */
     .qtySelect{
-      width:92px;
+      width:104px;
       padding:10px 10px;
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
       color: var(--text);
-      font-weight:900;
+      font-weight:1000;
       outline:none;
+      font-size:16px;      /* ←大きく */
+      height: 42px;        /* ←押しやすく */
     }
 
     .addBtn{
@@ -223,6 +224,7 @@
       flex:1;
       min-width: 84px;
       white-space:nowrap;
+      height: 42px;
     }
     .addBtn:hover{ background: rgba(200,164,90,.10); }
     .addBtn:active{ transform: translateY(1px); }
@@ -242,21 +244,29 @@
       border-radius:14px;
       background: rgba(0,0,0,.20);
     }
-    .cartName{ font-weight:900; font-size:14px; line-height:1.25; }
+    .cartName{ font-weight:1000; font-size:15px; line-height:1.25; }
     .cartMeta{ color:var(--muted); font-size:12px; margin-top:2px; }
 
     .qtyBox{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
     .qtyBtn{
-      width:34px; height:34px;
+      width:38px; height:38px; /* 押しやすく */
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
       color: var(--text);
       font-weight:1000;
       cursor:pointer;
+      font-size: 18px;
     }
     .qtyBtn:hover{ background: rgba(255,255,255,.06); }
-    .qty{ min-width: 22px; text-align:center; font-weight:1000; }
+
+    /* === ④ カート数量を大きく === */
+    .qty{
+      min-width: 26px;
+      text-align:center;
+      font-weight:1000;
+      font-size: 18px;
+    }
 
     .sumRow{
       margin-top:12px;
@@ -267,8 +277,10 @@
       border-top:1px solid var(--line);
       color:var(--muted);
       font-weight:900;
+      font-size: 14px;
     }
-    .sumVal{ color:var(--gold); font-size:18px; font-weight:1000; }
+    /* === ④ 合計金額を大きく === */
+    .sumVal{ color:var(--gold); font-size:22px; font-weight:1000; }
 
     .orderBtn{
       margin-top:12px;
@@ -306,10 +318,119 @@
       max-width:min(560px, 92vw);
       z-index:9999;
     }
+
+    /* ===== ② Mobile drawer (hamburger) ===== */
+    .hamburger{
+      display:none;
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 1002;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.30);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex-direction: column;
+    }
+    .hamburger span{
+      width: 18px;
+      height: 2px;
+      background: rgba(255,255,255,.85);
+      border-radius: 2px;
+      display:block;
+    }
+
+    .drawerOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+    .drawerOverlay.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer{
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100dvh;
+      width: min(320px, 86vw);
+      z-index: 1001;
+      transform: translateX(-102%);
+      transition: transform .18s ease;
+      padding: 14px;
+      background: rgba(10,12,16,.92);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+    .drawer.show{ transform: translateX(0); }
+
+    .drawerHead{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 6px 4px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 10px;
+    }
+    .drawerTitle{
+      font-weight: 1000;
+      color: var(--gold);
+      letter-spacing: .04em;
+    }
+    .drawerClose{
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.9);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 979px){
+      /* ① スマホ密度: 余白/影/見出しを少し詰める */
+      .wrap{ padding: var(--pad-mobile) 12px 44px; }
+      header{ padding: 8px 0 14px; margin-bottom: 14px; }
+      .title{ font-size: var(--title-mobile); }
+      .menuWrap{ padding: 12px; }
+      .panelTitle{ padding: 12px 14px; }
+      .cartBody{ padding: 12px 14px 14px; }
+      .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+
+      /* ② スマホでハンバーガー表示 */
+      .hamburger{ display:flex; }
+    }
   </style>
 </head>
 
 <body>
+  <!-- ② スマホ用ハンバーガー＆ドロワー -->
+  <button id="hamburger" class="hamburger" aria-label="カテゴリを開く">
+    <span></span><span></span><span></span>
+  </button>
+  <div id="drawerOverlay" class="drawerOverlay"></div>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawerHead">
+      <div class="drawerTitle">カテゴリ</div>
+      <button id="drawerClose" class="drawerClose" aria-label="閉じる">×</button>
+    </div>
+    <div id="drawerNav" class="navList"></div>
+  </aside>
+
   <div class="wrap">
     <header>
       <h1 class="title">北海道本格ジンギスカン　ひつじや</h1>
@@ -320,7 +441,7 @@
     </header>
 
     <div class="layout">
-      <!-- 左：カテゴリ -->
+      <!-- 左：カテゴリ（PC用：常時表示） -->
       <aside class="navCard">
         <div class="navTitle">カテゴリ</div>
         <div id="catNav" class="navList"></div>
@@ -333,7 +454,7 @@
       </section>
 
       <!-- 右：カート -->
-      <section class="card">
+      <section class="card" id="order-content">
         <div class="panelTitle">ご注文内容</div>
         <div class="cartBody">
           <ul id="cartList" class="cartList"></ul>
@@ -384,8 +505,7 @@
       { id:"other",      label:"その他" },
     ];
 
-    // メニュー（指定分を追加）
-    // category は CATEGORIES の id と一致させる
+    // メニュー
     const MENU = [
       // ===== 羊肉 =====
       { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188 },
@@ -425,8 +545,6 @@
       // ===== ご飯類 =====
       { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308 },
       { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418 },
-
-      // （他カテゴリは今は空でもOK。準備中表示になる）
     ];
 
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
@@ -462,10 +580,32 @@
     } catch {}
 
     const catNavEl = document.getElementById("catNav");
+    const drawerNavEl = document.getElementById("drawerNav");
     const menuEl = document.getElementById("menu");
     const cartListEl = document.getElementById("cartList");
     const totalEl = document.getElementById("total");
     const orderBtn = document.getElementById("orderBtn");
+
+    // ② Drawer open/close
+    const hamburger = document.getElementById("hamburger");
+    const drawer = document.getElementById("drawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const drawerClose = document.getElementById("drawerClose");
+
+    function openDrawer(){
+      drawer.classList.add("show");
+      drawerOverlay.classList.add("show");
+      drawer.setAttribute("aria-hidden", "false");
+    }
+    function closeDrawer(){
+      drawer.classList.remove("show");
+      drawerOverlay.classList.remove("show");
+      drawer.setAttribute("aria-hidden", "true");
+    }
+
+    hamburger?.addEventListener("click", openDrawer);
+    drawerClose?.addEventListener("click", closeDrawer);
+    drawerOverlay?.addEventListener("click", closeDrawer);
 
     function saveCart(){
       try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
@@ -473,15 +613,67 @@
     function cartItems(){
       return Object.values(cart).filter(x => x.qty > 0);
     }
+    function cartQtyTotal(){
+      return cartItems().reduce((sum, x) => sum + x.qty, 0); // 注文内容の「合計点数」
+    }
     function calcTotal(){
       return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
     }
 
+    // ③ 「注文内容」ボタンでカートへ
+    function scrollToOrder(){
+      const el = document.getElementById("order-content");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // カテゴリのidへ移動（ドロワー閉じる）
+    function goCategory(catId){
+      const el = document.getElementById(`cat-${catId}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      closeDrawer();
+    }
+
+    function renderNavInto(container){
+      const counts = new Map();
+      for (const c of CATEGORIES) {
+        counts.set(c.id, MENU.filter(m => m.category === c.id).length);
+      }
+
+      const orderCount = cartQtyTotal(); // ③ 注文内容の点数
+
+      container.innerHTML = [
+        // ③ 注文内容を先頭に追加
+        `<a class="navBtn" data-nav="order" href="#order-content">
+          <span>注文内容</span><small>${orderCount}</small>
+        </a>`,
+        ...CATEGORIES.map(c => {
+          const count = counts.get(c.id) ?? 0;
+          return `<a class="navBtn" data-nav="${c.id}" href="#cat-${c.id}">
+                    <span>${c.label}</span><small>${count}</small>
+                  </a>`;
+        })
+      ].join("");
+
+      // クリック時の挙動（スマホではドロワー閉じる）
+      container.querySelectorAll("a.navBtn").forEach(a => {
+        a.addEventListener("click", (e) => {
+          const key = a.getAttribute("data-nav");
+          if (!key) return;
+
+          // 通常のアンカー移動はキャンセルしてスムーススクロール
+          e.preventDefault();
+          if (key === "order") {
+            scrollToOrder();
+          } else {
+            goCategory(key);
+          }
+        });
+      });
+    }
+
     function renderNav(){
-      catNavEl.innerHTML = CATEGORIES.map(c => {
-        const count = MENU.filter(m => m.category === c.id).length;
-        return `<a class="navBtn" href="#cat-${c.id}"><span>${c.label}</span><small>${count}</small></a>`;
-      }).join("");
+      renderNavInto(catNavEl);     // PC左ナビ
+      renderNavInto(drawerNavEl);  // スマホドロワー
     }
 
     // 各商品に数量セレクト（+1〜+10）
@@ -553,6 +745,9 @@
       const total = calcTotal();
       totalEl.textContent = yen(total);
       orderBtn.disabled = !tableOk || total === 0;
+
+      // ③ 注文内容のカウント表示も更新
+      renderNav();
     }
 
     // qty を指定して追加
