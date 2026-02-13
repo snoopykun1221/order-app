@@ -20,7 +20,6 @@
     .danger { background:#fee2e2; color:#7f1d1d; }
     .muted { opacity:.75; font-size:13px; }
     .order { border:1px solid #eef0f5; border-radius:14px; padding:14px; margin:12px 0; background:#fff; }
-    .order.flash { outline: 3px solid rgba(59,130,246,.35); }
     .top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
     .tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:900; background:#eef2ff; }
     .tagDone { background:#dcfce7; color:#14532d; }
@@ -136,10 +135,6 @@
     let latestDocs = [];
     let currentView = "new"; // "new" | "done" | "all"
 
-    // 「完了押したら完了欄へ」用：移動後にその注文へスクロールする
-    let pendingScrollId = null;
-    let pendingFlashTimer = null;
-
     // 新規注文の通知音（未完了が追加された時だけ）
     function beep() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -166,14 +161,12 @@
       return { text:"未完了", cls:"" };
     }
 
-    // 並び順：未完了が上、完了は下、取消は一番下
     function statusPriority(s) {
       if (s === "done") return 1;
       if (s === "canceled") return 2;
-      return 0; // new その他＝未完了扱い
+      return 0; // 未完了
     }
 
-    // createdAt をミリ秒に（古いデータでも落ちない）
     function createdMillis(data) {
       const ts = data?.createdAt;
       if (ts?.toDate) return ts.toDate().getTime();
@@ -213,13 +206,12 @@
     function filteredDocsSorted() {
       let docs = latestDocs.slice();
 
-      // まず「一覧」の時だけは未完了を上に寄せる
       if (currentView === "all") {
         docs.sort((a, b) => {
           const sa = statusPriority(a.data.status ?? "new");
           const sb = statusPriority(b.data.status ?? "new");
-          if (sa !== sb) return sa - sb; // 0(未完了) → 1(done) → 2(canceled)
-          return createdMillis(b.data) - createdMillis(a.data); // 同カテゴリ内は新しい順
+          if (sa !== sb) return sa - sb; // 未完了→完了→取消
+          return createdMillis(b.data) - createdMillis(a.data); // 新しい順
         });
         return docs;
       }
@@ -237,22 +229,6 @@
       });
       docs.sort((a, b) => createdMillis(b.data) - createdMillis(a.data));
       return docs;
-    }
-
-    function afterRenderScrollIfNeeded() {
-      if (!pendingScrollId) return;
-      const el = document.querySelector(`.order[data-id="${pendingScrollId}"]`);
-      if (!el) return;
-
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
-      el.classList.add("flash");
-
-      if (pendingFlashTimer) clearTimeout(pendingFlashTimer);
-      pendingFlashTimer = setTimeout(() => {
-        el.classList.remove("flash");
-      }, 1200);
-
-      pendingScrollId = null;
     }
 
     function render() {
@@ -299,8 +275,6 @@
           </div>
         `;
       }).join("");
-
-      afterRenderScrollIfNeeded();
     }
 
     function listen() {
@@ -329,7 +303,7 @@
       });
     }
 
-    // ステータス更新：押したら「該当欄に移動」してスクロール
+    // ステータス更新：タブは切り替えない（自然に消えるだけ）
     ordersEl.addEventListener("click", async e => {
       const btn = e.target.closest("button[data-s]");
       if (!btn) return;
@@ -344,20 +318,8 @@
           status: nextStatus,
           updatedAt: serverTimestamp()
         });
-
-        // ここが要望の「押したら欄に行く」
-        if (nextStatus === "done") {
-          setActiveNav("done");
-          pendingScrollId = id;
-        } else if (nextStatus === "new") {
-          setActiveNav("new");
-          pendingScrollId = id;
-        } else {
-          // 取消は一覧で見えるように一覧へ
-          setActiveNav("all");
-          pendingScrollId = id;
-        }
-
+        // 👇 自動でタブ移動しない
+        // Firestoreのリアルタイム更新で表示が自然に変わる
       } catch (err) {
         infoEl.textContent = "更新エラー: " + (err?.message ?? String(err));
       }
@@ -396,7 +358,6 @@
         ordersEl.innerHTML = "";
         latestDocs = [];
         initialized = false;
-        pendingScrollId = null;
         cntAll.textContent = "0";
         cntDone.textContent = "0";
         cntNew.textContent = "0";
