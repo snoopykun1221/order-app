@@ -14,12 +14,13 @@
     h1 { margin:0; font-size:20px; }
     h2 { margin:0 0 10px; font-size:16px; }
     input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #e6e8ef; font-size:14px; box-sizing:border-box; }
-    button { cursor:pointer; border:0; border-radius:10px; padding:10px 12px; font-weight:800; }
+    button { cursor:pointer; border:0; border-radius:10px; padding:10px 12px; font-weight:900; }
     .btn { background:#0b1220; color:#fff; }
     .btn2 { background:#eef2ff; color:#0b1220; }
     .danger { background:#fee2e2; color:#7f1d1d; }
     .muted { opacity:.75; font-size:13px; }
     .order { border:1px solid #eef0f5; border-radius:14px; padding:14px; margin:12px 0; background:#fff; }
+    .order.flash { outline: 3px solid rgba(59,130,246,.35); }
     .top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
     .tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:900; background:#eef2ff; }
     .tagDone { background:#dcfce7; color:#14532d; }
@@ -30,7 +31,6 @@
     .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .small { padding:8px 10px; }
 
-    /* 左メニュー */
     .nav { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
     .navbtn {
       display:flex; align-items:center; justify-content:space-between;
@@ -71,7 +71,7 @@
       <hr style="border:none;border-top:1px solid #eef0f5;margin:16px 0;">
 
       <h2>メニュー</h2>
-      <div class="muted">表示を切り替えます</div>
+      <div class="muted">押したら表示が切り替わります</div>
       <div class="nav">
         <div id="navNew" class="navbtn active" role="button" tabindex="0">
           <span>未完了</span><span id="cntNew" class="badge">0</span>
@@ -85,13 +85,11 @@
       </div>
 
       <div style="height:10px"></div>
-      <div class="muted">
-        ※「取消」は一覧で確認できます
-      </div>
+      <div class="muted">※「取消」は一覧で確認できます</div>
     </section>
 
     <section class="card">
-      <h2 id="listTitle">未完了（新規）</h2>
+      <h2 id="listTitle">未完了</h2>
       <div id="info" class="muted">ログインすると表示されます</div>
       <div id="orders"></div>
     </section>
@@ -102,7 +100,6 @@
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
     import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // ===== Firebase設定（あなたのもの）=====
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
@@ -139,7 +136,11 @@
     let latestDocs = [];
     let currentView = "new"; // "new" | "done" | "all"
 
-    // ===== 通知音（新規注文が追加された時だけ）=====
+    // 「完了押したら完了欄へ」用：移動後にその注文へスクロールする
+    let pendingScrollId = null;
+    let pendingFlashTimer = null;
+
+    // 新規注文の通知音（未完了が追加された時だけ）
     function beep() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       const ctx = new AudioCtx();
@@ -150,16 +151,34 @@
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      setTimeout(() => {
-        osc.stop();
-        ctx.close();
-      }, 160);
+      setTimeout(() => { osc.stop(); ctx.close(); }, 160);
+    }
+
+    function safeText(v, fallback="-") {
+      if (v === null || v === undefined) return fallback;
+      const s = String(v).trim();
+      return s.length ? s : fallback;
     }
 
     function statusLabel(s) {
       if (s === "done") return { text:"完了", cls:"tagDone" };
       if (s === "canceled") return { text:"取消", cls:"tagCancel" };
-      return { text:"未完了", cls:"" }; // new など
+      return { text:"未完了", cls:"" };
+    }
+
+    // 並び順：未完了が上、完了は下、取消は一番下
+    function statusPriority(s) {
+      if (s === "done") return 1;
+      if (s === "canceled") return 2;
+      return 0; // new その他＝未完了扱い
+    }
+
+    // createdAt をミリ秒に（古いデータでも落ちない）
+    function createdMillis(data) {
+      const ts = data?.createdAt;
+      if (ts?.toDate) return ts.toDate().getTime();
+      if (typeof ts === "number") return ts;
+      return 0;
     }
 
     function setActiveNav(view) {
@@ -168,9 +187,9 @@
       navDone.classList.toggle("active", view === "done");
       navAll.classList.toggle("active", view === "all");
 
-      if (view === "new") listTitleEl.textContent = "未完了（新規）";
+      if (view === "new") listTitleEl.textContent = "未完了";
       if (view === "done") listTitleEl.textContent = "完了";
-      if (view === "all") listTitleEl.textContent = "一覧（すべて）";
+      if (view === "all") listTitleEl.textContent = "一覧（未完了が上）";
 
       render();
     }
@@ -188,28 +207,56 @@
       cntDone.textContent = String(done);
       cntNew.textContent = String(unfinished);
 
-      // info に取消数も出す（一覧じゃなくても把握できる）
-      infoEl.textContent = `件数: ${all}（完了:${done} / 未完了:${unfinished} / 取消:${canceled}）`;
+      infoEl.textContent = `件数: ${all}（未完了:${unfinished} / 完了:${done} / 取消:${canceled}）`;
     }
 
-    function filteredDocs() {
-      if (currentView === "all") return latestDocs;
-      if (currentView === "done") return latestDocs.filter(d => (d.data.status ?? "new") === "done");
-      // "new" view: 未完了（done/canceled以外）
-      return latestDocs.filter(d => {
+    function filteredDocsSorted() {
+      let docs = latestDocs.slice();
+
+      // まず「一覧」の時だけは未完了を上に寄せる
+      if (currentView === "all") {
+        docs.sort((a, b) => {
+          const sa = statusPriority(a.data.status ?? "new");
+          const sb = statusPriority(b.data.status ?? "new");
+          if (sa !== sb) return sa - sb; // 0(未完了) → 1(done) → 2(canceled)
+          return createdMillis(b.data) - createdMillis(a.data); // 同カテゴリ内は新しい順
+        });
+        return docs;
+      }
+
+      if (currentView === "done") {
+        docs = docs.filter(d => (d.data.status ?? "new") === "done");
+        docs.sort((a, b) => createdMillis(b.data) - createdMillis(a.data));
+        return docs;
+      }
+
+      // 未完了
+      docs = docs.filter(d => {
         const s = d.data.status ?? "new";
         return s !== "done" && s !== "canceled";
       });
+      docs.sort((a, b) => createdMillis(b.data) - createdMillis(a.data));
+      return docs;
     }
 
-    function safeText(v, fallback="-") {
-      if (v === null || v === undefined) return fallback;
-      const s = String(v).trim();
-      return s.length ? s : fallback;
+    function afterRenderScrollIfNeeded() {
+      if (!pendingScrollId) return;
+      const el = document.querySelector(`.order[data-id="${pendingScrollId}"]`);
+      if (!el) return;
+
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("flash");
+
+      if (pendingFlashTimer) clearTimeout(pendingFlashTimer);
+      pendingFlashTimer = setTimeout(() => {
+        el.classList.remove("flash");
+      }, 1200);
+
+      pendingScrollId = null;
     }
 
     function render() {
-      const docs = filteredDocs();
+      const docs = filteredDocsSorted();
 
       if (!docs.length) {
         ordersEl.innerHTML = "<div class='muted' style='margin-top:10px;'>表示する注文はありません</div>";
@@ -252,6 +299,8 @@
           </div>
         `;
       }).join("");
+
+      afterRenderScrollIfNeeded();
     }
 
     function listen() {
@@ -259,7 +308,7 @@
 
       const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
       unsub = onSnapshot(q, snap => {
-        // 初回ロード後に「新規追加」だけ鳴らす
+        // 初回ロード後に「未完了の追加」だけ鳴らす
         if (initialized) {
           let hasNew = false;
           for (const ch of snap.docChanges()) {
@@ -280,7 +329,7 @@
       });
     }
 
-    // ステータス更新
+    // ステータス更新：押したら「該当欄に移動」してスクロール
     ordersEl.addEventListener("click", async e => {
       const btn = e.target.closest("button[data-s]");
       if (!btn) return;
@@ -288,11 +337,27 @@
       const id = wrap?.dataset?.id;
       if (!id) return;
 
+      const nextStatus = btn.dataset.s;
+
       try {
         await updateDoc(doc(db, "orders", id), {
-          status: btn.dataset.s,
+          status: nextStatus,
           updatedAt: serverTimestamp()
         });
+
+        // ここが要望の「押したら欄に行く」
+        if (nextStatus === "done") {
+          setActiveNav("done");
+          pendingScrollId = id;
+        } else if (nextStatus === "new") {
+          setActiveNav("new");
+          pendingScrollId = id;
+        } else {
+          // 取消は一覧で見えるように一覧へ
+          setActiveNav("all");
+          pendingScrollId = id;
+        }
+
       } catch (err) {
         infoEl.textContent = "更新エラー: " + (err?.message ?? String(err));
       }
@@ -331,10 +396,11 @@
         ordersEl.innerHTML = "";
         latestDocs = [];
         initialized = false;
+        pendingScrollId = null;
         cntAll.textContent = "0";
         cntDone.textContent = "0";
         cntNew.textContent = "0";
-        listTitleEl.textContent = "未完了（新規）";
+        listTitleEl.textContent = "未完了";
         infoEl.textContent = "ログインすると表示されます";
         if (unsub) unsub();
         unsub = null;
@@ -343,4 +409,3 @@
   </script>
 </body>
 </html>
-v
