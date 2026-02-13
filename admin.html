@@ -7,26 +7,42 @@
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; margin:0; background:#f6f7fb; }
     header { padding:18px 16px; background:#0b1220; color:#fff; }
-    main { max-width: 1080px; margin: 0 auto; padding: 16px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 16px; }
     .grid { display:grid; grid-template-columns: 360px 1fr; gap:16px; }
     @media (max-width: 980px){ .grid { grid-template-columns: 1fr; } }
     .card { background:#fff; border-radius:16px; padding:16px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
     h1 { margin:0; font-size:20px; }
     h2 { margin:0 0 10px; font-size:16px; }
-    input, select { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #e6e8ef; font-size:14px; box-sizing:border-box; }
-    button { cursor:pointer; border:0; border-radius:10px; padding:10px 12px; font-weight:700; }
+    input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #e6e8ef; font-size:14px; box-sizing:border-box; }
+    button { cursor:pointer; border:0; border-radius:10px; padding:10px 12px; font-weight:800; }
     .btn { background:#0b1220; color:#fff; }
     .btn2 { background:#eef2ff; color:#0b1220; }
     .danger { background:#fee2e2; color:#7f1d1d; }
     .muted { opacity:.75; font-size:13px; }
     .order { border:1px solid #eef0f5; border-radius:14px; padding:14px; margin:12px 0; background:#fff; }
     .top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-    .tag { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; background:#eef2ff; }
+    .tag { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:900; background:#eef2ff; }
+    .tagDone { background:#dcfce7; color:#14532d; }
+    .tagCancel { background:#fee2e2; color:#7f1d1d; }
     .row { display:flex; gap:10px; }
     .row > * { flex:1; }
     ul { margin: 6px 0 0; padding-left: 18px; }
     .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .small { padding:8px 10px; }
+
+    /* 左メニュー */
+    .nav { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+    .navbtn {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:10px 12px; border-radius:12px; border:1px solid #eef0f5;
+      background:#fff; cursor:pointer; font-weight:900;
+    }
+    .navbtn.active { background:#0b1220; color:#fff; border-color:#0b1220; }
+    .badge {
+      font-size:12px; font-weight:900; padding:3px 8px; border-radius:999px;
+      background:#eef2ff; color:#0b1220;
+    }
+    .navbtn.active .badge { background:rgba(255,255,255,.2); color:#fff; }
   </style>
 </head>
 <body>
@@ -54,17 +70,28 @@
 
       <hr style="border:none;border-top:1px solid #eef0f5;margin:16px 0;">
 
-      <h2>表示フィルタ</h2>
-      <select id="filter">
-        <option value="all">すべて</option>
-        <option value="new">新規</option>
-        <option value="done">完了</option>
-        <option value="canceled">取消</option>
-      </select>
+      <h2>メニュー</h2>
+      <div class="muted">表示を切り替えます</div>
+      <div class="nav">
+        <div id="navNew" class="navbtn active" role="button" tabindex="0">
+          <span>未完了</span><span id="cntNew" class="badge">0</span>
+        </div>
+        <div id="navDone" class="navbtn" role="button" tabindex="0">
+          <span>完了</span><span id="cntDone" class="badge">0</span>
+        </div>
+        <div id="navAll" class="navbtn" role="button" tabindex="0">
+          <span>一覧</span><span id="cntAll" class="badge">0</span>
+        </div>
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="muted">
+        ※「取消」は一覧で確認できます
+      </div>
     </section>
 
     <section class="card">
-      <h2>注文一覧</h2>
+      <h2 id="listTitle">未完了（新規）</h2>
       <div id="info" class="muted">ログインすると表示されます</div>
       <div id="orders"></div>
     </section>
@@ -94,15 +121,25 @@
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const authState = document.getElementById("authState");
+
     const ordersEl = document.getElementById("orders");
     const infoEl = document.getElementById("info");
-    const filterEl = document.getElementById("filter");
+    const listTitleEl = document.getElementById("listTitle");
+
+    const navNew = document.getElementById("navNew");
+    const navDone = document.getElementById("navDone");
+    const navAll = document.getElementById("navAll");
+
+    const cntNew = document.getElementById("cntNew");
+    const cntDone = document.getElementById("cntDone");
+    const cntAll = document.getElementById("cntAll");
 
     let unsub = null;
     let initialized = false;
     let latestDocs = [];
+    let currentView = "new"; // "new" | "done" | "all"
 
-    // ===== 通知音 =====
+    // ===== 通知音（新規注文が追加された時だけ）=====
     function beep() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       const ctx = new AudioCtx();
@@ -119,29 +156,98 @@
       }, 160);
     }
 
+    function statusLabel(s) {
+      if (s === "done") return { text:"完了", cls:"tagDone" };
+      if (s === "canceled") return { text:"取消", cls:"tagCancel" };
+      return { text:"未完了", cls:"" }; // new など
+    }
+
+    function setActiveNav(view) {
+      currentView = view;
+      navNew.classList.toggle("active", view === "new");
+      navDone.classList.toggle("active", view === "done");
+      navAll.classList.toggle("active", view === "all");
+
+      if (view === "new") listTitleEl.textContent = "未完了（新規）";
+      if (view === "done") listTitleEl.textContent = "完了";
+      if (view === "all") listTitleEl.textContent = "一覧（すべて）";
+
+      render();
+    }
+
+    function updateCounts() {
+      const all = latestDocs.length;
+      const done = latestDocs.filter(d => (d.data.status ?? "new") === "done").length;
+      const canceled = latestDocs.filter(d => (d.data.status ?? "new") === "canceled").length;
+      const unfinished = latestDocs.filter(d => {
+        const s = d.data.status ?? "new";
+        return s !== "done" && s !== "canceled";
+      }).length;
+
+      cntAll.textContent = String(all);
+      cntDone.textContent = String(done);
+      cntNew.textContent = String(unfinished);
+
+      // info に取消数も出す（一覧じゃなくても把握できる）
+      infoEl.textContent = `件数: ${all}（完了:${done} / 未完了:${unfinished} / 取消:${canceled}）`;
+    }
+
+    function filteredDocs() {
+      if (currentView === "all") return latestDocs;
+      if (currentView === "done") return latestDocs.filter(d => (d.data.status ?? "new") === "done");
+      // "new" view: 未完了（done/canceled以外）
+      return latestDocs.filter(d => {
+        const s = d.data.status ?? "new";
+        return s !== "done" && s !== "canceled";
+      });
+    }
+
+    function safeText(v, fallback="-") {
+      if (v === null || v === undefined) return fallback;
+      const s = String(v).trim();
+      return s.length ? s : fallback;
+    }
+
     function render() {
-      const f = filterEl.value;
-      const docs = f === "all" ? latestDocs : latestDocs.filter(d => (d.data.status ?? "new") === f);
+      const docs = filteredDocs();
 
       if (!docs.length) {
-        ordersEl.innerHTML = "<div class='muted'>注文はありません</div>";
+        ordersEl.innerHTML = "<div class='muted' style='margin-top:10px;'>表示する注文はありません</div>";
         return;
       }
 
       ordersEl.innerHTML = docs.map(d => {
-        const it = (d.data.items || []).map(i => `<li>${i.name} × ${i.qty}</li>`).join("");
+        const data = d.data || {};
+        const table = safeText(data.table, "-");
+        const total = safeText(data.total, "0");
+        const st = data.status ?? "new";
+        const tag = statusLabel(st);
+
+        const items = Array.isArray(data.items) ? data.items : [];
+        const itemsHtml = items.length
+          ? items.map(i => {
+              const name = safeText(i?.name, "-");
+              const qty = safeText(i?.qty, "1");
+              return `<li>${name} × ${qty}</li>`;
+            }).join("")
+          : "<li>(商品なし)</li>";
+
         return `
           <div class="order" data-id="${d.id}">
             <div class="top">
-              <b>テーブル ${d.data.table}</b>
-              <span class="tag">${d.data.status}</span>
+              <div>
+                <div style="font-weight:900; font-size:16px;">テーブル ${table}</div>
+                <div class="muted">合計: ${total} 円</div>
+              </div>
+              <span class="tag ${tag.cls}">${tag.text}</span>
             </div>
-            <ul>${it}</ul>
-            <div><b>合計:</b> ${d.data.total} 円</div>
+
+            <ul>${itemsHtml}</ul>
+
             <div class="actions">
               <button class="btn small" data-s="done">完了</button>
               <button class="danger small" data-s="canceled">取消</button>
-              <button class="btn2 small" data-s="new">新規</button>
+              <button class="btn2 small" data-s="new">未完了</button>
             </div>
           </div>
         `;
@@ -150,37 +256,61 @@
 
     function listen() {
       if (unsub) unsub();
-      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
+      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
       unsub = onSnapshot(q, snap => {
+        // 初回ロード後に「新規追加」だけ鳴らす
         if (initialized) {
-          snap.docChanges().forEach(c => {
-            if (c.type === "added" && (c.doc.data().status ?? "new") === "new") {
-              beep();
+          let hasNew = false;
+          for (const ch of snap.docChanges()) {
+            if (ch.type === "added") {
+              const s = ch.doc.data().status ?? "new";
+              if (s !== "done" && s !== "canceled") hasNew = true;
             }
-          });
+          }
+          if (hasNew) beep();
         }
         initialized = true;
-        latestDocs = snap.docs.map(d => ({ id: d.id, data: d.data() }));
-        infoEl.textContent = `件数: ${latestDocs.length}`;
+
+        latestDocs = snap.docs.map(x => ({ id: x.id, data: x.data() }));
+        updateCounts();
         render();
+      }, err => {
+        infoEl.textContent = "読み取りエラー: " + (err?.message ?? String(err));
       });
     }
 
+    // ステータス更新
     ordersEl.addEventListener("click", async e => {
       const btn = e.target.closest("button[data-s]");
       if (!btn) return;
-      const id = e.target.closest(".order").dataset.id;
-      await updateDoc(doc(db, "orders", id), {
-        status: btn.dataset.s,
-        updatedAt: serverTimestamp()
-      });
+      const wrap = e.target.closest(".order");
+      const id = wrap?.dataset?.id;
+      if (!id) return;
+
+      try {
+        await updateDoc(doc(db, "orders", id), {
+          status: btn.dataset.s,
+          updatedAt: serverTimestamp()
+        });
+      } catch (err) {
+        infoEl.textContent = "更新エラー: " + (err?.message ?? String(err));
+      }
     });
 
-    filterEl.addEventListener("change", render);
+    // 左メニュー
+    navNew.addEventListener("click", () => setActiveNav("new"));
+    navDone.addEventListener("click", () => setActiveNav("done"));
+    navAll.addEventListener("click", () => setActiveNav("all"));
 
+    // ログイン/ログアウト
     loginBtn.onclick = async () => {
-      await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
+      infoEl.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
+      } catch (err) {
+        infoEl.textContent = "ログイン失敗: " + (err?.message ?? String(err));
+      }
     };
 
     logoutBtn.onclick = async () => {
@@ -189,18 +319,28 @@
 
     onAuthStateChanged(auth, user => {
       if (user) {
-        authState.textContent = "ログイン中: " + user.email;
+        authState.textContent = "ログイン中: " + (user.email ?? "");
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
+        setActiveNav("new"); // デフォは未完了
         listen();
       } else {
         authState.textContent = "未ログイン";
         loginBtn.style.display = "inline-block";
         logoutBtn.style.display = "none";
         ordersEl.innerHTML = "";
+        latestDocs = [];
+        initialized = false;
+        cntAll.textContent = "0";
+        cntDone.textContent = "0";
+        cntNew.textContent = "0";
+        listTitleEl.textContent = "未完了（新規）";
+        infoEl.textContent = "ログインすると表示されます";
         if (unsub) unsub();
+        unsub = null;
       }
     });
   </script>
 </body>
 </html>
+v
