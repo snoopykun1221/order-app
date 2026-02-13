@@ -154,7 +154,7 @@
     }
     .sectionHead p{ margin:0; font-size:12px; color: var(--muted); }
 
-    /* ★ ここが要望：商品選択を常に2列（スマホでも2列） */
+    /* 商品選択は常に2列（スマホでも2列） */
     .menuGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -357,6 +357,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+    // Firebase設定（あなたのもの）
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
@@ -369,6 +370,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // カテゴリ
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
       { id:"ippin",      label:"一品料理" },
@@ -382,36 +384,49 @@
       { id:"other",      label:"その他" },
     ];
 
+    // メニュー（指定分を追加）
     // category は CATEGORIES の id と一致させる
     const MENU = [
-      { id:"jingisukan_set", category:"osusume", name:"ひつじや特選ジンギスカン", desc:"まずはこれ。迷ったら王道。", price:1480 },
-      { id:"kata_roast",     category:"osusume", name:"肩ロース（おすすめ）", desc:"肉厚、旨み強め。", price:1580 },
+      // ===== 羊肉 =====
+      { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188 },
+      { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518 },
+      { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188 },
+      { id:"lamb_tan_gokujo",   category:"youniku", name:"極上ラムタン", desc:"", price:1408 },
+      { id:"mutton_hire",       category:"youniku", name:"マトンヒレ", desc:"", price:1298 },
+      { id:"lamb_sirloin",      category:"youniku", name:"生ラムサーロイン", desc:"", price:1958 },
+      { id:"lamb_ham_salad",    category:"youniku", name:"羊の生ハムサラダ風", desc:"", price:1078 },
+      { id:"lamb_wiener_1",     category:"youniku", name:"ラムウィンナー（1本）", desc:"", price:253 },
+      { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298 },
+      { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968 },
 
-      { id:"kimchi",         category:"ippin",   name:"キムチ盛り合わせ", desc:"箸休めに最高。", price:690 },
-      { id:"namul",          category:"ippin",   name:"ナムル盛り合わせ", desc:"さっぱり、定番。", price:590 },
+      // ===== 野菜 =====
+      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748 },
+      { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418 },
+      { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418 },
+      { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418 },
+      { id:"kyabetsu",          category:"yasai", name:"キャベツ", desc:"", price:418 },
+      { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418 },
+      { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110 },
 
-      { id:"lamb_shoulder",  category:"youniku", name:"ラム肩ロース", desc:"ジンギスカンの主役。", price:1320 },
-      { id:"lamb_leg",       category:"youniku", name:"ラムもも", desc:"赤身で食べやすい。", price:1180 },
+      // ===== 一品料理 =====
+      { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638 },
+      { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528 },
+      { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528 },
+      { id:"moyashi_namul_std", category:"ippin", name:"もやしナムル スタンダード", desc:"", price:418 },
+      { id:"moyashi_namul_hot", category:"ippin", name:"もやしナムル 辛口", desc:"", price:528 },
+      { id:"kyuuri_zuke",       category:"ippin", name:"自家製きゅうり漬け", desc:"", price:528 },
+      { id:"mozuku_su",         category:"ippin", name:"もずく酢", desc:"", price:528 },
+      { id:"yamaimo_wasabi",    category:"ippin", name:"山芋山葵醤油漬け", desc:"", price:748 },
+      { id:"tamago_soup",       category:"ippin", name:"卵スープ", desc:"", price:528 },
+      { id:"wakame_soup",       category:"ippin", name:"わかめスープ", desc:"", price:528 },
+      { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078 },
+      { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385 },
 
-      { id:"onion",          category:"yasai",   name:"玉ねぎ", desc:"甘みが出る。", price:220 },
-      { id:"moyashi",        category:"yasai",   name:"もやし", desc:"タレと相性抜群。", price:220 },
+      // ===== ご飯類 =====
+      { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308 },
+      { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418 },
 
-      { id:"rice",           category:"gohan",   name:"ライス", desc:"普通盛り", price:250 },
-      { id:"bibimbap",       category:"gohan",   name:"石焼ビビンバ", desc:"香ばしいおこげ", price:990 },
-
-      { id:"beer",           category:"alcohol", name:"生ビール", desc:"とりあえず。", price:650 },
-      { id:"highball",       category:"alcohol", name:"ハイボール", desc:"肉に合う。", price:520 },
-
-      { id:"nihonshu_hot",   category:"nihonshu",name:"日本酒（熱燗）", desc:"", price:650 },
-      { id:"nihonshu_cold",  category:"nihonshu",name:"日本酒（冷酒）", desc:"", price:720 },
-
-      { id:"wine_red",       category:"wine",    name:"グラスワイン（赤）", desc:"", price:650 },
-      { id:"wine_white",     category:"wine",    name:"グラスワイン（白）", desc:"", price:650 },
-
-      { id:"oolong",         category:"nonal",   name:"ウーロン茶", desc:"", price:320 },
-      { id:"cola",           category:"nonal",   name:"コーラ", desc:"", price:320 },
-
-      { id:"ice",            category:"other",   name:"アイス（バニラ）", desc:"食後に。", price:420 },
+      // （他カテゴリは今は空でもOK。準備中表示になる）
     ];
 
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
@@ -438,6 +453,7 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
+    // cart (tableごとに保持)
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
     let cart = {};
     try{
@@ -468,7 +484,7 @@
       }).join("");
     }
 
-    // ★ 各商品に数量セレクト（1〜10）を付ける
+    // 各商品に数量セレクト（+1〜+10）
     function qtySelectHtml(id){
       const opts = Array.from({length:10}, (_,i)=> i+1)
         .map(n => `<option value="${n}">+${n}</option>`).join("");
@@ -539,7 +555,7 @@
       orderBtn.disabled = !tableOk || total === 0;
     }
 
-    // ★ qty を指定して追加
+    // qty を指定して追加
     function addItem(id, qty){
       const m = MENU.find(x => x.id === id);
       if (!m) return;
@@ -561,7 +577,7 @@
       renderCart();
     }
 
-    // ===== events =====
+    // events
     menuEl.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-add]");
       if (!btn) return;
@@ -612,7 +628,7 @@
       }
     });
 
-    // ===== init =====
+    // init
     renderNav();
     renderMenu();
     renderCart();
