@@ -7,7 +7,6 @@
   <style>
     :root{
       --bg:#0b0d10;
-      --panel:#101318;
       --line:rgba(255,255,255,.08);
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.58);
@@ -138,9 +137,7 @@
 
     /* Menu area */
     .menuWrap{ padding:14px; }
-    .section{
-      margin: 8px 0 18px;
-    }
+    .section{ margin: 8px 0 18px; }
     .sectionHead{
       display:flex; align-items:baseline; justify-content:space-between;
       gap:12px;
@@ -155,19 +152,13 @@
       letter-spacing:.03em;
       color: var(--text);
     }
-    .sectionHead p{
-      margin:0;
-      font-size:12px;
-      color: var(--muted);
-    }
+    .sectionHead p{ margin:0; font-size:12px; color: var(--muted); }
 
+    /* ★ ここが要望：商品選択を常に2列（スマホでも2列） */
     .menuGrid{
       display:grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
       gap:12px;
-    }
-    @media (min-width: 720px){
-      .menuGrid{ grid-template-columns: 1fr 1fr; }
     }
 
     .itemCard{
@@ -176,16 +167,16 @@
       background: rgba(0,0,0,.20);
       padding:14px 14px;
       display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      min-height:106px;
+      flex-direction:column;
+      gap:10px;
+      min-height:150px;
     }
     .itemCard h3{
       margin:0 0 6px;
-      font-size:17px;
+      font-size:16px;
       font-weight:1000;
       letter-spacing:.02em;
+      line-height:1.2;
     }
     .desc{
       margin:0 0 8px;
@@ -200,17 +191,38 @@
       color:var(--gold);
     }
 
+    .bottomRow{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    /* 数量セレクト */
+    .qtySelect{
+      width:92px;
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-weight:900;
+      outline:none;
+    }
+
     .addBtn{
       border:1px solid rgba(200,164,90,.65);
       background: transparent;
       color: var(--gold);
-      padding:10px 14px;
+      padding:10px 12px;
       border-radius: 12px;
       font-weight:1000;
       cursor:pointer;
       transition: .15s;
+      flex:1;
       min-width: 84px;
-      flex-shrink:0;
+      white-space:nowrap;
     }
     .addBtn:hover{ background: rgba(200,164,90,.10); }
     .addBtn:active{ transform: translateY(1px); }
@@ -345,7 +357,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // ===== Firebase設定（あなたのもの）=====
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
@@ -358,7 +369,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ===== カテゴリ（左メニューに出す順番）=====
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
       { id:"ippin",      label:"一品料理" },
@@ -372,50 +382,38 @@
       { id:"other",      label:"その他" },
     ];
 
-    // ===== メニュー（ここ増やしていけば完成）=====
-    // category は上のCATEGORIESのidと一致させる
+    // category は CATEGORIES の id と一致させる
     const MENU = [
-      // おすすめ
       { id:"jingisukan_set", category:"osusume", name:"ひつじや特選ジンギスカン", desc:"まずはこれ。迷ったら王道。", price:1480 },
-      { id:"gyutan_like",    category:"osusume", name:"肩ロース（おすすめ）", desc:"肉厚、旨み強め。", price:1580 },
+      { id:"kata_roast",     category:"osusume", name:"肩ロース（おすすめ）", desc:"肉厚、旨み強め。", price:1580 },
 
-      // 一品料理
       { id:"kimchi",         category:"ippin",   name:"キムチ盛り合わせ", desc:"箸休めに最高。", price:690 },
       { id:"namul",          category:"ippin",   name:"ナムル盛り合わせ", desc:"さっぱり、定番。", price:590 },
 
-      // 羊肉
       { id:"lamb_shoulder",  category:"youniku", name:"ラム肩ロース", desc:"ジンギスカンの主役。", price:1320 },
       { id:"lamb_leg",       category:"youniku", name:"ラムもも", desc:"赤身で食べやすい。", price:1180 },
 
-      // 野菜
       { id:"onion",          category:"yasai",   name:"玉ねぎ", desc:"甘みが出る。", price:220 },
       { id:"moyashi",        category:"yasai",   name:"もやし", desc:"タレと相性抜群。", price:220 },
 
-      // ご飯類
       { id:"rice",           category:"gohan",   name:"ライス", desc:"普通盛り", price:250 },
       { id:"bibimbap",       category:"gohan",   name:"石焼ビビンバ", desc:"香ばしいおこげ", price:990 },
 
-      // アルコール
       { id:"beer",           category:"alcohol", name:"生ビール", desc:"とりあえず。", price:650 },
       { id:"highball",       category:"alcohol", name:"ハイボール", desc:"肉に合う。", price:520 },
 
-      // 日本酒
       { id:"nihonshu_hot",   category:"nihonshu",name:"日本酒（熱燗）", desc:"", price:650 },
       { id:"nihonshu_cold",  category:"nihonshu",name:"日本酒（冷酒）", desc:"", price:720 },
 
-      // ワイン
       { id:"wine_red",       category:"wine",    name:"グラスワイン（赤）", desc:"", price:650 },
       { id:"wine_white",     category:"wine",    name:"グラスワイン（白）", desc:"", price:650 },
 
-      // ノンアルコール
       { id:"oolong",         category:"nonal",   name:"ウーロン茶", desc:"", price:320 },
       { id:"cola",           category:"nonal",   name:"コーラ", desc:"", price:320 },
 
-      // その他
       { id:"ice",            category:"other",   name:"アイス（バニラ）", desc:"食後に。", price:420 },
     ];
 
-    // ===== util =====
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
@@ -440,7 +438,6 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ===== cart (tableごとに保持) =====
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
     let cart = {};
     try{
@@ -464,7 +461,6 @@
       return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
     }
 
-    // ===== render: left nav =====
     function renderNav(){
       catNavEl.innerHTML = CATEGORIES.map(c => {
         const count = MENU.filter(m => m.category === c.id).length;
@@ -472,7 +468,13 @@
       }).join("");
     }
 
-    // ===== render: menu sections =====
+    // ★ 各商品に数量セレクト（1〜10）を付ける
+    function qtySelectHtml(id){
+      const opts = Array.from({length:10}, (_,i)=> i+1)
+        .map(n => `<option value="${n}">+${n}</option>`).join("");
+      return `<select class="qtySelect" data-qty="${id}">${opts}</select>`;
+    }
+
     function renderMenu(){
       const byCat = new Map();
       for (const c of CATEGORIES) byCat.set(c.id, []);
@@ -490,7 +492,11 @@
               <p class="desc">${m.desc || ""}</p>
               <p class="price">${yen(m.price)}</p>
             </div>
-            <button class="addBtn" data-add="${m.id}">追加</button>
+
+            <div class="bottomRow">
+              ${qtySelectHtml(m.id)}
+              <button class="addBtn" data-add="${m.id}">追加</button>
+            </div>
           </div>
         `).join("");
 
@@ -533,14 +539,18 @@
       orderBtn.disabled = !tableOk || total === 0;
     }
 
-    function addItem(id){
+    // ★ qty を指定して追加
+    function addItem(id, qty){
       const m = MENU.find(x => x.id === id);
       if (!m) return;
+      const n = Math.max(1, Math.min(10, Number(qty) || 1));
+
       if (!cart[id]) cart[id] = { id:m.id, name:m.name, price:m.price, qty:0 };
-      cart[id].qty += 1;
+      cart[id].qty += n;
+
       saveCart();
       renderCart();
-      toast(`${m.name} を追加しました`);
+      toast(`${m.name} を +${n} 追加しました`);
     }
 
     function changeQty(id, delta){
@@ -555,7 +565,12 @@
     menuEl.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-add]");
       if (!btn) return;
-      addItem(btn.dataset.add);
+
+      const id = btn.dataset.add;
+      const sel = menuEl.querySelector(`select[data-qty="${CSS.escape(id)}"]`);
+      const qty = sel ? sel.value : 1;
+
+      addItem(id, qty);
     });
 
     cartListEl.addEventListener("click", (e) => {
