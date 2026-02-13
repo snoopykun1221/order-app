@@ -27,7 +27,6 @@
     ul { margin: 6px 0 0; padding-left: 18px; }
     .actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .small { padding:8px 10px; }
-    a { color: inherit; }
   </style>
 </head>
 <body>
@@ -38,51 +37,35 @@
   <main class="grid">
     <section class="card">
       <h2>管理者ログイン</h2>
-      <div class="muted">Firestoreのルールにより、ログインしないと注文一覧は読めません。</div>
 
-      <div style="height:12px"></div>
       <div class="row">
-        <div>
-          <div class="muted">メール</div>
-          <input id="email" type="email" placeholder="admin@example.com">
-        </div>
-        <div>
-          <div class="muted">パスワード</div>
-          <input id="password" type="password" placeholder="••••••••">
-        </div>
+        <input id="email" type="email" placeholder="管理者メール">
+        <input id="password" type="password" placeholder="パスワード">
       </div>
 
-      <div style="height:12px"></div>
+      <div style="height:10px"></div>
       <div class="row">
         <button id="loginBtn" class="btn">ログイン</button>
         <button id="logoutBtn" class="btn2" style="display:none;">ログアウト</button>
       </div>
 
-      <div style="height:12px"></div>
+      <div style="height:10px"></div>
       <div id="authState" class="muted">未ログイン</div>
 
-      <hr style="border:none; border-top:1px solid #eef0f5; margin:16px 0;">
+      <hr style="border:none;border-top:1px solid #eef0f5;margin:16px 0;">
 
       <h2>表示フィルタ</h2>
-      <div class="muted">ステータスで絞り込みできます。</div>
-      <div style="height:10px"></div>
       <select id="filter">
         <option value="all">すべて</option>
         <option value="new">新規</option>
         <option value="done">完了</option>
         <option value="canceled">取消</option>
       </select>
-
-      <div style="height:12px"></div>
-      <div class="muted">入口リンク</div>
-      <div style="margin-top:6px;">
-        <a href="./order.html?table=1">注文（テーブル1例）</a>
-      </div>
     </section>
 
     <section class="card">
       <h2>注文一覧</h2>
-      <div id="info" class="muted">ログインするとリアルタイム表示します。</div>
+      <div id="info" class="muted">ログインすると表示されます</div>
       <div id="orders"></div>
     </section>
   </main>
@@ -90,16 +73,16 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, collection, query, orderBy, limit, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
+    // ===== Firebase設定（あなたのもの）=====
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
       projectId: "order-app-ec18b",
       storageBucket: "order-app-ec18b.firebasestorage.app",
       messagingSenderId: "756193856808",
-      appId: "1:756193856808:web:f2200287017adaf895541d",
-      measurementId: "G-84PBP7PZNM"
+      appId: "1:756193856808:web:f2200287017adaf895541d"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -111,129 +94,111 @@
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const authState = document.getElementById("authState");
-    const infoEl = document.getElementById("info");
     const ordersEl = document.getElementById("orders");
+    const infoEl = document.getElementById("info");
     const filterEl = document.getElementById("filter");
 
     let unsub = null;
-    let latestDocs = []; // for client-side filter
+    let initialized = false;
+    let latestDocs = [];
 
-    function fmtTime(ts){
-      if (!ts?.toDate) return "(時刻取得中)";
-      return ts.toDate().toLocaleString("ja-JP");
+    // ===== 通知音 =====
+    function beep() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = 880;
+      gain.gain.value = 0.08;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      setTimeout(() => {
+        osc.stop();
+        ctx.close();
+      }, 160);
     }
 
-    function tag(status){
-      if (status === "done") return `<span class="tag">完了</span>`;
-      if (status === "canceled") return `<span class="tag" style="background:#fee2e2;color:#7f1d1d;">取消</span>`;
-      return `<span class="tag">新規</span>`;
-    }
-
-    function renderList() {
+    function render() {
       const f = filterEl.value;
-      const docs = (f === "all") ? latestDocs : latestDocs.filter(x => (x.data.status ?? "new") === f);
+      const docs = f === "all" ? latestDocs : latestDocs.filter(d => (d.data.status ?? "new") === f);
 
-      if (docs.length === 0) {
-        ordersEl.innerHTML = `<div class="muted" style="margin-top:10px;">表示する注文がありません。</div>`;
+      if (!docs.length) {
+        ordersEl.innerHTML = "<div class='muted'>注文はありません</div>";
         return;
       }
 
-      ordersEl.innerHTML = docs.map(({ id, data }) => {
-        const itemsHtml = (data.items || []).map(it => `<li>${it.name} × ${it.qty}</li>`).join("");
-        const note = (data.note || "").trim();
+      ordersEl.innerHTML = docs.map(d => {
+        const it = (d.data.items || []).map(i => `<li>${i.name} × ${i.qty}</li>`).join("");
         return `
-          <div class="order" data-id="${id}">
+          <div class="order" data-id="${d.id}">
             <div class="top">
-              <div>
-                <div style="font-weight:900; font-size:18px;">テーブル ${data.table ?? "-"}</div>
-                <div class="muted">作成: ${fmtTime(data.createdAt)} ／ 更新: ${fmtTime(data.updatedAt)}</div>
-              </div>
-              <div>${tag(data.status ?? "new")}</div>
+              <b>テーブル ${d.data.table}</b>
+              <span class="tag">${d.data.status}</span>
             </div>
-
-            <div style="margin-top:10px;">
-              <div style="font-weight:800;">注文内容</div>
-              <ul>${itemsHtml || "<li>(商品なし)</li>"}</ul>
-            </div>
-
-            <div style="margin-top:10px;">
-              <div><b>合計:</b> ${new Intl.NumberFormat("ja-JP").format(data.total ?? 0)} 円</div>
-              ${note ? `<div class="muted" style="margin-top:6px;"><b>備考:</b> ${note}</div>` : ""}
-            </div>
-
+            <ul>${it}</ul>
+            <div><b>合計:</b> ${d.data.total} 円</div>
             <div class="actions">
-              <button class="btn small" data-action="done">完了</button>
-              <button class="danger small" data-action="canceled">取消</button>
-              <button class="btn2 small" data-action="new">新規に戻す</button>
+              <button class="btn small" data-s="done">完了</button>
+              <button class="danger small" data-s="canceled">取消</button>
+              <button class="btn2 small" data-s="new">新規</button>
             </div>
           </div>
         `;
       }).join("");
     }
 
-    async function setStatus(orderId, status) {
-      const ref = doc(db, "orders", orderId);
-      await updateDoc(ref, { status, updatedAt: serverTimestamp() });
-    }
-
-    ordersEl.addEventListener("click", async (e) => {
-      const btn = e.target?.closest?.("button[data-action]");
-      if (!btn) return;
-      const wrap = e.target?.closest?.(".order");
-      if (!wrap) return;
-      const id = wrap.getAttribute("data-id");
-      const status = btn.getAttribute("data-action");
-      try {
-        await setStatus(id, status);
-      } catch (err) {
-        infoEl.textContent = "更新エラー: " + (err?.message ?? String(err));
-      }
-    });
-
-    filterEl.addEventListener("change", renderList);
-
-    function startListen() {
+    function listen() {
       if (unsub) unsub();
-      infoEl.textContent = "読み込み中…";
+      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"));
 
-      const q = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(100));
-      unsub = onSnapshot(q, (snap) => {
+      unsub = onSnapshot(q, snap => {
+        if (initialized) {
+          snap.docChanges().forEach(c => {
+            if (c.type === "added" && (c.doc.data().status ?? "new") === "new") {
+              beep();
+            }
+          });
+        }
+        initialized = true;
         latestDocs = snap.docs.map(d => ({ id: d.id, data: d.data() }));
-        infoEl.textContent = `表示件数: ${latestDocs.length}（リアルタイム）`;
-        renderList();
-      }, (err) => {
-        infoEl.textContent = "読み取りエラー: " + (err?.message ?? String(err));
+        infoEl.textContent = `件数: ${latestDocs.length}`;
+        render();
       });
     }
 
-    loginBtn.addEventListener("click", async () => {
-      infoEl.textContent = "";
-      try {
-        await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
-      } catch (err) {
-        infoEl.textContent = "ログイン失敗: " + (err?.message ?? String(err));
-      }
+    ordersEl.addEventListener("click", async e => {
+      const btn = e.target.closest("button[data-s]");
+      if (!btn) return;
+      const id = e.target.closest(".order").dataset.id;
+      await updateDoc(doc(db, "orders", id), {
+        status: btn.dataset.s,
+        updatedAt: serverTimestamp()
+      });
     });
 
-    logoutBtn.addEventListener("click", async () => {
+    filterEl.addEventListener("change", render);
+
+    loginBtn.onclick = async () => {
+      await signInWithEmailAndPassword(auth, emailEl.value, passEl.value);
+    };
+
+    logoutBtn.onclick = async () => {
       await signOut(auth);
-    });
+    };
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, user => {
       if (user) {
-        authState.textContent = `ログイン中: ${user.email ?? ""}`;
+        authState.textContent = "ログイン中: " + user.email;
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
-        startListen();
+        listen();
       } else {
         authState.textContent = "未ログイン";
         loginBtn.style.display = "inline-block";
         logoutBtn.style.display = "none";
-        infoEl.textContent = "ログインするとリアルタイム表示します。";
         ordersEl.innerHTML = "";
-        latestDocs = [];
         if (unsub) unsub();
-        unsub = null;
       }
     });
   </script>
