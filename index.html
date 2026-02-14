@@ -17,11 +17,9 @@
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
 
-      /* スマホ密度調整（情報量UP） */
       --pad-desktop: 26px;
       --pad-mobile: 14px;
 
-      /* タイトル大きすぎ問題対策：clampで自動調整 */
       --title: clamp(20px, 4.6vw, 30px);
       --subtitle: clamp(12px, 2.6vw, 14px);
     }
@@ -249,14 +247,14 @@
       color:var(--gold);
     }
 
-    /* ✅ ⑤：狭い幅で「個数＋追加」がはみ出さないように */
     .stepRow{
       margin-top:auto;
       display:flex;
       gap:10px;
       align-items:center;
       justify-content:space-between;
-      flex-wrap: wrap;         /* ←追加 */
+      flex-wrap:nowrap;
+      min-width: 0;
     }
     .stepper{
       display:flex; align-items:center; gap:8px;
@@ -275,7 +273,6 @@
       font-weight:1000;
       cursor:pointer;
       font-size:18px;
-      flex: 0 0 auto;
     }
     .stepQty{
       min-width: 22px;
@@ -293,15 +290,28 @@
       font-weight:1000;
       cursor:pointer;
       transition: .15s;
-      flex: 1 1 120px;     /* ←変更：狭い時は折り返して横幅確保 */
-      min-width: 120px;    /* ←追加：押しやすい幅 */
+      flex: 1 1 auto;
       white-space:nowrap;
       height: 44px;
+      min-width: 0;
     }
     .addBtn:hover{ background: rgba(200,164,90,.16); }
     .addBtn:active{ transform: translateY(1px); }
-    .addBtn:disabled{
-      opacity:.5; cursor:not-allowed;
+    .addBtn:disabled{ opacity:.5; cursor:not-allowed; }
+
+    /* ✅ スマホで「はみ出し」対策：縦積みにする */
+    @media (max-width: 520px){
+      .stepRow{
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .stepper{
+        justify-content: space-between;
+        width: 100%;
+      }
+      .addBtn{
+        width: 100%;
+      }
     }
 
     .soldBadge{
@@ -314,12 +324,14 @@
       font-weight:1000;
       font-size:12px;
       letter-spacing:.08em;
+      z-index: 2;
     }
     .soldOverlay{
       position:absolute;
       inset:0;
       background: rgba(0,0,0,.45);
       pointer-events:none;
+      z-index: 1;
     }
 
     /* Cart */
@@ -507,7 +519,7 @@
       cursor: pointer;
     }
 
-    /* ===== Bottom Nav (Order / History / Admin) ===== */
+    /* ===== Bottom Nav ===== */
     .bottomNav{
       position: fixed;
       left:0; right:0; bottom:0;
@@ -634,16 +646,7 @@
       .panelTitle{ padding: 12px 14px; }
       .cartBody{ padding: 12px 14px 14px; }
       .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
-
       .hamburger{ display:flex; }
-    }
-
-    /* ✅ ⑤：さらに狭い端末用にボタンを少し小さく */
-    @media (max-width: 420px){
-      .stepBtn{ width:34px; height:34px; border-radius: 11px; }
-      .addBtn{ height: 42px; min-width: 118px; }
-      .menuGrid{ gap:10px; }
-      .itemCard{ padding:11px; }
     }
   </style>
 </head>
@@ -765,7 +768,7 @@
         <div class="panelTitle">管理（会計 / 履歴無効化 / 品切れ）</div>
         <div class="adminBox">
           <div class="rowMeta" style="margin-top:2px;">
-            管理機能は <strong>テーブル708</strong> のみ表示（ログイン後に利用できます）。
+            管理機能はテーブル708のみ表示（ログイン後に利用できます）。
           </div>
 
           <div id="adminStatus" class="mini"></div>
@@ -783,13 +786,10 @@
           </div>
 
           <div id="adminActions" style="display:none;">
-            <!-- ✅ ①：全テーブル一括で会計＆履歴無効化 -->
-            <button id="resetAllBtn" class="orderBtn" style="box-shadow:none; margin-top:12px;">
-              全テーブル（1〜10） 会計＆履歴無効化
-            </button>
-            <div class="mini">
-              1〜10番テーブルの <strong>sessionId を新しくして</strong>、直前セッションの注文を <strong>status=cleared</strong> にします（履歴から非表示）。
-            </div>
+            <div class="adminLine"></div>
+            <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">会計＆履歴無効化（テーブル別：1〜10）</div>
+            <div class="mini">対象テーブルだけ sessionId を更新し、直前セッションの注文を status=cleared にします（履歴から非表示）。</div>
+            <div id="tableResetList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
 
             <div class="adminLine"></div>
             <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">品切れ ON/OFF（全テーブル共通）</div>
@@ -813,7 +813,7 @@
     <div class="tabs">
       <button id="tabOrder" class="tabBtn active">オーダー <span id="cartBadge" class="badge">0</span></button>
       <button id="tabHistory" class="tabBtn">注文履歴</button>
-      <button id="tabAdmin" class="tabBtn" title="管理">管理</button>
+      <button id="tabAdmin" class="tabBtn" title="管理" style="display:none;">管理</button>
     </div>
   </div>
 
@@ -841,7 +841,8 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const ADMIN_TABLE = 708;          // ✅ ①：管理サイトはtable=708だけ
+    // ===== テーブル設定 =====
+    const ADMIN_TABLE = 708;
     const CUSTOMER_TABLE_MIN = 1;
     const CUSTOMER_TABLE_MAX = 10;
 
@@ -908,7 +909,7 @@
       t.textContent = msg;
       t.style.display = "block";
       clearTimeout(toast._timer);
-      toast._timer = setTimeout(()=> t.style.display = "none", 2200);
+      toast._timer = setTimeout(()=> t.style.display = "none", 2400);
     }
 
     function newSessionId(){
@@ -921,10 +922,9 @@
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
     const table = Number(tableParam);
-    const tableOk = Number.isFinite(table) && table > 0;
-
-    const isAdminTable = tableOk && table === ADMIN_TABLE;
-    const isCustomerTable = tableOk && table >= CUSTOMER_TABLE_MIN && table <= CUSTOMER_TABLE_MAX;
+    const isAdminTable = (table === ADMIN_TABLE);
+    const isCustomerTable = Number.isFinite(table) && table >= CUSTOMER_TABLE_MIN && table <= CUSTOMER_TABLE_MAX;
+    const tableOk = isAdminTable || isCustomerTable;
 
     const tablePill = document.getElementById("tablePill");
     const tableNoEl = document.getElementById("tableNo");
@@ -932,13 +932,7 @@
       tablePill.style.display = "inline-flex";
       tableNoEl.textContent = String(table);
     } else {
-      toast("URLに ?table=1 のようにテーブル番号を付けてください");
-    }
-
-    // ✅ ③：テーブル1〜10は「管理」タブを消す（708だけ表示）
-    const tabAdmin = document.getElementById("tabAdmin");
-    if (!isAdminTable) {
-      tabAdmin.style.display = "none";
+      toast(`URLに ?table=1〜10（客） または ?table=${ADMIN_TABLE}（管理） を付けてください`);
     }
 
     // ===== Session pill =====
@@ -970,11 +964,10 @@
     const viewAdmin = document.getElementById("viewAdmin");
     const tabOrder = document.getElementById("tabOrder");
     const tabHistory = document.getElementById("tabHistory");
+    const tabAdmin = document.getElementById("tabAdmin");
 
-    function scrollToOrder(){
-      const el = document.getElementById("order-content");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    // ✅ 管理タブは table=708 のときだけ表示
+    tabAdmin.style.display = isAdminTable ? "flex" : "none";
 
     function setTab(which){
       for (const b of [tabOrder, tabHistory, tabAdmin]) b.classList.remove("active");
@@ -983,15 +976,17 @@
       if (which === "order"){
         tabOrder.classList.add("active");
         viewOrder.classList.add("active");
-        // ✅ ④：オーダータブ押したらカート位置（下）へ
-        scrollToOrder();
+        // ✅ ここは「上に戻さない」＆カートにスクロール
+        requestAnimationFrame(()=> scrollToOrder());
       }
+
       if (which === "history"){
         tabHistory.classList.add("active");
         viewHistory.classList.add("active");
+        requestAnimationFrame(()=> refreshHistory().catch(()=>{}));
         window.scrollTo({ top: 0, behavior: "smooth" });
-        refreshHistory().catch(()=>{});
       }
+
       if (which === "admin"){
         if (!isAdminTable) return;
         tabAdmin.classList.add("active");
@@ -1000,11 +995,12 @@
       }
     }
 
+    // ✅ 「オーダー」ボタンは常にカートへ
     tabOrder.addEventListener("click", ()=> setTab("order"));
     tabHistory.addEventListener("click", ()=> setTab("history"));
     tabAdmin.addEventListener("click", ()=> setTab("admin"));
 
-    // ===== Cart =====
+    // ===== Nav / Cart =====
     const catNavEl = document.getElementById("catNav");
     const drawerNavEl = document.getElementById("drawerNav");
     const menuEl = document.getElementById("menu");
@@ -1013,76 +1009,10 @@
     const orderBtn = document.getElementById("orderBtn");
     const cartBadge = document.getElementById("cartBadge");
 
-    // customer tableだけカートキーを分ける（708は管理用途でも一応動く）
-    const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
-    let cart = {};
-    try{
-      const saved = localStorage.getItem(CART_KEY);
-      if (saved) cart = JSON.parse(saved) || {};
-    } catch {}
-
-    function saveCart(){
-      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
+    function scrollToOrder(){
+      const el = document.getElementById("order-content");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-    function cartItems(){
-      return Object.values(cart).filter(x => x.qty > 0);
-    }
-    function cartQtyTotal(){
-      return cartItems().reduce((sum, x) => sum + x.qty, 0);
-    }
-    function calcTotal(){
-      return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
-    }
-    function updateBadge(){
-      cartBadge.textContent = String(cartQtyTotal());
-    }
-
-    // ===== Session / Stock state =====
-    let currentSessionId = null;
-    let stock = {}; // { [itemId]: { soldOut: boolean } }
-
-    async function loadSession(){
-      // customer table(1-10)だけ table_state 必須扱い
-      if (!isCustomerTable){
-        // 708などは表示だけ
-        sessionPill.style.display = "inline-flex";
-        sessionText.textContent = isAdminTable ? "管理" : "—";
-        return;
-      }
-
-      const ref = doc(db, "table_state", `table_${table}`);
-      const snap = await getDoc(ref);
-      if (snap.exists()){
-        const data = snap.data() || {};
-        currentSessionId = String(data.sessionId || "");
-      } else {
-        currentSessionId = "";
-      }
-
-      if (currentSessionId) {
-        sessionPill.style.display = "inline-flex";
-        const tail = currentSessionId.length > 14 ? "…" + currentSessionId.slice(-12) : currentSessionId;
-        sessionText.textContent = tail;
-      } else {
-        sessionPill.style.display = "inline-flex";
-        sessionText.textContent = "未設定";
-        toast("table_state が未作成です（管理708で一括会計/作成してください）");
-      }
-    }
-
-    async function loadStock(){
-      stock = {};
-      try{
-        const q = query(collection(db, "stock"));
-        const snaps = await getDocs(q);
-        snaps.forEach(s => {
-          stock[s.id] = s.data() || {};
-        });
-      } catch {
-        // 何もしない
-      }
-    }
-
     function goCategory(catId){
       const el = document.getElementById(`cat-${catId}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1092,7 +1022,6 @@
     function renderNavInto(container){
       const counts = new Map();
       for (const c of CATEGORIES) counts.set(c.id, MENU.filter(m => m.category === c.id).length);
-
       const orderCount = cartQtyTotal();
 
       container.innerHTML = [
@@ -1123,9 +1052,77 @@
       renderNavInto(drawerNavEl);
     }
 
-    // 各商品カードごとに「その場で＋／－」する数量（追加用）
-    const addQty = {}; // { [itemId]: number }
+    // ===== Cart storage =====
+    const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
+    let cart = {};
+    try{
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) cart = JSON.parse(saved) || {};
+    } catch {}
 
+    function saveCart(){
+      try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
+    }
+    function cartItems(){
+      return Object.values(cart).filter(x => x.qty > 0);
+    }
+    function cartQtyTotal(){
+      return cartItems().reduce((sum, x) => sum + x.qty, 0);
+    }
+    function calcTotal(){
+      return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
+    }
+    function updateBadge(){
+      cartBadge.textContent = String(cartQtyTotal());
+    }
+
+    // ===== Session / Stock state =====
+    let currentSessionId = null;
+    let stock = {}; // { [itemId]: { soldOut: boolean } }
+
+    async function loadSession(){
+      if (!tableOk) return;
+
+      // 管理テーブル(708)には sessionId は不要（表示だけ）
+      if (isAdminTable){
+        sessionPill.style.display = "inline-flex";
+        sessionText.textContent = "管理";
+        return;
+      }
+
+      const ref = doc(db, "table_state", `table_${table}`);
+      const snap = await getDoc(ref);
+      if (snap.exists()){
+        const data = snap.data() || {};
+        currentSessionId = String(data.sessionId || "");
+      } else {
+        currentSessionId = "";
+      }
+
+      sessionPill.style.display = "inline-flex";
+      if (currentSessionId) {
+        const tail = currentSessionId.length > 14 ? "…" + currentSessionId.slice(-12) : currentSessionId;
+        sessionText.textContent = tail;
+      } else {
+        sessionText.textContent = "未設定";
+        toast("注文できません：このテーブルの sessionId が未設定です（管理708で会計ボタンを押してください）");
+      }
+    }
+
+    async function loadStock(){
+      stock = {};
+      try{
+        const q = query(collection(db, "stock"));
+        const snaps = await getDocs(q);
+        snaps.forEach(s => { stock[s.id] = s.data() || {}; });
+      } catch {
+        // 読めない場合は「品切れ無し扱い」で動かす
+        stock = {};
+      }
+    }
+
+    // ===== Menu render =====
+    const addQty = {}; // { [itemId]: number }
     function getAddQty(id){
       const v = Number(addQty[id] ?? 1);
       return Math.max(1, Math.min(10, v));
@@ -1194,6 +1191,7 @@
       }).join("");
     }
 
+    // ===== Cart render =====
     function renderCart(){
       const items = cartItems();
       if (!items.length){
@@ -1217,7 +1215,7 @@
       const total = calcTotal();
       totalEl.textContent = yen(total);
 
-      // customer tableだけ注文可能
+      // 注文ボタンの有効条件：客テーブル + sessionIdあり + 合計>0
       orderBtn.disabled = !isCustomerTable || !currentSessionId || total === 0;
 
       renderNav();
@@ -1281,8 +1279,8 @@
 
     // ===== 注文送信 =====
     orderBtn.addEventListener("click", async () => {
-      if (!isCustomerTable) { toast("このテーブルでは注文できません"); return; }
-      if (!currentSessionId) { toast("セッションが未設定です（管理708で一括会計/作成）"); return; }
+      if (!isCustomerTable) { toast("このページは注文用ではありません"); return; }
+      if (!currentSessionId) { toast("セッションが未設定です（管理708で会計ボタンを押してください）"); return; }
 
       const items = cartItems();
       const total = calcTotal();
@@ -1293,7 +1291,7 @@
       orderBtn.textContent = "送信中…";
 
       try{
-        await addDoc(collection(db, "orders"), {
+        const payload = {
           table: table,
           sessionId: currentSessionId,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
@@ -1301,6 +1299,19 @@
           status: "new",
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
+        };
+
+        // ✅ 管理用（orders）
+        await addDoc(collection(db, "orders"), payload);
+
+        // ✅ 客履歴用（public_orders）: rulesでread OK
+        await addDoc(collection(db, "public_orders"), {
+          table: payload.table,
+          sessionId: payload.sessionId,
+          items: payload.items,
+          total: payload.total,
+          status: payload.status,
+          createdAt: payload.createdAt
         });
 
         cart = {};
@@ -1316,7 +1327,7 @@
       }
     });
 
-    // ===== 注文履歴 =====
+    // ===== 注文履歴（public_ordersから読む） =====
     const historyList = document.getElementById("historyList");
 
     function renderHistoryRows(rows){
@@ -1346,7 +1357,7 @@
       }
       try{
         const qy = query(
-          collection(db, "orders"),
+          collection(db, "public_orders"),
           where("table", "==", table),
           where("sessionId", "==", currentSessionId),
           orderBy("createdAt", "desc")
@@ -1359,14 +1370,15 @@
           try{ created = d.createdAt?.toDate?.() || null; } catch {}
           rows.push({ id: s.id, ...d, _createdAt: created || new Date() });
         });
+        // status="cleared" は履歴から除外
         renderHistoryRows(rows.filter(x => x.status !== "cleared"));
       } catch (err){
         console.error(err);
-        historyList.innerHTML = `<li class="simpleRow"><div class="rowMeta">履歴を取得できません（Firestoreルールの read 設定が必要です）</div></li>`;
+        historyList.innerHTML = `<li class="simpleRow"><div class="rowMeta">履歴を取得できません（public_orders の read 設定を確認）</div></li>`;
       }
     }
 
-    // ===== Admin auth & actions（708だけ） =====
+    // ===== Admin auth & actions =====
     const adminStatus = document.getElementById("adminStatus");
     const loginBox = document.getElementById("loginBox");
     const adminActions = document.getElementById("adminActions");
@@ -1375,16 +1387,9 @@
     const loginBtn = document.getElementById("loginBtn");
     const logoutBtn = document.getElementById("logoutBtn");
     const stockList = document.getElementById("stockList");
-    const resetAllBtn = document.getElementById("resetAllBtn");
+    const tableResetList = document.getElementById("tableResetList");
 
     function setAdminUI(user){
-      if (!isAdminTable){
-        adminStatus.textContent = "このテーブルでは管理画面は利用できません";
-        loginBox.style.display = "none";
-        adminActions.style.display = "none";
-        return;
-      }
-
       if (user){
         adminStatus.textContent = `ログイン中: ${user.email || ""}`;
         loginBox.style.display = "none";
@@ -1399,12 +1404,12 @@
     onAuthStateChanged(auth, (user) => {
       setAdminUI(user);
       if (user && isAdminTable){
+        renderTableResetList();
         renderStockAdmin().catch(()=>{});
       }
     });
 
     loginBtn.addEventListener("click", async () => {
-      if (!isAdminTable) return;
       const email = adminEmail.value.trim();
       const pass = adminPass.value;
       if (!email || !pass){ toast("メールとパスワードを入力"); return; }
@@ -1421,53 +1426,76 @@
       try{ await signOut(auth); toast("ログアウトしました"); } catch {}
     });
 
-    // ✅ ①：全テーブル(1-10)を「会計＆履歴無効化」
-    resetAllBtn.addEventListener("click", async () => {
-      if (!isAdminTable) return;
-      const ok = confirm("1〜10番テーブルのセッションを更新し、直前セッションの注文履歴を無効化します。続行？");
-      if (!ok) return;
+    // ✅ テーブル別：会計＆履歴無効化
+    async function resetOneTable(t){
+      // 1) 現在sessionId取得
+      const stateRef = doc(db, "table_state", `table_${t}`);
+      const stateSnap = await getDoc(stateRef);
+      const oldSid = stateSnap.exists() ? String((stateSnap.data() || {}).sessionId || "") : "";
 
-      try{
-        for (let t = CUSTOMER_TABLE_MIN; t <= CUSTOMER_TABLE_MAX; t++){
-          // 1) 現在のsessionId取得
-          const stateRef = doc(db, "table_state", `table_${t}`);
-          const stateSnap = await getDoc(stateRef);
-          const oldSid = stateSnap.exists() ? String((stateSnap.data() || {}).sessionId || "") : "";
+      // 2) 新sessionIdに切替
+      const newSid = newSessionId();
+      await setDoc(stateRef, { table: t, sessionId: newSid, updatedAt: serverTimestamp() }, { merge: true });
 
-          // 2) 新sessionId発行して切替
-          const newSid = newSessionId();
-          await setDoc(stateRef, {
-            table: t,
-            sessionId: newSid,
-            updatedAt: serverTimestamp()
-          }, { merge: true });
-
-          // 3) 旧セッションがあれば、その注文を cleared にする
-          if (oldSid){
-            const qy = query(
-              collection(db, "orders"),
-              where("table", "==", t),
-              where("sessionId", "==", oldSid)
-            );
-            const snaps = await getDocs(qy);
-
-            // バッチ（最大500件まで）
-            const batch = writeBatch(db);
-            let count = 0;
-            snaps.forEach(s => {
-              batch.update(s.ref, { status: "cleared", updatedAt: serverTimestamp() });
-              count++;
-            });
-            if (count > 0) await batch.commit();
-          }
+      // 3) 旧セッションがあれば cleared に
+      if (oldSid){
+        // orders（管理用）
+        try{
+          const qOrders = query(collection(db, "orders"), where("table", "==", t), where("sessionId", "==", oldSid));
+          const snapsO = await getDocs(qOrders);
+          const batchO = writeBatch(db);
+          let cntO = 0;
+          snapsO.forEach(s => { batchO.update(s.ref, { status:"cleared", updatedAt: serverTimestamp() }); cntO++; });
+          if (cntO > 0) await batchO.commit();
+        } catch(e){
+          // orders は rules で管理者read/update前提。失敗したらログだけ。
+          console.error(e);
         }
 
-        toast("完了：1〜10番テーブルを新しいセッションに切り替えました");
-      } catch (e){
-        console.error(e);
-        toast("失敗：ルール(orders/table_state の write)を確認してください");
+        // public_orders（客履歴用）
+        const qPub = query(collection(db, "public_orders"), where("table", "==", t), where("sessionId", "==", oldSid));
+        const snapsP = await getDocs(qPub);
+        const batchP = writeBatch(db);
+        let cntP = 0;
+        snapsP.forEach(s => { batchP.update(s.ref, { status:"cleared" }); cntP++; });
+        if (cntP > 0) await batchP.commit();
       }
-    });
+    }
+
+    function renderTableResetList(){
+      tableResetList.innerHTML = "";
+      for (let t = CUSTOMER_TABLE_MIN; t <= CUSTOMER_TABLE_MAX; t++){
+        const row = document.createElement("div");
+        row.className = "toggleRow";
+        row.innerHTML = `
+          <div style="min-width:0;">
+            <strong>テーブル ${t}</strong>
+            <div class="rowMeta">会計＆履歴無効化</div>
+          </div>
+          <button class="ghostBtn" style="margin:0; width:auto; padding:10px 12px;" data-reset="${t}">実行</button>
+        `;
+        tableResetList.appendChild(row);
+      }
+
+      tableResetList.querySelectorAll("[data-reset]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const t = Number(btn.getAttribute("data-reset"));
+          const ok = confirm(`テーブル${t} を会計＆履歴無効化します。続行？`);
+          if (!ok) return;
+
+          btn.disabled = true;
+          try{
+            await resetOneTable(t);
+            toast(`完了：テーブル${t} を切り替えました`);
+          } catch(e){
+            console.error(e);
+            toast(`失敗：テーブル${t}（ルール確認）`);
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      });
+    }
 
     async function renderStockAdmin(){
       stockList.innerHTML = "";
@@ -1498,6 +1526,7 @@
             stock[id] = { ...(stock[id] || {}), soldOut: next };
             el.classList.toggle("on", next);
 
+            // 客画面にも反映
             renderMenu();
             toast(next ? "品切れにしました" : "販売再開しました");
           } catch (e){
@@ -1515,8 +1544,8 @@
     await loadSession();
     renderCart();
 
-    // 管理テーブル708は初期で管理タブにしてもいいならここをON
-    // if (isAdminTable) setTab("admin");
+    // ✅ 708は最初から管理画面へ
+    if (isAdminTable) setTab("admin");
   </script>
 </body>
 </html>
