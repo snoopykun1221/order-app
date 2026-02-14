@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>北海道本格ジンギスカン ひつじや｜ご注文</title>
+
   <style>
     :root{
       --bg:#0b0d10;
@@ -16,13 +17,15 @@
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
 
-      /* === ① スマホ密度調整（情報量UP） === */
+      /* スマホ密度調整（情報量UP） */
       --pad-desktop: 26px;
       --pad-mobile: 14px;
       --title-desktop: 30px;
       --title-mobile: 26px;
     }
+
     *{ box-sizing:border-box; }
+
     body{
       margin:0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
@@ -30,9 +33,10 @@
                   radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
       color:var(--text);
-      font-size: 14px; /* ① 全体基準を少し小さく */
+      font-size: 14px;
       overflow-x: hidden;
     }
+
     .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 56px; }
 
     header{
@@ -41,6 +45,7 @@
       margin-bottom:18px;
       position: relative;
     }
+
     .title{
       font-size:var(--title-desktop);
       font-weight:1000;
@@ -50,29 +55,12 @@
       line-height:1.15;
     }
 
-    /* ===== ひつじロゴ（タイトル左右） ===== */
-    .title-with-sheep{
-      display:flex;
-      align-items:center;
-      justify-content:flex-start; /* headerの中で自然に */
-      gap:12px;
-      flex-wrap:wrap;            /* 画面が狭い時の保険 */
-    }
-    .sheep-icon{
-      width:38px;
-      height:auto;
-      flex-shrink:0;
-      display:block;
-    }
-    @media (max-width: 480px){
-      .sheep-icon{ width:28px; }
-    }
-
     .sub{
       margin:0;
       color:var(--muted);
       font-size:14px;
     }
+
     .pill{
       display:inline-flex;
       align-items:center;
@@ -86,6 +74,29 @@
       margin-top:10px;
     }
     .pill strong{ color:var(--text); }
+
+    /* タイトル左右にひつじ（SVG埋め込み） */
+    .title-with-sheep{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .title-text{
+      word-break: keep-all;
+      line-break: strict;
+      text-align:center;
+    }
+    .sheep-icon{
+      width:34px;
+      height:34px;
+      flex:0 0 auto;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
+    }
+    @media (max-width: 768px){
+      .sheep-icon{ width:28px; height:28px; }
+    }
 
     /* Layout */
     .layout{
@@ -131,9 +142,9 @@
     .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
     .navBtn small{ color:var(--muted); font-weight:800; }
 
-    /* === ② スマホ: 左ナビはドロワーに収納（横チップは廃止） === */
+    /* スマホはPC左ナビを隠して、ドロワーにする */
     @media (max-width: 979px){
-      .navCard{ display:none; } /* スマホは常時表示しない */
+      .navCard{ display:none; }
     }
 
     /* Cards */
@@ -172,7 +183,7 @@
     }
     .sectionHead p{ margin:0; font-size:12px; color: var(--muted); }
 
-    /* 商品選択は常に2列（スマホでも2列） */
+    /* 商品は常に2列（スマホでも2列） */
     .menuGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -217,7 +228,7 @@
       justify-content:space-between;
     }
 
-    /* === ④ 数量セレクトを大きく === */
+    /* 数量セレクトを大きく */
     .qtySelect{
       width:104px;
       padding:10px 10px;
@@ -227,8 +238,8 @@
       color: var(--text);
       font-weight:1000;
       outline:none;
-      font-size:16px;      /* ←大きく */
-      height: 42px;        /* ←押しやすく */
+      font-size:16px;
+      height: 42px;
     }
 
     .addBtn{
@@ -268,7 +279,7 @@
 
     .qtyBox{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
     .qtyBtn{
-      width:38px; height:38px; /* 押しやすく */
+      width:38px; height:38px;
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
@@ -279,7 +290,7 @@
     }
     .qtyBtn:hover{ background: rgba(255,255,255,.06); }
 
-    /* === ④ カート数量を大きく === */
+    /* カート数量を大きく */
     .qty{
       min-width: 26px;
       text-align:center;
@@ -298,7 +309,7 @@
       font-weight:900;
       font-size: 14px;
     }
-    /* === ④ 合計金額を大きく === */
+    /* 合計金額を大きく */
     .sumVal{ color:var(--gold); font-size:22px; font-weight:1000; }
 
     .orderBtn{
@@ -338,7 +349,7 @@
       z-index:9999;
     }
 
-    /* ===== ② Mobile drawer (hamburger) ===== */
+    /* ===== Mobile drawer (hamburger) ===== */
     .hamburger{
       display:none;
       position: fixed;
@@ -393,6 +404,7 @@
       backdrop-filter: blur(12px);
       border-right: 1px solid rgba(255,255,255,.10);
       box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      overflow:auto;
     }
     .drawer.show{ transform: translateX(0); }
 
@@ -421,7 +433,6 @@
     }
 
     @media (max-width: 979px){
-      /* ① スマホ密度: 余白/影/見出しを少し詰める */
       .wrap{ padding: var(--pad-mobile) 12px 44px; }
       header{ padding: 8px 0 14px; margin-bottom: 14px; }
       .title{ font-size: var(--title-mobile); }
@@ -430,14 +441,13 @@
       .cartBody{ padding: 12px 14px 14px; }
       .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
 
-      /* ② スマホでハンバーガー表示 */
       .hamburger{ display:flex; }
     }
   </style>
 </head>
 
 <body>
-  <!-- ② スマホ用ハンバーガー＆ドロワー -->
+  <!-- スマホ用ハンバーガー＆ドロワー -->
   <button id="hamburger" class="hamburger" aria-label="カテゴリを開く">
     <span></span><span></span><span></span>
   </button>
@@ -452,21 +462,61 @@
 
   <div class="wrap">
     <header>
-      <!-- ★ここが修正点：タイトル左右にひつじ -->
       <h1 class="title title-with-sheep">
-        <img src="assets/sheep.png" alt="ひつじ" class="sheep-icon">
-        北海道本格ジンギスカン　ひつじや
-        <img src="assets/sheep.png" alt="ひつじ" class="sheep-icon">
+        <span class="sheep-icon" aria-hidden="true">
+          <!-- 左ひつじ -->
+          <svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <g fill="none" stroke="none">
+              <ellipse cx="30" cy="34" rx="18" ry="14" fill="#f5f5f5"/>
+              <circle cx="18" cy="30" r="6" fill="#f5f5f5"/>
+              <circle cx="42" cy="30" r="6" fill="#f5f5f5"/>
+              <ellipse cx="44" cy="38" rx="9" ry="8" fill="#3b2f2a"/>
+              <circle cx="41" cy="35" r="1.5" fill="#fff"/>
+              <circle cx="47" cy="35" r="1.5" fill="#fff"/>
+              <circle cx="41" cy="35" r="0.7" fill="#000"/>
+              <circle cx="47" cy="35" r="0.7" fill="#000"/>
+              <path d="M43 40c2 2 4 2 6 0" stroke="#000" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M38 31c-3-6 3-10 6-7" stroke="#3b2f2a" stroke-width="3" stroke-linecap="round"/>
+              <path d="M50 31c3-6-3-10-6-7" stroke="#3b2f2a" stroke-width="3" stroke-linecap="round"/>
+              <rect x="22" y="45" width="5" height="9" rx="2.5" fill="#3b2f2a"/>
+              <rect x="33" y="45" width="5" height="9" rx="2.5" fill="#3b2f2a"/>
+            </g>
+          </svg>
+        </span>
+
+        <span class="title-text">北海道本格ジンギスカン　ひつじや</span>
+
+        <span class="sheep-icon" aria-hidden="true">
+          <!-- 右ひつじ（左右反転） -->
+          <svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(64,0) scale(-1,1)">
+              <ellipse cx="30" cy="34" rx="18" ry="14" fill="#f5f5f5"/>
+              <circle cx="18" cy="30" r="6" fill="#f5f5f5"/>
+              <circle cx="42" cy="30" r="6" fill="#f5f5f5"/>
+              <ellipse cx="44" cy="38" rx="9" ry="8" fill="#3b2f2a"/>
+              <circle cx="41" cy="35" r="1.5" fill="#fff"/>
+              <circle cx="47" cy="35" r="1.5" fill="#fff"/>
+              <circle cx="41" cy="35" r="0.7" fill="#000"/>
+              <circle cx="47" cy="35" r="0.7" fill="#000"/>
+              <path d="M43 40c2 2 4 2 6 0" stroke="#000" stroke-width="1.3" stroke-linecap="round"/>
+              <path d="M38 31c-3-6 3-10 6-7" stroke="#3b2f2a" stroke-width="3" stroke-linecap="round"/>
+              <path d="M50 31c3-6-3-10-6-7" stroke="#3b2f2a" stroke-width="3" stroke-linecap="round"/>
+              <rect x="22" y="45" width="5" height="9" rx="2.5" fill="#3b2f2a"/>
+              <rect x="33" y="45" width="5" height="9" rx="2.5" fill="#3b2f2a"/>
+            </g>
+          </svg>
+        </span>
       </h1>
 
       <p class="sub">ごゆっくりお選びください</p>
+
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
       </div>
     </header>
 
     <div class="layout">
-      <!-- 左：カテゴリ（PC用：常時表示） -->
+      <!-- 左：カテゴリ（PC用） -->
       <aside class="navCard">
         <div class="navTitle">カテゴリ</div>
         <div id="catNav" class="navList"></div>
@@ -503,7 +553,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // Firebase設定（あなたのもの）
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
       authDomain: "order-app-ec18b.firebaseapp.com",
@@ -516,7 +565,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // カテゴリ
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
       { id:"ippin",      label:"一品料理" },
@@ -530,9 +578,7 @@
       { id:"other",      label:"その他" },
     ];
 
-    // メニュー
     const MENU = [
-      // ===== 羊肉 =====
       { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188 },
       { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518 },
       { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188 },
@@ -544,7 +590,6 @@
       { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298 },
       { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968 },
 
-      // ===== 野菜 =====
       { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748 },
       { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418 },
       { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418 },
@@ -553,7 +598,6 @@
       { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418 },
       { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110 },
 
-      // ===== 一品料理 =====
       { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638 },
       { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528 },
       { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528 },
@@ -567,12 +611,12 @@
       { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078 },
       { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385 },
 
-      // ===== ご飯類 =====
       { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308 },
       { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418 },
     ];
 
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
+
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
     const table = Number(tableParam);
@@ -596,7 +640,6 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // cart (tableごとに保持)
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
     let cart = {};
     try{
@@ -611,7 +654,7 @@
     const totalEl = document.getElementById("total");
     const orderBtn = document.getElementById("orderBtn");
 
-    // ② Drawer open/close
+    // Drawer open/close
     const hamburger = document.getElementById("hamburger");
     const drawer = document.getElementById("drawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
@@ -639,19 +682,17 @@
       return Object.values(cart).filter(x => x.qty > 0);
     }
     function cartQtyTotal(){
-      return cartItems().reduce((sum, x) => sum + x.qty, 0); // 注文内容の「合計点数」
+      return cartItems().reduce((sum, x) => sum + x.qty, 0);
     }
     function calcTotal(){
       return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
     }
 
-    // ③ 「注文内容」ボタンでカートへ
     function scrollToOrder(){
       const el = document.getElementById("order-content");
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    // カテゴリのidへ移動（ドロワー閉じる）
     function goCategory(catId){
       const el = document.getElementById(`cat-${catId}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -664,10 +705,9 @@
         counts.set(c.id, MENU.filter(m => m.category === c.id).length);
       }
 
-      const orderCount = cartQtyTotal(); // ③ 注文内容の点数
+      const orderCount = cartQtyTotal();
 
       container.innerHTML = [
-        // ③ 注文内容を先頭に追加
         `<a class="navBtn" data-nav="order" href="#order-content">
           <span>注文内容</span><small>${orderCount}</small>
         </a>`,
@@ -679,29 +719,22 @@
         })
       ].join("");
 
-      // クリック時の挙動（スマホではドロワー閉じる）
       container.querySelectorAll("a.navBtn").forEach(a => {
         a.addEventListener("click", (e) => {
           const key = a.getAttribute("data-nav");
           if (!key) return;
-
-          // 通常のアンカー移動はキャンセルしてスムーススクロール
           e.preventDefault();
-          if (key === "order") {
-            scrollToOrder();
-          } else {
-            goCategory(key);
-          }
+          if (key === "order") scrollToOrder();
+          else goCategory(key);
         });
       });
     }
 
     function renderNav(){
-      renderNavInto(catNavEl);     // PC左ナビ
-      renderNavInto(drawerNavEl);  // スマホドロワー
+      renderNavInto(catNavEl);
+      renderNavInto(drawerNavEl);
     }
 
-    // 各商品に数量セレクト（+1〜+10）
     function qtySelectHtml(id){
       const opts = Array.from({length:10}, (_,i)=> i+1)
         .map(n => `<option value="${n}">+${n}</option>`).join("");
@@ -771,11 +804,9 @@
       totalEl.textContent = yen(total);
       orderBtn.disabled = !tableOk || total === 0;
 
-      // ③ 注文内容のカウント表示も更新
       renderNav();
     }
 
-    // qty を指定して追加
     function addItem(id, qty){
       const m = MENU.find(x => x.id === id);
       if (!m) return;
@@ -797,7 +828,6 @@
       renderCart();
     }
 
-    // events
     menuEl.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-add]");
       if (!btn) return;
@@ -848,7 +878,6 @@
       }
     });
 
-    // init
     renderNav();
     renderMenu();
     renderCart();
