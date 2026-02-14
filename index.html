@@ -49,6 +49,25 @@
       margin:0 0 6px;
       line-height:1.15;
     }
+
+    /* ===== ひつじロゴ（タイトル左右） ===== */
+    .title-with-sheep{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start; /* headerの中で自然に */
+      gap:12px;
+      flex-wrap:wrap;            /* 画面が狭い時の保険 */
+    }
+    .sheep-icon{
+      width:38px;
+      height:auto;
+      flex-shrink:0;
+      display:block;
+    }
+    @media (max-width: 480px){
+      .sheep-icon{ width:28px; }
+    }
+
     .sub{
       margin:0;
       color:var(--muted);
@@ -433,7 +452,13 @@
 
   <div class="wrap">
     <header>
-      <h1 class="title">北海道本格ジンギスカン　ひつじや</h1>
+      <!-- ★ここが修正点：タイトル左右にひつじ -->
+      <h1 class="title title-with-sheep">
+        <img src="assets/sheep.png" alt="ひつじ" class="sheep-icon">
+        北海道本格ジンギスカン　ひつじや
+        <img src="assets/sheep.png" alt="ひつじ" class="sheep-icon">
+      </h1>
+
       <p class="sub">ごゆっくりお選びください</p>
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
