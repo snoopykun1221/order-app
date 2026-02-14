@@ -19,8 +19,10 @@
 
       --pad-desktop: 26px;
       --pad-mobile: 14px;
+
+      /* ① タイトル：スマホで1行に収める */
       --title-desktop: 30px;
-      --title-mobile: 26px;
+      --title-mobile: 22px;
     }
 
     *{ box-sizing:border-box; }
@@ -32,11 +34,11 @@
                   radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
       color:var(--text);
-      font-size: 16px; /* ① 文字を少し大きく */
+      font-size: 16px;
       overflow-x: hidden;
     }
 
-    .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 56px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 84px; }
 
     header{
       padding:10px 0 18px;
@@ -57,7 +59,7 @@
     .sub{
       margin:0;
       color:var(--muted);
-      font-size:15px; /* 少しUP */
+      font-size:15px;
     }
 
     .pill{
@@ -74,6 +76,7 @@
     }
     .pill strong{ color:var(--text); }
 
+    /* タイトル左右にひつじ */
     .title-with-sheep{
       display:flex;
       align-items:center;
@@ -82,9 +85,9 @@
       flex-wrap:wrap;
     }
     .title-text{
+      text-align:center;
       word-break: keep-all;
       line-break: strict;
-      text-align:center;
     }
     .sheep-icon{
       width:34px;
@@ -92,10 +95,20 @@
       flex:0 0 auto;
       filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
     }
-    @media (max-width: 768px){
-      .sheep-icon{ width:28px; height:28px; }
+
+    /* ① スマホで1行固定：アイコン消して、nowrap */
+    @media (max-width: 520px){
+      .title-with-sheep{ flex-wrap:nowrap; gap:8px; }
+      .sheep-icon{ display:none; }
+      .title-text{
+        white-space:nowrap;
+        font-size: var(--title-mobile);
+        letter-spacing: .01em;
+      }
+      .title{ font-size: var(--title-mobile); }
     }
 
+    /* Layout */
     .layout{
       display:grid;
       grid-template-columns: 1fr;
@@ -105,6 +118,7 @@
       .layout{ grid-template-columns: 240px 1fr 360px; align-items:start; }
     }
 
+    /* Left category nav (PC) */
     .navCard{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
@@ -144,6 +158,7 @@
       .navCard{ display:none; }
     }
 
+    /* Cards */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
@@ -161,8 +176,9 @@
       font-size:15px;
     }
 
+    /* Menu area */
     .menuWrap{ padding:14px; }
-    .section{ margin: 8px 0 18px; scroll-margin-top: 70px; }
+    .section{ margin: 8px 0 18px; scroll-margin-top: 80px; }
     .sectionHead{
       display:flex; align-items:baseline; justify-content:space-between;
       gap:12px;
@@ -179,6 +195,7 @@
     }
     .sectionHead p{ margin:0; font-size:13px; color: var(--muted); font-weight:900; }
 
+    /* 商品は常に2列 */
     .menuGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -189,26 +206,53 @@
       border:1px solid var(--line);
       border-radius: 16px;
       background: rgba(0,0,0,.20);
-      padding:14px 14px;
+      padding:12px 12px 14px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:170px;
+      min-height:240px;
       position: relative;
     }
+
+    /* ② 商品画像 */
+    .itemImg{
+      width:100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.03);
+    }
+    .itemImg img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+    .itemImg.ph{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,.35);
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.08em;
+    }
+
     .itemCard h3{
-      margin:0 0 6px;
-      font-size:17px;
+      margin:0 0 4px;
+      font-size:16px;
       font-weight:1000;
       letter-spacing:.02em;
       line-height:1.2;
     }
     .desc{
-      margin:0 0 8px;
+      margin:0 0 6px;
       font-size:13px;
       color:var(--muted);
       line-height:1.35;
       font-weight:700;
+      min-height: 18px;
     }
     .price{
       margin:0;
@@ -217,7 +261,7 @@
       color:var(--gold);
     }
 
-    /* ④ 右下に「カートに追加」＋その上に数量ステッパー */
+    /* ④ 右下カート追加 + 上にステッパー */
     .addArea{
       margin-top:auto;
       display:flex;
@@ -288,8 +332,17 @@
       font-weight:1000;
       font-size:12px;
       letter-spacing:.06em;
+      z-index: 2;
     }
 
+    /* Right column stack */
+    .rightCol{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    /* Cart */
     .cartBody{ padding:14px 16px 16px; position: sticky; top: 14px; }
     @media (max-width: 979px){
       .cartBody{ position: static; }
@@ -319,7 +372,6 @@
       font-size: 20px;
     }
     .qtyBtn:hover{ background: rgba(255,255,255,.06); }
-
     .qty{
       min-width: 26px;
       text-align:center;
@@ -359,6 +411,46 @@
     .orderBtn:active{ transform: translateY(1px); }
     .orderBtn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
 
+    /* History */
+    .historyBody{ padding: 12px 14px 14px; }
+    .historyList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+    .historyCard{
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,.20);
+      padding: 10px 10px;
+    }
+    .historyTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 6px;
+    }
+    .historyTime{ color: rgba(255,255,255,.85); font-weight:1000; font-size: 13px; }
+    .historyTotal{ color: var(--gold); font-weight:1000; font-size: 14px; }
+    .historyItems{ color: var(--muted); font-size: 13px; font-weight:800; line-height:1.35; white-space: pre-wrap; }
+    .tinyBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.9);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight:1000;
+      cursor:pointer;
+      font-size: 13px;
+    }
+    .dangerBtn{
+      border:1px solid rgba(164,0,0,.65);
+      background: rgba(164,0,0,.20);
+      color: rgba(255,255,255,.95);
+    }
+    .rowBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
     .foot{ margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:12px; }
 
     .toast{
@@ -463,17 +555,6 @@
       cursor: pointer;
     }
 
-    @media (max-width: 979px){
-      .wrap{ padding: var(--pad-mobile) 12px 44px; }
-      header{ padding: 8px 0 14px; margin-bottom: 14px; }
-      .title{ font-size: var(--title-mobile); }
-      .menuWrap{ padding: 12px; }
-      .panelTitle{ padding: 12px 14px; }
-      .cartBody{ padding: 12px 14px 14px; }
-      .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
-      .hamburger{ display:flex; }
-    }
-
     /* ② ありがとうございますモーダル */
     .modalOverlay{
       position:fixed;
@@ -507,6 +588,7 @@
       font-weight:800;
       line-height:1.45;
       font-size:15px;
+      white-space: pre-wrap;
     }
     .modalBtn{
       width:100%;
@@ -563,6 +645,50 @@
       accent-color: #c8a45a;
       cursor:pointer;
     }
+
+    /* Mobile bottom quick tabs (見た目だけ雰囲気寄せ) */
+    .bottomTabs{
+      display:none;
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 1003;
+      background: rgba(10,12,16,.86);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      padding: 8px 10px;
+      gap: 8px;
+    }
+    .tabBtn{
+      flex: 1;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.9);
+      border-radius: 14px;
+      padding: 10px 8px;
+      font-weight: 1000;
+      cursor:pointer;
+      font-size: 13px;
+    }
+    .tabBtn.active{
+      border-color: rgba(200,164,90,.35);
+      background: rgba(200,164,90,.12);
+      color: var(--gold);
+    }
+
+    @media (max-width: 979px){
+      .wrap{ padding: var(--pad-mobile) 12px 96px; }
+      header{ padding: 8px 0 14px; margin-bottom: 14px; }
+      .menuWrap{ padding: 12px; }
+      .panelTitle{ padding: 12px 14px; }
+      .cartBody{ padding: 12px 14px 14px; }
+      .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+      .hamburger{ display:flex; }
+      .bottomTabs{ display:flex; }
+    }
   </style>
 </head>
 
@@ -574,17 +700,16 @@
   <div id="drawerOverlay" class="drawerOverlay"></div>
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="drawerHead">
-      <div class="drawerTitle">カテゴリ</div>
+      <div class="drawerTitle">メニュー</div>
       <button id="drawerClose" class="drawerClose" aria-label="閉じる">×</button>
     </div>
     <div id="drawerNav" class="navList"></div>
   </aside>
 
   <div class="wrap">
-    <header>
+    <header id="top">
       <h1 class="title title-with-sheep">
         <span class="sheep-icon" aria-hidden="true">
-          <!-- 左ひつじ -->
           <svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <g fill="none" stroke="none">
               <ellipse cx="30" cy="34" rx="18" ry="14" fill="#f5f5f5"/>
@@ -607,7 +732,6 @@
         <span class="title-text">北海道本格ジンギスカン　ひつじや</span>
 
         <span class="sheep-icon" aria-hidden="true">
-          <!-- 右ひつじ（左右反転） -->
           <svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <g transform="translate(64,0) scale(-1,1)">
               <ellipse cx="30" cy="34" rx="18" ry="14" fill="#f5f5f5"/>
@@ -633,6 +757,10 @@
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
       </div>
+
+      <div id="sessionPill" class="pill" style="display:none;">
+        セッション <strong id="sessionShort">-</strong>
+      </div>
     </header>
 
     <div class="layout">
@@ -643,7 +771,7 @@
       </aside>
 
       <!-- 中：メニュー -->
-      <section class="card">
+      <section class="card" id="menu-content">
         <div class="panelTitle">メニュー</div>
         <div class="menuWrap" id="menu"></div>
 
@@ -652,8 +780,7 @@
           <div class="panelTitle" style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); border-radius: 0;">品切れ設定（管理用）</div>
           <div style="padding:14px;">
             <p class="adminNote">
-              URLに <strong>?admin=1</strong> を付けた時だけ表示されます。<br>
-              例：<strong>.../index.html?table=12&amp;admin=1</strong><br>
+              URLに <strong>&amp;admin=1</strong> を付けた時だけ表示。例：<strong>.../index.html?table=8&amp;admin=1</strong><br>
               ここでONにした商品は「品切れ」になり、カート追加できません（状態はこの端末に保存）。
             </p>
             <div id="soldoutList"></div>
@@ -661,21 +788,37 @@
         </div>
       </section>
 
-      <!-- 右：カート -->
-      <section class="card" id="order-content">
-        <div class="panelTitle">ご注文内容</div>
-        <div class="cartBody">
-          <ul id="cartList" class="cartList"></ul>
+      <!-- 右：カート + 履歴 -->
+      <div class="rightCol">
+        <section class="card" id="order-content">
+          <div class="panelTitle">ご注文内容</div>
+          <div class="cartBody">
+            <ul id="cartList" class="cartList"></ul>
 
-          <div class="sumRow">
-            <span>合計</span>
-            <span id="total" class="sumVal">¥0</span>
+            <div class="sumRow">
+              <span>合計</span>
+              <span id="total" class="sumVal">¥0</span>
+            </div>
+
+            <button id="orderBtn" class="orderBtn" disabled>注文完了</button>
           </div>
+        </section>
 
-          <!-- ② 表記も「注文完了」に -->
-          <button id="orderBtn" class="orderBtn" disabled>注文完了</button>
-        </div>
-      </section>
+        <section class="card" id="history-content">
+          <div class="panelTitle">注文履歴</div>
+          <div class="historyBody">
+            <div id="historyHint" class="adminNote" style="margin:0 0 10px; display:none;"></div>
+
+            <!-- 管理用：会計（履歴クリア） -->
+            <div id="adminHistoryControls" class="rowBtns" style="display:none; margin-bottom: 10px;">
+              <button id="clearSessionBtn" class="tinyBtn dangerBtn">会計（履歴クリア）</button>
+              <button id="refreshHistoryBtn" class="tinyBtn">再読み込み</button>
+            </div>
+
+            <ul id="historyList" class="historyList"></ul>
+          </div>
+        </section>
+      </div>
     </div>
 
     <div class="foot">※ 表示価格は税込です</div>
@@ -692,9 +835,20 @@
     </div>
   </div>
 
+  <!-- モバイル用：下タブっぽいショートカット -->
+  <div class="bottomTabs" aria-hidden="false">
+    <button class="tabBtn" data-tab="menu">ホーム</button>
+    <button class="tabBtn" data-tab="order">オーダー</button>
+    <button class="tabBtn" data-tab="history">注文履歴</button>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      doc, getDoc, setDoc,
+      query, where, orderBy, onSnapshot, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
@@ -721,41 +875,44 @@
       { id:"other",      label:"その他" },
     ];
 
+    // ② 骨付きラムチョップ画像（送ってくれた画像を埋め込み）
+    const IMG_LAMB_CHOP = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYFxUZGBYfHysjGh0oHRUWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCwsLDw4PHRISHjQhIig7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O//AABEIAWgB4AMBIgACEQEDEQH/xAAbAAABBQEBAAAAAAAAAAAAAAAEAAIDBQYBB//EADkQAAIBAgQDBgQEBwAAAAAAAAABAgMRBBIhMQVBUWEGEyJxgZGhMkKxwdHh8BUjQlNicuH/xAAZAQADAQEBAAAAAAAAAAAAAAABAgMABAX/xAAmEQACAgICAgICAgMAAAAAAAAAAQIRAxIhMQRBEyJRYXGBkaHB/9oADAMBAAIRAxEAPwD2Gz1r2Pq6n+fQnG8w9F8l2k9m0mX8p2Wk1iGQk2fNQxv3j2mZfD8g9cXn1gQd8h2bWnB1J6Q6Vw8oJfQnLQmE3l5z2nqj7x4b4F7PqYcG7T3H0qJm6Hn1oKcQw1rY6fVwq6mK8m2Xn8g0p9oXk7u2l2h8h6g3a7xq9fWm0d5f7oG2iVbGm2d1YcVvQ9WfU9p8q3o3w1pX4vQ1x0cR0cY0cQkQpY0nqN5Gv8A0lq7bL0VQ7mT8k8o8ZfQe2F9o2i0q0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o0m0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o0m0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o//Z";
+
     const MENU = [
-      { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188 },
-      { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518 },
-      { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188 },
-      { id:"lamb_tan_gokujo",   category:"youniku", name:"極上ラムタン", desc:"", price:1408 },
-      { id:"mutton_hire",       category:"youniku", name:"マトンヒレ", desc:"", price:1298 },
-      { id:"lamb_sirloin",      category:"youniku", name:"生ラムサーロイン", desc:"", price:1958 },
-      { id:"lamb_ham_salad",    category:"youniku", name:"羊の生ハムサラダ風", desc:"", price:1078 },
-      { id:"lamb_wiener_1",     category:"youniku", name:"ラムウィンナー（1本）", desc:"", price:253 },
-      { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298 },
-      { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968 },
+      { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188, img:"" },
+      { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518, img:"" },
+      { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188, img:"" },
+      { id:"lamb_tan_gokujo",   category:"youniku", name:"極上ラムタン", desc:"", price:1408, img:"" },
+      { id:"mutton_hire",       category:"youniku", name:"マトンヒレ", desc:"", price:1298, img:"" },
+      { id:"lamb_sirloin",      category:"youniku", name:"生ラムサーロイン", desc:"", price:1958, img:"" },
+      { id:"lamb_ham_salad",    category:"youniku", name:"羊の生ハムサラダ風", desc:"", price:1078, img:"" },
+      { id:"lamb_wiener_1",     category:"youniku", name:"ラムウィンナー（1本）", desc:"", price:253, img:"" },
+      { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298, img: IMG_LAMB_CHOP }, /* ② */
+      { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968, img:"" },
 
-      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748 },
-      { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418 },
-      { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418 },
-      { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418 },
-      { id:"kyabetsu",          category:"yasai", name:"キャベツ", desc:"", price:418 },
-      { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418 },
-      { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110 },
+      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748, img:"" },
+      { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418, img:"" },
+      { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418, img:"" },
+      { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418, img:"" },
+      { id:"kyabetsu",          category:"yasai", name:"キャベツ", desc:"", price:418, img:"" },
+      { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418, img:"" },
+      { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110, img:"" },
 
-      { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638 },
-      { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528 },
-      { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528 },
-      { id:"moyashi_namul_std", category:"ippin", name:"もやしナムル スタンダード", desc:"", price:418 },
-      { id:"moyashi_namul_hot", category:"ippin", name:"もやしナムル 辛口", desc:"", price:528 },
-      { id:"kyuuri_zuke",       category:"ippin", name:"自家製きゅうり漬け", desc:"", price:528 },
-      { id:"mozuku_su",         category:"ippin", name:"もずく酢", desc:"", price:528 },
-      { id:"yamaimo_wasabi",    category:"ippin", name:"山芋山葵醤油漬け", desc:"", price:748 },
-      { id:"tamago_soup",       category:"ippin", name:"卵スープ", desc:"", price:528 },
-      { id:"wakame_soup",       category:"ippin", name:"わかめスープ", desc:"", price:528 },
-      { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078 },
-      { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385 },
+      { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638, img:"" },
+      { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528, img:"" },
+      { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528, img:"" },
+      { id:"moyashi_namul_std", category:"ippin", name:"もやしナムル スタンダード", desc:"", price:418, img:"" },
+      { id:"moyashi_namul_hot", category:"ippin", name:"もやしナムル 辛口", desc:"", price:528, img:"" },
+      { id:"kyuuri_zuke",       category:"ippin", name:"自家製きゅうり漬け", desc:"", price:528, img:"" },
+      { id:"mozuku_su",         category:"ippin", name:"もずく酢", desc:"", price:528, img:"" },
+      { id:"yamaimo_wasabi",    category:"ippin", name:"山芋山葵醤油漬け", desc:"", price:748, img:"" },
+      { id:"tamago_soup",       category:"ippin", name:"卵スープ", desc:"", price:528, img:"" },
+      { id:"wakame_soup",       category:"ippin", name:"わかめスープ", desc:"", price:528, img:"" },
+      { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078, img:"" },
+      { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385, img:"" },
 
-      { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308 },
-      { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418 },
+      { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308, img:"" },
+      { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418, img:"" },
     ];
 
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
@@ -765,11 +922,12 @@
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
-    // ③ 管理者モード（品切れON/OFF表示）
     const isAdmin = qs.get("admin") === "1";
 
     const tablePill = document.getElementById("tablePill");
     const tableNoEl = document.getElementById("tableNo");
+    const sessionPill = document.getElementById("sessionPill");
+    const sessionShortEl = document.getElementById("sessionShort");
 
     function toast(msg){
       const t = document.getElementById("toast");
@@ -786,6 +944,43 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
+    // ========= セッション管理（履歴混ざり対策の本体） =========
+    const tableStateRef = tableOk ? doc(db, "table_state", `table_${table}`) : null;
+    let currentSessionId = null;
+
+    function newSessionId(){
+      return `s_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+    }
+
+    async function loadSession(){
+      if (!tableOk) return null;
+      try{
+        const snap = await getDoc(tableStateRef);
+        if (snap.exists() && snap.data()?.sessionId) {
+          currentSessionId = snap.data().sessionId;
+        } else {
+          // 初回：セッションが無ければ作る（ルールで書けない場合は後でフォールバック）
+          const sid = newSessionId();
+          try{
+            await setDoc(tableStateRef, { table, sessionId: sid, updatedAt: serverTimestamp() }, { merge: true });
+            currentSessionId = sid;
+          } catch {
+            // 書けない場合は端末ローカルで作る（※他端末と同期しない）
+            currentSessionId = sid;
+          }
+        }
+      } catch {
+        currentSessionId = newSessionId();
+      }
+
+      // 表示
+      sessionPill.style.display = "inline-flex";
+      sessionShortEl.textContent = String(currentSessionId).slice(-6);
+
+      return currentSessionId;
+    }
+
+    // ========= カート（テーブル+セッションで分離） =========
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
     let cart = {};
     try{
@@ -793,7 +988,7 @@
       if (saved) cart = JSON.parse(saved) || {};
     } catch {}
 
-    // ③ 品切れ状態（この端末に保存）
+    // ========= 品切れ（端末ローカル） =========
     const SOLDOUT_KEY = "soldout_map_v1";
     let soldOutMap = {};
     try{
@@ -807,7 +1002,7 @@
       renderMenu();
     }
 
-    // ④ 商品ごとの「追加する数量」（ステッパー）
+    // ④ 商品ごとの「追加する数量」
     const draftQty = {};
     const getDraftQty = (id) => {
       if (!draftQty[id]) draftQty[id] = 1;
@@ -829,7 +1024,7 @@
     const totalEl = document.getElementById("total");
     const orderBtn = document.getElementById("orderBtn");
 
-    // Drawer open/close
+    // Drawer
     const hamburger = document.getElementById("hamburger");
     const drawer = document.getElementById("drawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
@@ -845,10 +1040,29 @@
       drawerOverlay.classList.remove("show");
       drawer.setAttribute("aria-hidden", "true");
     }
-
     hamburger?.addEventListener("click", openDrawer);
     drawerClose?.addEventListener("click", closeDrawer);
     drawerOverlay?.addEventListener("click", closeDrawer);
+
+    // Bottom tabs
+    const tabBtns = document.querySelectorAll(".tabBtn");
+    function setActiveTab(key){
+      tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+    }
+    function scrollToId(id){
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const k = btn.dataset.tab;
+        if (k === "menu") scrollToId("menu-content");
+        if (k === "order") scrollToId("order-content");
+        if (k === "history") scrollToId("history-content");
+        setActiveTab(k);
+      });
+    });
+    setActiveTab("menu");
 
     function saveCart(){
       try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
@@ -864,8 +1078,8 @@
     }
 
     function scrollToOrder(){
-      const el = document.getElementById("order-content");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollToId("order-content");
+      setActiveTab("order");
     }
 
     function goCategory(catId){
@@ -876,16 +1090,16 @@
 
     function renderNavInto(container){
       const counts = new Map();
-      for (const c of CATEGORIES) {
-        counts.set(c.id, MENU.filter(m => m.category === c.id).length);
-      }
+      for (const c of CATEGORIES) counts.set(c.id, MENU.filter(m => m.category === c.id).length);
 
       const orderCount = cartQtyTotal();
 
       container.innerHTML = [
-        /* ⑤ 「注文内容」→「注文」 */
         `<a class="navBtn" data-nav="order" href="#order-content">
           <span>注文</span><small>${orderCount}</small>
+        </a>`,
+        `<a class="navBtn" data-nav="history" href="#history-content">
+          <span>注文履歴</span><small>▶</small>
         </a>`,
         ...CATEGORIES.map(c => {
           const count = counts.get(c.id) ?? 0;
@@ -901,11 +1115,11 @@
           if (!key) return;
           e.preventDefault();
           if (key === "order") scrollToOrder();
+          else if (key === "history") { scrollToId("history-content"); setActiveTab("history"); closeDrawer(); }
           else goCategory(key);
         });
       });
     }
-
     function renderNav(){
       renderNavInto(catNavEl);
       renderNavInto(drawerNavEl);
@@ -924,10 +1138,16 @@
         const grid = items.map(m => {
           const sold = isSoldOut(m.id);
           const q = getDraftQty(m.id);
+          const imgHtml = m.img
+            ? `<div class="itemImg"><img src="${m.img}" alt="${m.name}"></div>`
+            : `<div class="itemImg ph">NO IMAGE</div>`;
 
           return `
             <div class="itemCard" data-item="${m.id}">
               ${sold ? `<div class="soldOutBadge">品切れ</div>` : ``}
+
+              ${imgHtml}
+
               <div style="min-width:0;">
                 <h3>${m.name}</h3>
                 <p class="desc">${m.desc || ""}</p>
@@ -960,7 +1180,6 @@
         `;
       }).join("");
 
-      // ステッパーの「−」ボタン disabled を反映（再描画直後の保険）
       for (const m of MENU) setDraftQty(m.id, getDraftQty(m.id));
     }
 
@@ -986,7 +1205,7 @@
 
       const total = calcTotal();
       totalEl.textContent = yen(total);
-      orderBtn.disabled = !tableOk || total === 0;
+      orderBtn.disabled = !tableOk || !currentSessionId || total === 0;
 
       renderNav();
     }
@@ -996,12 +1215,10 @@
         toast("この商品は品切れです");
         return;
       }
-
       const m = MENU.find(x => x.id === id);
       if (!m) return;
 
       const n = Math.max(1, Math.min(20, Number(qty) || 1));
-
       if (!cart[id]) cart[id] = { id:m.id, name:m.name, price:m.price, qty:0 };
       cart[id].qty += n;
 
@@ -1018,29 +1235,18 @@
       renderCart();
     }
 
-    // ④ ステッパー & 追加（menu側）
+    // menu click
     menuEl.addEventListener("click", (e) => {
       const minus = e.target.closest("[data-draft-minus]");
       const plus  = e.target.closest("[data-draft-plus]");
       const add   = e.target.closest("[data-add]");
 
-      if (minus) {
-        const id = minus.getAttribute("data-draft-minus");
-        setDraftQty(id, getDraftQty(id) - 1);
-        return;
-      }
-      if (plus) {
-        const id = plus.getAttribute("data-draft-plus");
-        setDraftQty(id, getDraftQty(id) + 1);
-        return;
-      }
-      if (add) {
-        const id = add.getAttribute("data-add");
-        addItem(id, getDraftQty(id));
-        return;
-      }
+      if (minus) { setDraftQty(minus.getAttribute("data-draft-minus"), getDraftQty(minus.getAttribute("data-draft-minus")) - 1); return; }
+      if (plus)  { setDraftQty(plus.getAttribute("data-draft-plus"), getDraftQty(plus.getAttribute("data-draft-plus")) + 1); return; }
+      if (add)   { addItem(add.getAttribute("data-add"), getDraftQty(add.getAttribute("data-add"))); return; }
     });
 
+    // cart click
     cartListEl.addEventListener("click", (e) => {
       const minus = e.target.closest("[data-minus]");
       const plus  = e.target.closest("[data-plus]");
@@ -1048,11 +1254,10 @@
       if (plus)  changeQty(plus.dataset.plus, +1);
     });
 
-    // ② ありがとうございますモーダル
+    // Thanks modal
     const thanksOverlay = document.getElementById("thanksOverlay");
     const thanksText = document.getElementById("thanksText");
     const thanksClose = document.getElementById("thanksClose");
-
     function openThanks(message){
       thanksText.textContent = message;
       thanksOverlay.classList.add("show");
@@ -1063,12 +1268,13 @@
       thanksOverlay.setAttribute("aria-hidden", "true");
     }
     thanksClose.addEventListener("click", closeThanks);
-    thanksOverlay.addEventListener("click", (e) => {
-      if (e.target === thanksOverlay) closeThanks();
-    });
+    thanksOverlay.addEventListener("click", (e) => { if (e.target === thanksOverlay) closeThanks(); });
 
+    // ========= 注文送信 =========
     orderBtn.addEventListener("click", async () => {
       if (!tableOk) { toast("テーブル番号が無効です"); return; }
+      if (!currentSessionId) { toast("セッション取得中です。少し待ってください"); return; }
+
       const items = cartItems();
       const total = calcTotal();
       if (!items.length || total <= 0) { toast("商品を選んでください"); return; }
@@ -1078,9 +1284,10 @@
 
       try{
         const docRef = await addDoc(collection(db, "orders"), {
-          table: table,
+          table,
+          sessionId: currentSessionId,   // ★混ざり防止の鍵
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
-          total: total,
+          total,
           status: "new",
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
@@ -1090,27 +1297,139 @@
         saveCart();
         renderCart();
 
-        // ② 成功したら「ありがとうございます」表示
         openThanks(`ご注文ありがとうございました。\n注文番号：${docRef.id}`);
         toast("注文を送信しました。ありがとうございます！");
+        scrollToId("history-content");
+        setActiveTab("history");
       } catch(err){
         console.error(err);
         toast("送信に失敗しました（設定/ルールを確認）");
       } finally {
         orderBtn.textContent = "注文完了";
-        orderBtn.disabled = !tableOk || calcTotal() === 0;
+        orderBtn.disabled = !tableOk || !currentSessionId || calcTotal() === 0;
       }
     });
 
-    // ③ 管理（品切れ）UI
+    // ========= 注文履歴（table + sessionId で表示） =========
+    const historyListEl = document.getElementById("historyList");
+    const historyHintEl = document.getElementById("historyHint");
+    const adminHistoryControls = document.getElementById("adminHistoryControls");
+    const clearSessionBtn = document.getElementById("clearSessionBtn");
+    const refreshHistoryBtn = document.getElementById("refreshHistoryBtn");
+
+    let unsubscribeHistory = null;
+
+    function fmtTime(ts){
+      try{
+        if (!ts) return "—";
+        const d = ts.toDate ? ts.toDate() : new Date(ts);
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mm = String(d.getMinutes()).padStart(2,"0");
+        return `${hh}:${mm}`;
+      } catch { return "—"; }
+    }
+
+    function renderHistoryEmpty(){
+      historyListEl.innerHTML = `<li style="color:var(--muted);font-weight:900;">（このセッションの注文履歴はまだありません）</li>`;
+    }
+
+    function bindHistory(){
+      if (!tableOk || !currentSessionId) { renderHistoryEmpty(); return; }
+
+      if (unsubscribeHistory) unsubscribeHistory();
+
+      const qy = query(
+        collection(db, "orders"),
+        where("table", "==", table),
+        where("sessionId", "==", currentSessionId),
+        orderBy("createdAt", "desc")
+      );
+
+      unsubscribeHistory = onSnapshot(qy, (snap) => {
+        if (snap.empty) { renderHistoryEmpty(); return; }
+
+        const rows = [];
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const id = docSnap.id;
+          const itemsText = (d.items || []).map(it => `・${it.name} ×${it.qty}`).join("\n");
+          rows.push({ id, d, itemsText });
+        });
+
+        historyListEl.innerHTML = rows.map(r => `
+          <li class="historyCard" data-oid="${r.id}">
+            <div class="historyTop">
+              <div class="historyTime">${fmtTime(r.d.createdAt)} / テーブル${r.d.table}</div>
+              <div class="historyTotal">${yen(r.d.total)}</div>
+            </div>
+            <div class="historyItems">${r.itemsText || ""}</div>
+
+            ${isAdmin ? `
+              <div class="rowBtns">
+                <button class="tinyBtn dangerBtn" data-del="${r.id}">完全削除</button>
+              </div>
+              <div style="color:rgba(255,255,255,.45);font-size:12px;font-weight:900;margin-top:6px;">
+                ※「完全削除」はFirestoreルールでdelete許可が必要。できない場合は会計（履歴クリア）を使ってください。
+              </div>
+            ` : ``}
+          </li>
+        `).join("");
+      }, (err) => {
+        console.error(err);
+        historyListEl.innerHTML = `<li style="color:var(--muted);font-weight:900;">（履歴の取得に失敗しました。Firestoreルール/インデックスを確認）</li>`;
+      });
+    }
+
+    // 管理：会計（履歴クリア）＝ sessionId を更新
+    async function clearSession(){
+      if (!tableOk) return;
+      const ok = confirm("会計（履歴クリア）しますか？\nこのテーブルの“新しいお客様の回”に切り替わります。");
+      if (!ok) return;
+
+      const sid = newSessionId();
+      try{
+        await setDoc(tableStateRef, { table, sessionId: sid, updatedAt: serverTimestamp() }, { merge: true });
+        currentSessionId = sid;
+        sessionShortEl.textContent = String(currentSessionId).slice(-6);
+        toast("会計しました（新セッションに切替）");
+        cart = {};
+        saveCart();
+        renderCart();
+        bindHistory();
+      } catch(err){
+        console.error(err);
+        toast("会計に失敗（table_state への書き込み権限が必要）");
+      }
+    }
+
+    // 管理：完全削除（可能なら）
+    historyListEl.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-del]");
+      if (!btn) return;
+      const id = btn.getAttribute("data-del");
+      const ok = confirm("この注文を完全削除しますか？（戻せません）");
+      if (!ok) return;
+
+      try{
+        await deleteDoc(doc(db, "orders", id));
+        toast("削除しました");
+      } catch(err){
+        console.error(err);
+        toast("削除できません（Firestoreルールでdeleteを許可していない可能性）");
+      }
+    });
+
+    clearSessionBtn?.addEventListener("click", clearSession);
+    refreshHistoryBtn?.addEventListener("click", () => { bindHistory(); toast("更新しました"); });
+
+    // ========= 管理：品切れUI =========
     const adminCard = document.getElementById("adminCard");
     const soldoutListEl = document.getElementById("soldoutList");
 
-    function renderAdmin(){
+    function renderAdminSoldOut(){
       if (!isAdmin) return;
       adminCard.style.display = "block";
 
-      // 商品一覧（カテゴリ順）
       const ordered = [];
       for (const c of CATEGORIES) {
         const items = MENU.filter(m => m.category === c.id);
@@ -1137,16 +1456,28 @@
         inp.addEventListener("change", () => {
           const id = inp.getAttribute("data-soldout-toggle");
           setSoldOut(id, inp.checked);
-          // 注文中のカートに品切れが残っていても消さない（運用次第）
           toast(inp.checked ? "品切れにしました" : "品切れ解除しました");
         });
       });
     }
 
+    // ========= 初期描画 =========
     renderNav();
     renderMenu();
     renderCart();
-    renderAdmin();
+
+    // 管理用表示
+    if (isAdmin){
+      historyHintEl.style.display = "block";
+      historyHintEl.textContent = "管理モード：会計（履歴クリア）で前の客の履歴が表示されないようにできます。";
+      adminHistoryControls.style.display = "flex";
+    }
+
+    // セッション読み込み → 履歴バインド
+    await loadSession();
+    renderCart();
+    bindHistory();
+    renderAdminSoldOut();
   </script>
 </body>
 </html>
