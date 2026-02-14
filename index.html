@@ -17,7 +17,6 @@
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
 
-      /* スマホ密度調整（情報量UP） */
       --pad-desktop: 26px;
       --pad-mobile: 14px;
       --title-desktop: 30px;
@@ -33,7 +32,7 @@
                   radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
       color:var(--text);
-      font-size: 14px;
+      font-size: 16px; /* ① 文字を少し大きく */
       overflow-x: hidden;
     }
 
@@ -58,24 +57,23 @@
     .sub{
       margin:0;
       color:var(--muted);
-      font-size:14px;
+      font-size:15px; /* 少しUP */
     }
 
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:6px 10px;
+      padding:7px 10px;
       border-radius:999px;
       border:1px solid var(--line);
       background: rgba(0,0,0,.18);
       color:var(--muted);
-      font-size:12px;
+      font-size:13px;
       margin-top:10px;
     }
     .pill strong{ color:var(--text); }
 
-    /* タイトル左右にひつじ（SVG埋め込み） */
     .title-with-sheep{
       display:flex;
       align-items:center;
@@ -98,7 +96,6 @@
       .sheep-icon{ width:28px; height:28px; }
     }
 
-    /* Layout */
     .layout{
       display:grid;
       grid-template-columns: 1fr;
@@ -108,7 +105,6 @@
       .layout{ grid-template-columns: 240px 1fr 360px; align-items:start; }
     }
 
-    /* Left category nav (PC) */
     .navCard{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
@@ -125,6 +121,7 @@
       border-bottom:1px solid var(--line);
       background: rgba(0,0,0,.18);
       letter-spacing:.04em;
+      font-size:15px;
     }
     .navList{ display:flex; flex-direction:column; gap:8px; padding:12px; }
     .navBtn{
@@ -132,22 +129,21 @@
       border:1px solid var(--line);
       background: rgba(0,0,0,.20);
       color: var(--text);
-      padding:10px 12px;
+      padding:11px 12px;
       border-radius:14px;
       text-decoration:none;
       font-weight:900;
       transition:.15s;
       cursor: pointer;
+      font-size:15px;
     }
     .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
-    .navBtn small{ color:var(--muted); font-weight:800; }
+    .navBtn small{ color:var(--muted); font-weight:900; font-size:13px; }
 
-    /* スマホはPC左ナビを隠して、ドロワーにする */
     @media (max-width: 979px){
       .navCard{ display:none; }
     }
 
-    /* Cards */
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
@@ -162,9 +158,9 @@
       border-bottom:1px solid var(--line);
       background: rgba(0,0,0,.18);
       letter-spacing:.04em;
+      font-size:15px;
     }
 
-    /* Menu area */
     .menuWrap{ padding:14px; }
     .section{ margin: 8px 0 18px; scroll-margin-top: 70px; }
     .sectionHead{
@@ -176,14 +172,13 @@
     }
     .sectionHead h2{
       margin:0;
-      font-size:18px;
+      font-size:19px;
       font-weight:1000;
       letter-spacing:.03em;
       color: var(--text);
     }
-    .sectionHead p{ margin:0; font-size:12px; color: var(--muted); }
+    .sectionHead p{ margin:0; font-size:13px; color: var(--muted); font-weight:900; }
 
-    /* 商品は常に2列（スマホでも2列） */
     .menuGrid{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -198,68 +193,103 @@
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:150px;
+      min-height:170px;
+      position: relative;
     }
     .itemCard h3{
       margin:0 0 6px;
-      font-size:16px;
+      font-size:17px;
       font-weight:1000;
       letter-spacing:.02em;
       line-height:1.2;
     }
     .desc{
       margin:0 0 8px;
-      font-size:12px;
+      font-size:13px;
       color:var(--muted);
       line-height:1.35;
+      font-weight:700;
     }
     .price{
       margin:0;
-      font-size:16px;
+      font-size:18px;
       font-weight:1000;
       color:var(--gold);
     }
 
-    .bottomRow{
+    /* ④ 右下に「カートに追加」＋その上に数量ステッパー */
+    .addArea{
       margin-top:auto;
       display:flex;
+      flex-direction:column;
       gap:10px;
-      align-items:center;
-      justify-content:space-between;
+      align-items:flex-end;
     }
 
-    /* 数量セレクトを大きく */
-    .qtySelect{
-      width:104px;
-      padding:10px 10px;
-      border-radius: 12px;
+    .stepper{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+    }
+    .stepBtn{
+      width:44px; height:44px;
+      border-radius: 999px;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
+      background: rgba(255,255,255,.04);
       color: var(--text);
       font-weight:1000;
-      outline:none;
-      font-size:16px;
-      height: 42px;
+      cursor:pointer;
+      font-size: 22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .stepBtn:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+    }
+    .stepQty{
+      min-width: 28px;
+      text-align:center;
+      font-weight:1000;
+      font-size: 18px;
     }
 
-    .addBtn{
+    .addBtn2{
+      width:100%;
       border:1px solid rgba(200,164,90,.65);
-      background: transparent;
+      background: rgba(200,164,90,.12);
       color: var(--gold);
-      padding:10px 12px;
-      border-radius: 12px;
+      padding:14px 12px;
+      border-radius: 14px;
       font-weight:1000;
       cursor:pointer;
       transition: .15s;
-      flex:1;
-      min-width: 84px;
       white-space:nowrap;
-      height: 42px;
+      font-size:16px;
     }
-    .addBtn:hover{ background: rgba(200,164,90,.10); }
-    .addBtn:active{ transform: translateY(1px); }
+    .addBtn2:hover{ background: rgba(200,164,90,.18); }
+    .addBtn2:active{ transform: translateY(1px); }
+    .addBtn2:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
 
-    /* Cart */
+    .soldOutBadge{
+      position:absolute;
+      top:12px;
+      right:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.35);
+      color: rgba(255,255,255,.9);
+      font-weight:1000;
+      font-size:12px;
+      letter-spacing:.06em;
+    }
+
     .cartBody{ padding:14px 16px 16px; position: sticky; top: 14px; }
     @media (max-width: 979px){
       .cartBody{ position: static; }
@@ -274,23 +304,22 @@
       border-radius:14px;
       background: rgba(0,0,0,.20);
     }
-    .cartName{ font-weight:1000; font-size:15px; line-height:1.25; }
-    .cartMeta{ color:var(--muted); font-size:12px; margin-top:2px; }
+    .cartName{ font-weight:1000; font-size:16px; line-height:1.25; }
+    .cartMeta{ color:var(--muted); font-size:13px; margin-top:2px; font-weight:800; }
 
     .qtyBox{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
     .qtyBtn{
-      width:38px; height:38px;
+      width:40px; height:40px;
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
       color: var(--text);
       font-weight:1000;
       cursor:pointer;
-      font-size: 18px;
+      font-size: 20px;
     }
     .qtyBtn:hover{ background: rgba(255,255,255,.06); }
 
-    /* カート数量を大きく */
     .qty{
       min-width: 26px;
       text-align:center;
@@ -306,11 +335,10 @@
       padding-top:12px;
       border-top:1px solid var(--line);
       color:var(--muted);
-      font-weight:900;
-      font-size: 14px;
+      font-weight:1000;
+      font-size: 15px;
     }
-    /* 合計金額を大きく */
-    .sumVal{ color:var(--gold); font-size:22px; font-weight:1000; }
+    .sumVal{ color:var(--gold); font-size:24px; font-weight:1000; }
 
     .orderBtn{
       margin-top:12px;
@@ -325,6 +353,7 @@
       cursor:pointer;
       box-shadow: 0 18px 50px rgba(164,0,0,.35);
       transition:.15s;
+      font-size:16px;
     }
     .orderBtn:hover{ filter: brightness(1.03); }
     .orderBtn:active{ transform: translateY(1px); }
@@ -347,6 +376,7 @@
       display:none;
       max-width:min(560px, 92vw);
       z-index:9999;
+      font-size:14px;
     }
 
     /* ===== Mobile drawer (hamburger) ===== */
@@ -420,6 +450,7 @@
       font-weight: 1000;
       color: var(--gold);
       letter-spacing: .04em;
+      font-size:15px;
     }
     .drawerClose{
       width: 36px;
@@ -440,8 +471,97 @@
       .panelTitle{ padding: 12px 14px; }
       .cartBody{ padding: 12px 14px 14px; }
       .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
-
       .hamburger{ display:flex; }
+    }
+
+    /* ② ありがとうございますモーダル */
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.65);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10010;
+      padding: 18px;
+    }
+    .modalOverlay.show{ display:flex; }
+    .modal{
+      width:min(520px, 92vw);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(16,19,24,.96);
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
+    }
+    .modalTitle{
+      font-size: 18px;
+      font-weight:1000;
+      color: var(--gold);
+      margin:0 0 8px;
+      letter-spacing:.04em;
+    }
+    .modalText{
+      margin:0 0 14px;
+      color: rgba(255,255,255,.88);
+      font-weight:800;
+      line-height:1.45;
+      font-size:15px;
+    }
+    .modalBtn{
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.92);
+      padding: 12px 12px;
+      border-radius: 14px;
+      font-weight:1000;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    /* ③ 管理（品切れ）パネル */
+    .adminPanel{
+      margin-top:16px;
+      padding: 14px;
+    }
+    .adminNote{
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      margin: 0 0 12px;
+      line-height: 1.4;
+    }
+    .toggleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 10px;
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(0,0,0,.20);
+      margin-bottom: 8px;
+    }
+    .toggleRow strong{
+      font-weight:1000;
+      font-size: 14px;
+    }
+    .toggleRow label{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-weight:1000;
+      color: rgba(255,255,255,.9);
+      cursor:pointer;
+      user-select:none;
+      font-size: 13px;
+    }
+    .toggleRow input{
+      width: 18px;
+      height: 18px;
+      accent-color: #c8a45a;
+      cursor:pointer;
     }
   </style>
 </head>
@@ -526,6 +646,19 @@
       <section class="card">
         <div class="panelTitle">メニュー</div>
         <div class="menuWrap" id="menu"></div>
+
+        <!-- ③ 品切れ管理（?admin=1 の時だけ表示） -->
+        <div id="adminCard" class="adminPanel" style="display:none;">
+          <div class="panelTitle" style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); border-radius: 0;">品切れ設定（管理用）</div>
+          <div style="padding:14px;">
+            <p class="adminNote">
+              URLに <strong>?admin=1</strong> を付けた時だけ表示されます。<br>
+              例：<strong>.../index.html?table=12&amp;admin=1</strong><br>
+              ここでONにした商品は「品切れ」になり、カート追加できません（状態はこの端末に保存）。
+            </p>
+            <div id="soldoutList"></div>
+          </div>
+        </div>
       </section>
 
       <!-- 右：カート -->
@@ -539,7 +672,8 @@
             <span id="total" class="sumVal">¥0</span>
           </div>
 
-          <button id="orderBtn" class="orderBtn" disabled>この内容で注文</button>
+          <!-- ② 表記も「注文完了」に -->
+          <button id="orderBtn" class="orderBtn" disabled>注文完了</button>
         </div>
       </section>
     </div>
@@ -548,6 +682,15 @@
   </div>
 
   <div id="toast" class="toast"></div>
+
+  <!-- ② ありがとうございますモーダル -->
+  <div id="thanksOverlay" class="modalOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="注文完了">
+      <p class="modalTitle">ご注文ありがとうございました！</p>
+      <p class="modalText" id="thanksText">注文を受け付けました。</p>
+      <button id="thanksClose" class="modalBtn">閉じる</button>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -622,6 +765,9 @@
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
+    // ③ 管理者モード（品切れON/OFF表示）
+    const isAdmin = qs.get("admin") === "1";
+
     const tablePill = document.getElementById("tablePill");
     const tableNoEl = document.getElementById("tableNo");
 
@@ -646,6 +792,35 @@
       const saved = localStorage.getItem(CART_KEY);
       if (saved) cart = JSON.parse(saved) || {};
     } catch {}
+
+    // ③ 品切れ状態（この端末に保存）
+    const SOLDOUT_KEY = "soldout_map_v1";
+    let soldOutMap = {};
+    try{
+      const saved = localStorage.getItem(SOLDOUT_KEY);
+      if (saved) soldOutMap = JSON.parse(saved) || {};
+    } catch {}
+    const isSoldOut = (id) => !!soldOutMap[id];
+    function setSoldOut(id, on){
+      soldOutMap[id] = !!on;
+      try{ localStorage.setItem(SOLDOUT_KEY, JSON.stringify(soldOutMap)); } catch {}
+      renderMenu();
+    }
+
+    // ④ 商品ごとの「追加する数量」（ステッパー）
+    const draftQty = {};
+    const getDraftQty = (id) => {
+      if (!draftQty[id]) draftQty[id] = 1;
+      return draftQty[id];
+    };
+    const setDraftQty = (id, n) => {
+      const v = Math.max(1, Math.min(20, Number(n) || 1));
+      draftQty[id] = v;
+      const el = document.querySelector(`[data-draft-qty="${CSS.escape(id)}"]`);
+      if (el) el.textContent = String(v);
+      const minusBtn = document.querySelector(`[data-draft-minus="${CSS.escape(id)}"]`);
+      if (minusBtn) minusBtn.disabled = v <= 1;
+    };
 
     const catNavEl = document.getElementById("catNav");
     const drawerNavEl = document.getElementById("drawerNav");
@@ -708,8 +883,9 @@
       const orderCount = cartQtyTotal();
 
       container.innerHTML = [
+        /* ⑤ 「注文内容」→「注文」 */
         `<a class="navBtn" data-nav="order" href="#order-content">
-          <span>注文内容</span><small>${orderCount}</small>
+          <span>注文</span><small>${orderCount}</small>
         </a>`,
         ...CATEGORIES.map(c => {
           const count = counts.get(c.id) ?? 0;
@@ -735,12 +911,6 @@
       renderNavInto(drawerNavEl);
     }
 
-    function qtySelectHtml(id){
-      const opts = Array.from({length:10}, (_,i)=> i+1)
-        .map(n => `<option value="${n}">+${n}</option>`).join("");
-      return `<select class="qtySelect" data-qty="${id}">${opts}</select>`;
-    }
-
     function renderMenu(){
       const byCat = new Map();
       for (const c of CATEGORIES) byCat.set(c.id, []);
@@ -751,20 +921,31 @@
 
       menuEl.innerHTML = CATEGORIES.map(c => {
         const items = byCat.get(c.id) || [];
-        const grid = items.map(m => `
-          <div class="itemCard">
-            <div style="min-width:0;">
-              <h3>${m.name}</h3>
-              <p class="desc">${m.desc || ""}</p>
-              <p class="price">${yen(m.price)}</p>
-            </div>
+        const grid = items.map(m => {
+          const sold = isSoldOut(m.id);
+          const q = getDraftQty(m.id);
 
-            <div class="bottomRow">
-              ${qtySelectHtml(m.id)}
-              <button class="addBtn" data-add="${m.id}">追加</button>
+          return `
+            <div class="itemCard" data-item="${m.id}">
+              ${sold ? `<div class="soldOutBadge">品切れ</div>` : ``}
+              <div style="min-width:0;">
+                <h3>${m.name}</h3>
+                <p class="desc">${m.desc || ""}</p>
+                <p class="price">${yen(m.price)}</p>
+              </div>
+
+              <div class="addArea">
+                <div class="stepper">
+                  <button class="stepBtn" data-draft-minus="${m.id}" ${q<=1 ? "disabled":""} ${sold ? "disabled":""}>−</button>
+                  <div class="stepQty" data-draft-qty="${m.id}">${q}</div>
+                  <button class="stepBtn" data-draft-plus="${m.id}" ${sold ? "disabled":""}>＋</button>
+                </div>
+
+                <button class="addBtn2" data-add="${m.id}" ${sold ? "disabled":""}>カートに追加</button>
+              </div>
             </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
 
         return `
           <div class="section" id="cat-${c.id}">
@@ -778,6 +959,9 @@
           </div>
         `;
       }).join("");
+
+      // ステッパーの「−」ボタン disabled を反映（再描画直後の保険）
+      for (const m of MENU) setDraftQty(m.id, getDraftQty(m.id));
     }
 
     function renderCart(){
@@ -808,9 +992,15 @@
     }
 
     function addItem(id, qty){
+      if (isSoldOut(id)) {
+        toast("この商品は品切れです");
+        return;
+      }
+
       const m = MENU.find(x => x.id === id);
       if (!m) return;
-      const n = Math.max(1, Math.min(10, Number(qty) || 1));
+
+      const n = Math.max(1, Math.min(20, Number(qty) || 1));
 
       if (!cart[id]) cart[id] = { id:m.id, name:m.name, price:m.price, qty:0 };
       cart[id].qty += n;
@@ -828,15 +1018,27 @@
       renderCart();
     }
 
+    // ④ ステッパー & 追加（menu側）
     menuEl.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-add]");
-      if (!btn) return;
+      const minus = e.target.closest("[data-draft-minus]");
+      const plus  = e.target.closest("[data-draft-plus]");
+      const add   = e.target.closest("[data-add]");
 
-      const id = btn.dataset.add;
-      const sel = menuEl.querySelector(`select[data-qty="${CSS.escape(id)}"]`);
-      const qty = sel ? sel.value : 1;
-
-      addItem(id, qty);
+      if (minus) {
+        const id = minus.getAttribute("data-draft-minus");
+        setDraftQty(id, getDraftQty(id) - 1);
+        return;
+      }
+      if (plus) {
+        const id = plus.getAttribute("data-draft-plus");
+        setDraftQty(id, getDraftQty(id) + 1);
+        return;
+      }
+      if (add) {
+        const id = add.getAttribute("data-add");
+        addItem(id, getDraftQty(id));
+        return;
+      }
     });
 
     cartListEl.addEventListener("click", (e) => {
@@ -844,6 +1046,25 @@
       const plus  = e.target.closest("[data-plus]");
       if (minus) changeQty(minus.dataset.minus, -1);
       if (plus)  changeQty(plus.dataset.plus, +1);
+    });
+
+    // ② ありがとうございますモーダル
+    const thanksOverlay = document.getElementById("thanksOverlay");
+    const thanksText = document.getElementById("thanksText");
+    const thanksClose = document.getElementById("thanksClose");
+
+    function openThanks(message){
+      thanksText.textContent = message;
+      thanksOverlay.classList.add("show");
+      thanksOverlay.setAttribute("aria-hidden", "false");
+    }
+    function closeThanks(){
+      thanksOverlay.classList.remove("show");
+      thanksOverlay.setAttribute("aria-hidden", "true");
+    }
+    thanksClose.addEventListener("click", closeThanks);
+    thanksOverlay.addEventListener("click", (e) => {
+      if (e.target === thanksOverlay) closeThanks();
     });
 
     orderBtn.addEventListener("click", async () => {
@@ -856,7 +1077,7 @@
       orderBtn.textContent = "送信中…";
 
       try{
-        await addDoc(collection(db, "orders"), {
+        const docRef = await addDoc(collection(db, "orders"), {
           table: table,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
           total: total,
@@ -868,19 +1089,64 @@
         cart = {};
         saveCart();
         renderCart();
+
+        // ② 成功したら「ありがとうございます」表示
+        openThanks(`ご注文ありがとうございました。\n注文番号：${docRef.id}`);
         toast("注文を送信しました。ありがとうございます！");
       } catch(err){
         console.error(err);
         toast("送信に失敗しました（設定/ルールを確認）");
       } finally {
-        orderBtn.textContent = "この内容で注文";
+        orderBtn.textContent = "注文完了";
         orderBtn.disabled = !tableOk || calcTotal() === 0;
       }
     });
 
+    // ③ 管理（品切れ）UI
+    const adminCard = document.getElementById("adminCard");
+    const soldoutListEl = document.getElementById("soldoutList");
+
+    function renderAdmin(){
+      if (!isAdmin) return;
+      adminCard.style.display = "block";
+
+      // 商品一覧（カテゴリ順）
+      const ordered = [];
+      for (const c of CATEGORIES) {
+        const items = MENU.filter(m => m.category === c.id);
+        for (const m of items) ordered.push({ c, m });
+      }
+
+      soldoutListEl.innerHTML = ordered.map(({c, m}) => {
+        const on = isSoldOut(m.id);
+        return `
+          <div class="toggleRow">
+            <div style="min-width:0;">
+              <strong>${m.name}</strong>
+              <div style="color:var(--muted);font-size:12px;font-weight:900;margin-top:2px;">${c.label}</div>
+            </div>
+            <label>
+              <input type="checkbox" data-soldout-toggle="${m.id}" ${on ? "checked":""}>
+              品切れ
+            </label>
+          </div>
+        `;
+      }).join("");
+
+      soldoutListEl.querySelectorAll("[data-soldout-toggle]").forEach(inp => {
+        inp.addEventListener("change", () => {
+          const id = inp.getAttribute("data-soldout-toggle");
+          setSoldOut(id, inp.checked);
+          // 注文中のカートに品切れが残っていても消さない（運用次第）
+          toast(inp.checked ? "品切れにしました" : "品切れ解除しました");
+        });
+      });
+    }
+
     renderNav();
     renderMenu();
     renderCart();
+    renderAdmin();
   </script>
 </body>
 </html>
