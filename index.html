@@ -17,12 +17,13 @@
       --shadow: 0 18px 60px rgba(0,0,0,.55);
       --radius:18px;
 
+      /* スマホ密度調整（情報量UP） */
       --pad-desktop: 26px;
       --pad-mobile: 14px;
 
-      /* ① タイトル：スマホで1行に収める */
-      --title-desktop: 30px;
-      --title-mobile: 22px;
+      /* タイトル大きすぎ問題対策：clampで自動調整 */
+      --title: clamp(20px, 4.6vw, 30px);
+      --subtitle: clamp(12px, 2.6vw, 14px);
     }
 
     *{ box-sizing:border-box; }
@@ -34,21 +35,21 @@
                   radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
                   var(--bg);
       color:var(--text);
-      font-size: 16px;
+      font-size: 14px;
       overflow-x: hidden;
     }
 
-    .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 84px; }
+    .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 86px; }
 
     header{
       padding:10px 0 18px;
       border-bottom: 1px solid var(--line);
-      margin-bottom:18px;
+      margin-bottom:14px;
       position: relative;
     }
 
     .title{
-      font-size:var(--title-desktop);
+      font-size:var(--title);
       font-weight:1000;
       letter-spacing:.02em;
       color:var(--gold);
@@ -59,53 +60,53 @@
     .sub{
       margin:0;
       color:var(--muted);
-      font-size:15px;
+      font-size:var(--subtitle);
     }
 
     .pill{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:7px 10px;
+      padding:6px 10px;
       border-radius:999px;
       border:1px solid var(--line);
       background: rgba(0,0,0,.18);
       color:var(--muted);
-      font-size:13px;
+      font-size:12px;
       margin-top:10px;
     }
     .pill strong{ color:var(--text); }
 
-    /* タイトル左右にひつじ */
+    /* タイトル左右にひつじ（SVG埋め込み） */
     .title-with-sheep{
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
     }
     .title-text{
       text-align:center;
-      word-break: keep-all;
-      line-break: strict;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:min(92vw, 680px);
+    }
+    @media (max-width: 480px){
+      .title-text{
+        white-space:normal; /* どうしても無理な時は2行に逃がす */
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        max-width: 92vw;
+      }
     }
     .sheep-icon{
-      width:34px;
-      height:34px;
+      width:30px;
+      height:30px;
       flex:0 0 auto;
       filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
-    }
-
-    /* ① スマホで1行固定：アイコン消して、nowrap */
-    @media (max-width: 520px){
-      .title-with-sheep{ flex-wrap:nowrap; gap:8px; }
-      .sheep-icon{ display:none; }
-      .title-text{
-        white-space:nowrap;
-        font-size: var(--title-mobile);
-        letter-spacing: .01em;
-      }
-      .title{ font-size: var(--title-mobile); }
+      opacity:.95;
     }
 
     /* Layout */
@@ -135,7 +136,6 @@
       border-bottom:1px solid var(--line);
       background: rgba(0,0,0,.18);
       letter-spacing:.04em;
-      font-size:15px;
     }
     .navList{ display:flex; flex-direction:column; gap:8px; padding:12px; }
     .navBtn{
@@ -143,16 +143,15 @@
       border:1px solid var(--line);
       background: rgba(0,0,0,.20);
       color: var(--text);
-      padding:11px 12px;
+      padding:10px 12px;
       border-radius:14px;
       text-decoration:none;
       font-weight:900;
       transition:.15s;
       cursor: pointer;
-      font-size:15px;
     }
     .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
-    .navBtn small{ color:var(--muted); font-weight:900; font-size:13px; }
+    .navBtn small{ color:var(--muted); font-weight:800; }
 
     @media (max-width: 979px){
       .navCard{ display:none; }
@@ -173,12 +172,11 @@
       border-bottom:1px solid var(--line);
       background: rgba(0,0,0,.18);
       letter-spacing:.04em;
-      font-size:15px;
     }
 
     /* Menu area */
     .menuWrap{ padding:14px; }
-    .section{ margin: 8px 0 18px; scroll-margin-top: 80px; }
+    .section{ margin: 8px 0 18px; scroll-margin-top: 70px; }
     .sectionHead{
       display:flex; align-items:baseline; justify-content:space-between;
       gap:12px;
@@ -188,12 +186,12 @@
     }
     .sectionHead h2{
       margin:0;
-      font-size:19px;
+      font-size:18px;
       font-weight:1000;
       letter-spacing:.03em;
       color: var(--text);
     }
-    .sectionHead p{ margin:0; font-size:13px; color: var(--muted); font-weight:900; }
+    .sectionHead p{ margin:0; font-size:12px; color: var(--muted); }
 
     /* 商品は常に2列 */
     .menuGrid{
@@ -206,16 +204,16 @@
       border:1px solid var(--line);
       border-radius: 16px;
       background: rgba(0,0,0,.20);
-      padding:12px 12px 14px;
+      padding:12px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:240px;
-      position: relative;
+      min-height: 240px;
+      position:relative;
+      overflow:hidden;
     }
 
-    /* ② 商品画像 */
-    .itemImg{
+    .imgBox{
       width:100%;
       aspect-ratio: 4 / 3;
       border-radius: 14px;
@@ -223,123 +221,100 @@
       border:1px solid rgba(255,255,255,.08);
       background: rgba(255,255,255,.03);
     }
-    .itemImg img{
+    .imgBox img{
       width:100%;
       height:100%;
-      object-fit: cover;
+      object-fit:cover;
       display:block;
-    }
-    .itemImg.ph{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color: rgba(255,255,255,.35);
-      font-weight:1000;
-      font-size:12px;
-      letter-spacing:.08em;
     }
 
     .itemCard h3{
-      margin:0 0 4px;
-      font-size:16px;
+      margin:0;
+      font-size:15px;
       font-weight:1000;
       letter-spacing:.02em;
       line-height:1.2;
     }
     .desc{
-      margin:0 0 6px;
-      font-size:13px;
+      margin:0;
+      font-size:12px;
       color:var(--muted);
       line-height:1.35;
-      font-weight:700;
-      min-height: 18px;
+      min-height: 16px;
     }
     .price{
       margin:0;
-      font-size:18px;
+      font-size:15px;
       font-weight:1000;
       color:var(--gold);
     }
 
-    /* ④ 右下カート追加 + 上にステッパー */
-    .addArea{
+    .stepRow{
       margin-top:auto;
       display:flex;
-      flex-direction:column;
       gap:10px;
-      align-items:flex-end;
-    }
-
-    .stepper{
-      display:inline-flex;
       align-items:center;
-      gap:10px;
-      user-select:none;
+      justify-content:space-between;
+    }
+    .stepper{
+      display:flex; align-items:center; gap:8px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding:6px 8px;
     }
     .stepBtn{
-      width:44px; height:44px;
-      border-radius: 999px;
+      width:36px; height:36px;
+      border-radius: 12px;
       border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
+      background: rgba(0,0,0,.25);
       color: var(--text);
       font-weight:1000;
       cursor:pointer;
-      font-size: 22px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .stepBtn:disabled{
-      opacity:.35;
-      cursor:not-allowed;
+      font-size:18px;
     }
     .stepQty{
-      min-width: 28px;
+      min-width: 22px;
       text-align:center;
       font-weight:1000;
-      font-size: 18px;
+      font-size: 16px;
     }
 
-    .addBtn2{
-      width:100%;
+    .addBtn{
       border:1px solid rgba(200,164,90,.65);
-      background: rgba(200,164,90,.12);
+      background: rgba(200,164,90,.10);
       color: var(--gold);
-      padding:14px 12px;
+      padding:10px 12px;
       border-radius: 14px;
       font-weight:1000;
       cursor:pointer;
       transition: .15s;
+      flex:1;
       white-space:nowrap;
-      font-size:16px;
+      height: 44px;
     }
-    .addBtn2:hover{ background: rgba(200,164,90,.18); }
-    .addBtn2:active{ transform: translateY(1px); }
-    .addBtn2:disabled{
-      opacity:.45;
-      cursor:not-allowed;
+    .addBtn:hover{ background: rgba(200,164,90,.16); }
+    .addBtn:active{ transform: translateY(1px); }
+    .addBtn:disabled{
+      opacity:.5; cursor:not-allowed;
     }
 
-    .soldOutBadge{
+    .soldBadge{
       position:absolute;
-      top:12px;
-      right:12px;
+      top:10px; left:10px;
       padding:6px 10px;
-      border-radius:999px;
+      border-radius: 999px;
+      background: rgba(164,0,0,.85);
       border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.35);
-      color: rgba(255,255,255,.9);
       font-weight:1000;
       font-size:12px;
-      letter-spacing:.06em;
-      z-index: 2;
+      letter-spacing:.08em;
     }
-
-    /* Right column stack */
-    .rightCol{
-      display:flex;
-      flex-direction:column;
-      gap:16px;
+    .soldOverlay{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,.45);
+      pointer-events:none;
     }
 
     /* Cart */
@@ -357,21 +332,22 @@
       border-radius:14px;
       background: rgba(0,0,0,.20);
     }
-    .cartName{ font-weight:1000; font-size:16px; line-height:1.25; }
-    .cartMeta{ color:var(--muted); font-size:13px; margin-top:2px; font-weight:800; }
+    .cartName{ font-weight:1000; font-size:14px; line-height:1.25; }
+    .cartMeta{ color:var(--muted); font-size:12px; margin-top:2px; }
 
     .qtyBox{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
     .qtyBtn{
-      width:40px; height:40px;
+      width:38px; height:38px;
       border-radius: 12px;
       border:1px solid var(--line);
       background: rgba(255,255,255,.03);
       color: var(--text);
       font-weight:1000;
       cursor:pointer;
-      font-size: 20px;
+      font-size: 18px;
     }
     .qtyBtn:hover{ background: rgba(255,255,255,.06); }
+
     .qty{
       min-width: 26px;
       text-align:center;
@@ -387,10 +363,10 @@
       padding-top:12px;
       border-top:1px solid var(--line);
       color:var(--muted);
-      font-weight:1000;
-      font-size: 15px;
+      font-weight:900;
+      font-size: 14px;
     }
-    .sumVal{ color:var(--gold); font-size:24px; font-weight:1000; }
+    .sumVal{ color:var(--gold); font-size:22px; font-weight:1000; }
 
     .orderBtn{
       margin-top:12px;
@@ -405,58 +381,30 @@
       cursor:pointer;
       box-shadow: 0 18px 50px rgba(164,0,0,.35);
       transition:.15s;
-      font-size:16px;
     }
     .orderBtn:hover{ filter: brightness(1.03); }
     .orderBtn:active{ transform: translateY(1px); }
     .orderBtn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
 
-    /* History */
-    .historyBody{ padding: 12px 14px 14px; }
-    .historyList{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
-    .historyCard{
-      border:1px solid var(--line);
-      border-radius: 14px;
-      background: rgba(0,0,0,.20);
-      padding: 10px 10px;
-    }
-    .historyTop{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 6px;
-    }
-    .historyTime{ color: rgba(255,255,255,.85); font-weight:1000; font-size: 13px; }
-    .historyTotal{ color: var(--gold); font-weight:1000; font-size: 14px; }
-    .historyItems{ color: var(--muted); font-size: 13px; font-weight:800; line-height:1.35; white-space: pre-wrap; }
-    .tinyBtn{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
+    .ghostBtn{
+      margin-top:10px;
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
       color: rgba(255,255,255,.9);
-      border-radius: 12px;
-      padding: 8px 10px;
       font-weight:1000;
+      padding:12px 14px;
+      border-radius: 16px;
       cursor:pointer;
-      font-size: 13px;
     }
-    .dangerBtn{
-      border:1px solid rgba(164,0,0,.65);
-      background: rgba(164,0,0,.20);
-      color: rgba(255,255,255,.95);
-    }
-    .rowBtns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top: 10px;
-    }
+    .ghostBtn:disabled{ opacity:.55; cursor:not-allowed; }
+
     .foot{ margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:12px; }
 
     .toast{
       position:fixed;
       left:50%;
-      bottom:18px;
+      bottom:70px;
       transform:translateX(-50%);
       background: rgba(16,19,24,.92);
       border:1px solid var(--line);
@@ -468,7 +416,7 @@
       display:none;
       max-width:min(560px, 92vw);
       z-index:9999;
-      font-size:14px;
+      text-align:center;
     }
 
     /* ===== Mobile drawer (hamburger) ===== */
@@ -542,7 +490,6 @@
       font-weight: 1000;
       color: var(--gold);
       letter-spacing: .04em;
-      font-size:15px;
     }
     .drawerClose{
       width: 36px;
@@ -555,128 +502,124 @@
       cursor: pointer;
     }
 
-    /* ② ありがとうございますモーダル */
-    .modalOverlay{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.65);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:10010;
-      padding: 18px;
+    /* ===== Bottom Nav (Order / History / Admin) ===== */
+    .bottomNav{
+      position: fixed;
+      left:0; right:0; bottom:0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(10,12,16,.82);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,.10);
+      z-index: 9998;
     }
-    .modalOverlay.show{ display:flex; }
-    .modal{
-      width:min(520px, 92vw);
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(16,19,24,.96);
-      box-shadow: var(--shadow);
-      padding: 18px 16px 16px;
+    .tabs{
+      display:flex;
+      gap:10px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .modalTitle{
-      font-size: 18px;
-      font-weight:1000;
-      color: var(--gold);
-      margin:0 0 8px;
-      letter-spacing:.04em;
-    }
-    .modalText{
-      margin:0 0 14px;
-      color: rgba(255,255,255,.88);
-      font-weight:800;
-      line-height:1.45;
-      font-size:15px;
-      white-space: pre-wrap;
-    }
-    .modalBtn{
-      width:100%;
+    .tabBtn{
+      flex:1;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.92);
-      padding: 12px 12px;
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.9);
+      padding: 12px 10px;
       border-radius: 14px;
-      font-weight:1000;
+      font-weight: 1000;
       cursor:pointer;
-      font-size:15px;
-    }
-
-    /* ③ 管理（品切れ）パネル */
-    .adminPanel{
-      margin-top:16px;
-      padding: 14px;
-    }
-    .adminNote{
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-      margin: 0 0 12px;
-      line-height: 1.4;
-    }
-    .toggleRow{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      padding: 10px 10px;
+      justify-content:center;
+      gap:8px;
+    }
+    .tabBtn.active{
+      border-color: rgba(200,164,90,.45);
+      background: rgba(200,164,90,.10);
+      color: var(--gold);
+    }
+    .badge{
+      min-width: 22px;
+      height: 22px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.9);
+      font-size: 12px;
+      font-weight:1000;
+      padding: 0 6px;
+    }
+
+    /* Views */
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    /* History / Admin panels */
+    .simpleList{ margin:0; padding:14px; list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .simpleRow{
       border:1px solid var(--line);
       border-radius: 14px;
       background: rgba(0,0,0,.20);
-      margin-bottom: 8px;
+      padding: 12px;
     }
-    .toggleRow strong{
-      font-weight:1000;
-      font-size: 14px;
+    .rowTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .rowTitle{ font-weight:1000; }
+    .rowMeta{ color: var(--muted); font-size:12px; }
+    .mini{ font-size:12px; color: var(--muted); margin-top:8px; line-height:1.4; }
+
+    .adminBox{ padding:14px; }
+    .adminLine{ border-top:1px solid var(--line); margin:14px 0; }
+
+    .field{
+      display:flex; flex-direction:column; gap:6px;
+      margin-top:10px;
     }
-    .toggleRow label{
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      font-weight:1000;
-      color: rgba(255,255,255,.9);
-      cursor:pointer;
-      user-select:none;
-      font-size: 13px;
-    }
-    .toggleRow input{
-      width: 18px;
-      height: 18px;
-      accent-color: #c8a45a;
-      cursor:pointer;
+    .field label{ color: var(--muted); font-size:12px; font-weight:900; }
+    .inp{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.92);
+      font-weight: 900;
+      outline: none;
     }
 
-    /* Mobile bottom quick tabs (見た目だけ雰囲気寄せ) */
-    .bottomTabs{
-      display:none;
-      position: fixed;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      z-index: 1003;
-      background: rgba(10,12,16,.86);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
-      padding: 8px 10px;
-      gap: 8px;
-    }
-    .tabBtn{
-      flex: 1;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      color: rgba(255,255,255,.9);
+    .toggleRow{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:10px 10px;
+      border:1px solid var(--line);
       border-radius: 14px;
-      padding: 10px 8px;
-      font-weight: 1000;
-      cursor:pointer;
-      font-size: 13px;
+      background: rgba(0,0,0,.20);
     }
-    .tabBtn.active{
-      border-color: rgba(200,164,90,.35);
-      background: rgba(200,164,90,.12);
-      color: var(--gold);
+    .toggleRow strong{ font-size:13px; }
+    .sw{
+      width:48px; height:28px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      position:relative;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .sw::after{
+      content:"";
+      width:22px; height:22px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.85);
+      position:absolute;
+      top:2px; left:2px;
+      transition: .15s;
+    }
+    .sw.on{
+      border-color: rgba(200,164,90,.45);
+      background: rgba(200,164,90,.14);
+    }
+    .sw.on::after{
+      left:24px;
+      background: rgba(200,164,90,.95);
     }
 
     @media (max-width: 979px){
@@ -686,8 +629,8 @@
       .panelTitle{ padding: 12px 14px; }
       .cartBody{ padding: 12px 14px 14px; }
       .card{ box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+
       .hamburger{ display:flex; }
-      .bottomTabs{ display:flex; }
     }
   </style>
 </head>
@@ -700,14 +643,14 @@
   <div id="drawerOverlay" class="drawerOverlay"></div>
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="drawerHead">
-      <div class="drawerTitle">メニュー</div>
+      <div class="drawerTitle">カテゴリ</div>
       <button id="drawerClose" class="drawerClose" aria-label="閉じる">×</button>
     </div>
     <div id="drawerNav" class="navList"></div>
   </aside>
 
   <div class="wrap">
-    <header id="top">
+    <header>
       <h1 class="title title-with-sheep">
         <span class="sheep-icon" aria-hidden="true">
           <svg viewBox="0 0 64 64" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -754,42 +697,31 @@
 
       <p class="sub">ごゆっくりお選びください</p>
 
+      <div class="pill" id="sessionPill" style="display:none;">
+        セッション <strong id="sessionText">-</strong>
+      </div>
+
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
       </div>
-
-      <div id="sessionPill" class="pill" style="display:none;">
-        セッション <strong id="sessionShort">-</strong>
-      </div>
     </header>
 
-    <div class="layout">
-      <!-- 左：カテゴリ（PC用） -->
-      <aside class="navCard">
-        <div class="navTitle">カテゴリ</div>
-        <div id="catNav" class="navList"></div>
-      </aside>
+    <!-- ====== VIEW: Order (menu + cart) ====== -->
+    <div id="viewOrder" class="view active">
+      <div class="layout">
+        <!-- 左：カテゴリ（PC用） -->
+        <aside class="navCard">
+          <div class="navTitle">カテゴリ</div>
+          <div id="catNav" class="navList"></div>
+        </aside>
 
-      <!-- 中：メニュー -->
-      <section class="card" id="menu-content">
-        <div class="panelTitle">メニュー</div>
-        <div class="menuWrap" id="menu"></div>
+        <!-- 中：メニュー -->
+        <section class="card">
+          <div class="panelTitle">メニュー</div>
+          <div class="menuWrap" id="menu"></div>
+        </section>
 
-        <!-- ③ 品切れ管理（?admin=1 の時だけ表示） -->
-        <div id="adminCard" class="adminPanel" style="display:none;">
-          <div class="panelTitle" style="border-top:1px solid var(--line); border-bottom:1px solid var(--line); border-radius: 0;">品切れ設定（管理用）</div>
-          <div style="padding:14px;">
-            <p class="adminNote">
-              URLに <strong>&amp;admin=1</strong> を付けた時だけ表示。例：<strong>.../index.html?table=8&amp;admin=1</strong><br>
-              ここでONにした商品は「品切れ」になり、カート追加できません（状態はこの端末に保存）。
-            </p>
-            <div id="soldoutList"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 右：カート + 履歴 -->
-      <div class="rightCol">
+        <!-- 右：カート -->
         <section class="card" id="order-content">
           <div class="panelTitle">ご注文内容</div>
           <div class="cartBody">
@@ -800,25 +732,61 @@
               <span id="total" class="sumVal">¥0</span>
             </div>
 
-            <button id="orderBtn" class="orderBtn" disabled>注文完了</button>
-          </div>
-        </section>
-
-        <section class="card" id="history-content">
-          <div class="panelTitle">注文履歴</div>
-          <div class="historyBody">
-            <div id="historyHint" class="adminNote" style="margin:0 0 10px; display:none;"></div>
-
-            <!-- 管理用：会計（履歴クリア） -->
-            <div id="adminHistoryControls" class="rowBtns" style="display:none; margin-bottom: 10px;">
-              <button id="clearSessionBtn" class="tinyBtn dangerBtn">会計（履歴クリア）</button>
-              <button id="refreshHistoryBtn" class="tinyBtn">再読み込み</button>
-            </div>
-
-            <ul id="historyList" class="historyList"></ul>
+            <button id="orderBtn" class="orderBtn" disabled>この内容で注文</button>
           </div>
         </section>
       </div>
+    </div>
+
+    <!-- ====== VIEW: History ====== -->
+    <div id="viewHistory" class="view">
+      <section class="card">
+        <div class="panelTitle">注文履歴</div>
+        <ul id="historyList" class="simpleList"></ul>
+      </section>
+    </div>
+
+    <!-- ====== VIEW: Admin ====== -->
+    <div id="viewAdmin" class="view">
+      <section class="card">
+        <div class="panelTitle">管理（会計 / 品切れ）</div>
+        <div class="adminBox">
+          <div class="rowMeta" style="margin-top:2px;">
+            管理機能はログイン後に使えます（ルールが isAdmin 前提の場合）。
+          </div>
+
+          <div id="adminStatus" class="mini"></div>
+
+          <div id="loginBox">
+            <div class="field">
+              <label>管理者メール</label>
+              <input id="adminEmail" class="inp" type="email" placeholder="例: xxx@gmail.com" />
+            </div>
+            <div class="field">
+              <label>パスワード</label>
+              <input id="adminPass" class="inp" type="password" placeholder="********" />
+            </div>
+            <button id="loginBtn" class="ghostBtn">ログイン</button>
+          </div>
+
+          <div id="adminActions" style="display:none;">
+            <button id="checkoutBtn" class="orderBtn" style="box-shadow:none; margin-top:12px;">
+              会計（新しいお客様に切り替え）
+            </button>
+            <button id="clearOrdersBtn" class="ghostBtn" style="margin-top:10px;">
+              このセッションの注文を「無効」にする（履歴から除外）
+            </button>
+
+            <div class="adminLine"></div>
+            <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">品切れ ON/OFF</div>
+            <div class="mini">ここでONにすると、客側で「品切れ」表示になり追加できません。</div>
+            <div id="stockList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+
+            <div class="adminLine"></div>
+            <button id="logoutBtn" class="ghostBtn">ログアウト</button>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="foot">※ 表示価格は税込です</div>
@@ -826,29 +794,25 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- ② ありがとうございますモーダル -->
-  <div id="thanksOverlay" class="modalOverlay" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="注文完了">
-      <p class="modalTitle">ご注文ありがとうございました！</p>
-      <p class="modalText" id="thanksText">注文を受け付けました。</p>
-      <button id="thanksClose" class="modalBtn">閉じる</button>
+  <!-- Bottom nav -->
+  <div class="bottomNav">
+    <div class="tabs">
+      <button id="tabOrder" class="tabBtn active">オーダー <span id="cartBadge" class="badge">0</span></button>
+      <button id="tabHistory" class="tabBtn">注文履歴</button>
+      <button id="tabAdmin" class="tabBtn" title="管理">管理</button>
     </div>
-  </div>
-
-  <!-- モバイル用：下タブっぽいショートカット -->
-  <div class="bottomTabs" aria-hidden="false">
-    <button class="tabBtn" data-tab="menu">ホーム</button>
-    <button class="tabBtn" data-tab="order">オーダー</button>
-    <button class="tabBtn" data-tab="history">注文履歴</button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import {
       getFirestore, collection, addDoc, serverTimestamp,
-      doc, getDoc, setDoc,
-      query, where, orderBy, onSnapshot, deleteDoc
+      doc, getDoc, setDoc, updateDoc,
+      query, where, orderBy, getDocs, writeBatch
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import {
+      getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
@@ -861,6 +825,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
@@ -875,59 +840,52 @@
       { id:"other",      label:"その他" },
     ];
 
-    // ② 骨付きラムチョップ画像（送ってくれた画像を埋め込み）
-    const IMG_LAMB_CHOP = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYFxUZGBYfHysjGh0oHRUWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCwsLDw4PHRISHjQhIig7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O//AABEIAWgB4AMBIgACEQEDEQH/xAAbAAABBQEBAAAAAAAAAAAAAAAEAAIDBQYBB//EADkQAAIBAgQDBgQEBwAAAAAAAAABAgMRBBIhMQVBUWEGEyJxgZGhMkKxwdHh8BUjQlNicuH/xAAZAQADAQEBAAAAAAAAAAAAAAABAgMABAX/xAAmEQACAgICAgICAgMAAAAAAAAAAQIRAxIhMQRBEyJRYXGBkaHB/9oADAMBAAIRAxEAPwD2Gz1r2Pq6n+fQnG8w9F8l2k9m0mX8p2Wk1iGQk2fNQxv3j2mZfD8g9cXn1gQd8h2bWnB1J6Q6Vw8oJfQnLQmE3l5z2nqj7x4b4F7PqYcG7T3H0qJm6Hn1oKcQw1rY6fVwq6mK8m2Xn8g0p9oXk7u2l2h8h6g3a7xq9fWm0d5f7oG2iVbGm2d1YcVvQ9WfU9p8q3o3w1pX4vQ1x0cR0cY0cQkQpY0nqN5Gv8A0lq7bL0VQ7mT8k8o8ZfQe2F9o2i0q0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o0m0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o0m0m3l7a4mQzVvJQvNq6o0uKX1Hq7bqz1x1m1n0Y6l1mYq8a1W3mXzjv3x8S8m7c6p+qX1p5kU7q8qV5J0q3m5Zgq2l8mK3f1h4m0cUq0m0kq6cVY0l8n7pPp3p3q0t2c6dY9HqH2r7bqz8o//Z";
-
+    // 画像を入れたい商品は img を付ける（相対パス推奨）
+    // 骨付きラムチョップは例として images/lamb_chop.jpg にしてある
     const MENU = [
-      { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188, img:"" },
-      { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518, img:"" },
-      { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188, img:"" },
-      { id:"lamb_tan_gokujo",   category:"youniku", name:"極上ラムタン", desc:"", price:1408, img:"" },
-      { id:"mutton_hire",       category:"youniku", name:"マトンヒレ", desc:"", price:1298, img:"" },
-      { id:"lamb_sirloin",      category:"youniku", name:"生ラムサーロイン", desc:"", price:1958, img:"" },
-      { id:"lamb_ham_salad",    category:"youniku", name:"羊の生ハムサラダ風", desc:"", price:1078, img:"" },
-      { id:"lamb_wiener_1",     category:"youniku", name:"ラムウィンナー（1本）", desc:"", price:253, img:"" },
-      { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298, img: IMG_LAMB_CHOP }, /* ② */
-      { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968, img:"" },
+      { id:"lamb_raw",          category:"youniku", name:"生ラム", desc:"", price:1188 },
+      { id:"lamb_raw_jyo",      category:"youniku", name:"上生ラム", desc:"", price:1518 },
+      { id:"lamb_momo_steak",   category:"youniku", name:"生ラムモモステーキ", desc:"", price:1188 },
+      { id:"lamb_tan_gokujo",   category:"youniku", name:"極上ラムタン", desc:"", price:1408 },
+      { id:"mutton_hire",       category:"youniku", name:"マトンヒレ", desc:"", price:1298 },
+      { id:"lamb_sirloin",      category:"youniku", name:"生ラムサーロイン", desc:"", price:1958 },
+      { id:"lamb_ham_salad",    category:"youniku", name:"羊の生ハムサラダ風", desc:"", price:1078 },
+      { id:"lamb_wiener_1",     category:"youniku", name:"ラムウィンナー（1本）", desc:"", price:253 },
+      { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298, img:"images/lamb_chop.jpg" },
+      { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968 },
 
-      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748, img:"" },
-      { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418, img:"" },
-      { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418, img:"" },
-      { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418, img:"" },
-      { id:"kyabetsu",          category:"yasai", name:"キャベツ", desc:"", price:418, img:"" },
-      { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418, img:"" },
-      { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110, img:"" },
+      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748 },
+      { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418 },
+      { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418 },
+      { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418 },
+      { id:"kyabetsu",          category:"yasai", name:"キャベツ", desc:"", price:418 },
+      { id:"ninniku_no_me",     category:"yasai", name:"ニンニクの芽", desc:"", price:418 },
+      { id:"abura_add",         category:"yasai", name:"追加 脂代", desc:"（追加オプション）", price:110 },
 
-      { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638, img:"" },
-      { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528, img:"" },
-      { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528, img:"" },
-      { id:"moyashi_namul_std", category:"ippin", name:"もやしナムル スタンダード", desc:"", price:418, img:"" },
-      { id:"moyashi_namul_hot", category:"ippin", name:"もやしナムル 辛口", desc:"", price:528, img:"" },
-      { id:"kyuuri_zuke",       category:"ippin", name:"自家製きゅうり漬け", desc:"", price:528, img:"" },
-      { id:"mozuku_su",         category:"ippin", name:"もずく酢", desc:"", price:528, img:"" },
-      { id:"yamaimo_wasabi",    category:"ippin", name:"山芋山葵醤油漬け", desc:"", price:748, img:"" },
-      { id:"tamago_soup",       category:"ippin", name:"卵スープ", desc:"", price:528, img:"" },
-      { id:"wakame_soup",       category:"ippin", name:"わかめスープ", desc:"", price:528, img:"" },
-      { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078, img:"" },
-      { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385, img:"" },
+      { id:"ume_kimchi",        category:"ippin", name:"さっぱり梅キムチ", desc:"", price:638 },
+      { id:"kimchi_home",       category:"ippin", name:"ひつじやの手作りキムチ", desc:"", price:528 },
+      { id:"kakuteki_home",     category:"ippin", name:"ひつじやの手作りカクテキ", desc:"", price:528 },
+      { id:"moyashi_namul_std", category:"ippin", name:"もやしナムル スタンダード", desc:"", price:418 },
+      { id:"moyashi_namul_hot", category:"ippin", name:"もやしナムル 辛口", desc:"", price:528 },
+      { id:"kyuuri_zuke",       category:"ippin", name:"自家製きゅうり漬け", desc:"", price:528 },
+      { id:"mozuku_su",         category:"ippin", name:"もずく酢", desc:"", price:528 },
+      { id:"yamaimo_wasabi",    category:"ippin", name:"山芋山葵醤油漬け", desc:"", price:748 },
+      { id:"tamago_soup",       category:"ippin", name:"卵スープ", desc:"", price:528 },
+      { id:"wakame_soup",       category:"ippin", name:"わかめスープ", desc:"", price:528 },
+      { id:"hitsujiya_reimen",  category:"ippin", name:"ひつじやの冷麺", desc:"", price:1078 },
+      { id:"season_sherbet",    category:"ippin", name:"季節のシャーベット", desc:"", price:385 },
 
-      { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308, img:"" },
-      { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418, img:"" },
+      { id:"koshihikari_m",     category:"gohan", name:"農家直送県内産コシヒカリ（中）", desc:"", price:308 },
+      { id:"koshihikari_l",     category:"gohan", name:"農家直送県内産コシヒカリ（大）", desc:"", price:418 },
     ];
 
     const yen = (n) => "¥" + Number(n || 0).toLocaleString("ja-JP");
-
-    const qs = new URLSearchParams(location.search);
-    const tableParam = qs.get("table");
-    const table = Number(tableParam);
-    const tableOk = Number.isFinite(table) && table > 0;
-
-    const isAdmin = qs.get("admin") === "1";
-
-    const tablePill = document.getElementById("tablePill");
-    const tableNoEl = document.getElementById("tableNo");
-    const sessionPill = document.getElementById("sessionPill");
-    const sessionShortEl = document.getElementById("sessionShort");
+    const fmtTime = (d) => {
+      try{
+        const dt = d instanceof Date ? d : new Date(d);
+        return dt.toLocaleString("ja-JP", { month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+      } catch { return ""; }
+    };
 
     function toast(msg){
       const t = document.getElementById("toast");
@@ -937,6 +895,21 @@
       toast._timer = setTimeout(()=> t.style.display = "none", 2200);
     }
 
+    function newSessionId(){
+      // s_ + (time + random)
+      const r = Math.random().toString(36).slice(2,8);
+      const t = Date.now().toString(36);
+      return `s_${t}_${r}`;
+    }
+
+    // ===== URL params =====
+    const qs = new URLSearchParams(location.search);
+    const tableParam = qs.get("table");
+    const table = Number(tableParam);
+    const tableOk = Number.isFinite(table) && table > 0;
+
+    const tablePill = document.getElementById("tablePill");
+    const tableNoEl = document.getElementById("tableNo");
     if (tableOk) {
       tablePill.style.display = "inline-flex";
       tableNoEl.textContent = String(table);
@@ -944,92 +917,15 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ========= セッション管理（履歴混ざり対策の本体） =========
-    const tableStateRef = tableOk ? doc(db, "table_state", `table_${table}`) : null;
-    let currentSessionId = null;
+    // ===== Session pill =====
+    const sessionPill = document.getElementById("sessionPill");
+    const sessionText = document.getElementById("sessionText");
 
-    function newSessionId(){
-      return `s_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
-    }
-
-    async function loadSession(){
-      if (!tableOk) return null;
-      try{
-        const snap = await getDoc(tableStateRef);
-        if (snap.exists() && snap.data()?.sessionId) {
-          currentSessionId = snap.data().sessionId;
-        } else {
-          // 初回：セッションが無ければ作る（ルールで書けない場合は後でフォールバック）
-          const sid = newSessionId();
-          try{
-            await setDoc(tableStateRef, { table, sessionId: sid, updatedAt: serverTimestamp() }, { merge: true });
-            currentSessionId = sid;
-          } catch {
-            // 書けない場合は端末ローカルで作る（※他端末と同期しない）
-            currentSessionId = sid;
-          }
-        }
-      } catch {
-        currentSessionId = newSessionId();
-      }
-
-      // 表示
-      sessionPill.style.display = "inline-flex";
-      sessionShortEl.textContent = String(currentSessionId).slice(-6);
-
-      return currentSessionId;
-    }
-
-    // ========= カート（テーブル+セッションで分離） =========
-    const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
-    let cart = {};
-    try{
-      const saved = localStorage.getItem(CART_KEY);
-      if (saved) cart = JSON.parse(saved) || {};
-    } catch {}
-
-    // ========= 品切れ（端末ローカル） =========
-    const SOLDOUT_KEY = "soldout_map_v1";
-    let soldOutMap = {};
-    try{
-      const saved = localStorage.getItem(SOLDOUT_KEY);
-      if (saved) soldOutMap = JSON.parse(saved) || {};
-    } catch {}
-    const isSoldOut = (id) => !!soldOutMap[id];
-    function setSoldOut(id, on){
-      soldOutMap[id] = !!on;
-      try{ localStorage.setItem(SOLDOUT_KEY, JSON.stringify(soldOutMap)); } catch {}
-      renderMenu();
-    }
-
-    // ④ 商品ごとの「追加する数量」
-    const draftQty = {};
-    const getDraftQty = (id) => {
-      if (!draftQty[id]) draftQty[id] = 1;
-      return draftQty[id];
-    };
-    const setDraftQty = (id, n) => {
-      const v = Math.max(1, Math.min(20, Number(n) || 1));
-      draftQty[id] = v;
-      const el = document.querySelector(`[data-draft-qty="${CSS.escape(id)}"]`);
-      if (el) el.textContent = String(v);
-      const minusBtn = document.querySelector(`[data-draft-minus="${CSS.escape(id)}"]`);
-      if (minusBtn) minusBtn.disabled = v <= 1;
-    };
-
-    const catNavEl = document.getElementById("catNav");
-    const drawerNavEl = document.getElementById("drawerNav");
-    const menuEl = document.getElementById("menu");
-    const cartListEl = document.getElementById("cartList");
-    const totalEl = document.getElementById("total");
-    const orderBtn = document.getElementById("orderBtn");
-
-    // Drawer
+    // ===== Drawer open/close =====
     const hamburger = document.getElementById("hamburger");
     const drawer = document.getElementById("drawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
     const drawerClose = document.getElementById("drawerClose");
-
     function openDrawer(){
       drawer.classList.add("show");
       drawerOverlay.classList.add("show");
@@ -1044,25 +940,41 @@
     drawerClose?.addEventListener("click", closeDrawer);
     drawerOverlay?.addEventListener("click", closeDrawer);
 
-    // Bottom tabs
-    const tabBtns = document.querySelectorAll(".tabBtn");
-    function setActiveTab(key){
-      tabBtns.forEach(b => b.classList.toggle("active", b.dataset.tab === key));
+    // ===== Tabs / Views =====
+    const viewOrder = document.getElementById("viewOrder");
+    const viewHistory = document.getElementById("viewHistory");
+    const viewAdmin = document.getElementById("viewAdmin");
+    const tabOrder = document.getElementById("tabOrder");
+    const tabHistory = document.getElementById("tabHistory");
+    const tabAdmin = document.getElementById("tabAdmin");
+
+    function setTab(which){
+      for (const b of [tabOrder, tabHistory, tabAdmin]) b.classList.remove("active");
+      for (const v of [viewOrder, viewHistory, viewAdmin]) v.classList.remove("active");
+      if (which === "order"){ tabOrder.classList.add("active"); viewOrder.classList.add("active"); }
+      if (which === "history"){ tabHistory.classList.add("active"); viewHistory.classList.add("active"); refreshHistory().catch(()=>{}); }
+      if (which === "admin"){ tabAdmin.classList.add("active"); viewAdmin.classList.add("active"); }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-    function scrollToId(id){
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    tabBtns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const k = btn.dataset.tab;
-        if (k === "menu") scrollToId("menu-content");
-        if (k === "order") scrollToId("order-content");
-        if (k === "history") scrollToId("history-content");
-        setActiveTab(k);
-      });
-    });
-    setActiveTab("menu");
+    tabOrder.addEventListener("click", ()=> setTab("order"));
+    tabHistory.addEventListener("click", ()=> setTab("history"));
+    tabAdmin.addEventListener("click", ()=> setTab("admin"));
+
+    // ===== Cart =====
+    const catNavEl = document.getElementById("catNav");
+    const drawerNavEl = document.getElementById("drawerNav");
+    const menuEl = document.getElementById("menu");
+    const cartListEl = document.getElementById("cartList");
+    const totalEl = document.getElementById("total");
+    const orderBtn = document.getElementById("orderBtn");
+    const cartBadge = document.getElementById("cartBadge");
+
+    const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
+    let cart = {};
+    try{
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) cart = JSON.parse(saved) || {};
+    } catch {}
 
     function saveCart(){
       try{ localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch {}
@@ -1076,12 +988,56 @@
     function calcTotal(){
       return cartItems().reduce((sum, x) => sum + x.price * x.qty, 0);
     }
-
-    function scrollToOrder(){
-      scrollToId("order-content");
-      setActiveTab("order");
+    function updateBadge(){
+      cartBadge.textContent = String(cartQtyTotal());
     }
 
+    // ===== Session / Stock state =====
+    let currentSessionId = null;
+    let stock = {}; // { [itemId]: { soldOut: boolean } }
+
+    async function loadSession(){
+      if (!tableOk) return;
+      const ref = doc(db, "table_state", `table_${table}`);
+      const snap = await getDoc(ref);
+      if (snap.exists()){
+        const data = snap.data() || {};
+        currentSessionId = String(data.sessionId || "");
+      } else {
+        currentSessionId = "";
+      }
+
+      if (currentSessionId) {
+        sessionPill.style.display = "inline-flex";
+        // 長すぎるので末尾だけ見せる
+        const tail = currentSessionId.length > 14 ? "…" + currentSessionId.slice(-12) : currentSessionId;
+        sessionText.textContent = tail;
+      } else {
+        sessionPill.style.display = "inline-flex";
+        sessionText.textContent = "未設定";
+        toast("table_state が未作成です（管理で作成/会計してください）");
+      }
+    }
+
+    async function loadStock(){
+      // stock コレクション（任意）： stock/{itemId} { soldOut: true/false }
+      // ルールが無いと読めない場合がある → そのときは無視して動かす
+      stock = {};
+      try{
+        const q = query(collection(db, "stock"));
+        const snaps = await getDocs(q);
+        snaps.forEach(s => {
+          stock[s.id] = s.data() || {};
+        });
+      } catch {
+        // 何もしない（未設定でも注文機能は動く）
+      }
+    }
+
+    function scrollToOrder(){
+      const el = document.getElementById("order-content");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     function goCategory(catId){
       const el = document.getElementById(`cat-${catId}`);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1095,11 +1051,9 @@
       const orderCount = cartQtyTotal();
 
       container.innerHTML = [
+        // 「注文内容」→「注文」に変更
         `<a class="navBtn" data-nav="order" href="#order-content">
           <span>注文</span><small>${orderCount}</small>
-        </a>`,
-        `<a class="navBtn" data-nav="history" href="#history-content">
-          <span>注文履歴</span><small>▶</small>
         </a>`,
         ...CATEGORIES.map(c => {
           const count = counts.get(c.id) ?? 0;
@@ -1115,14 +1069,25 @@
           if (!key) return;
           e.preventDefault();
           if (key === "order") scrollToOrder();
-          else if (key === "history") { scrollToId("history-content"); setActiveTab("history"); closeDrawer(); }
           else goCategory(key);
         });
       });
     }
+
     function renderNav(){
       renderNavInto(catNavEl);
       renderNavInto(drawerNavEl);
+    }
+
+    // 各商品カードごとに「その場で＋／－」する数量（追加用）
+    const addQty = {}; // { [itemId]: number }
+
+    function getAddQty(id){
+      const v = Number(addQty[id] ?? 1);
+      return Math.max(1, Math.min(10, v));
+    }
+    function setAddQty(id, v){
+      addQty[id] = Math.max(1, Math.min(10, Number(v) || 1));
     }
 
     function renderMenu(){
@@ -1135,17 +1100,22 @@
 
       menuEl.innerHTML = CATEGORIES.map(c => {
         const items = byCat.get(c.id) || [];
+
         const grid = items.map(m => {
-          const sold = isSoldOut(m.id);
-          const q = getDraftQty(m.id);
-          const imgHtml = m.img
-            ? `<div class="itemImg"><img src="${m.img}" alt="${m.name}"></div>`
-            : `<div class="itemImg ph">NO IMAGE</div>`;
+          const isSold = !!(stock?.[m.id]?.soldOut);
+          const qty = getAddQty(m.id);
+
+          const imgHtml = m.img ? `
+            <div class="imgBox">
+              <img src="${m.img}" alt="${m.name}">
+            </div>
+          ` : `
+            <div class="imgBox" aria-hidden="true"></div>
+          `;
 
           return `
             <div class="itemCard" data-item="${m.id}">
-              ${sold ? `<div class="soldOutBadge">品切れ</div>` : ``}
-
+              ${isSold ? `<div class="soldOverlay"></div><div class="soldBadge">品切れ</div>` : ``}
               ${imgHtml}
 
               <div style="min-width:0;">
@@ -1154,14 +1124,13 @@
                 <p class="price">${yen(m.price)}</p>
               </div>
 
-              <div class="addArea">
-                <div class="stepper">
-                  <button class="stepBtn" data-draft-minus="${m.id}" ${q<=1 ? "disabled":""} ${sold ? "disabled":""}>−</button>
-                  <div class="stepQty" data-draft-qty="${m.id}">${q}</div>
-                  <button class="stepBtn" data-draft-plus="${m.id}" ${sold ? "disabled":""}>＋</button>
+              <div class="stepRow">
+                <div class="stepper" aria-label="数量">
+                  <button class="stepBtn" data-step-minus="${m.id}" ${isSold ? "disabled" : ""}>−</button>
+                  <div class="stepQty" data-step-qty="${m.id}">${qty}</div>
+                  <button class="stepBtn" data-step-plus="${m.id}" ${isSold ? "disabled" : ""}>＋</button>
                 </div>
-
-                <button class="addBtn2" data-add="${m.id}" ${sold ? "disabled":""}>カートに追加</button>
+                <button class="addBtn" data-add="${m.id}" ${isSold ? "disabled" : ""}>カートに追加</button>
               </div>
             </div>
           `;
@@ -1179,8 +1148,6 @@
           </div>
         `;
       }).join("");
-
-      for (const m of MENU) setDraftQty(m.id, getDraftQty(m.id));
     }
 
     function renderCart(){
@@ -1205,20 +1172,20 @@
 
       const total = calcTotal();
       totalEl.textContent = yen(total);
+
+      // 注文ボタンの有効条件：tableOk + sessionIdあり + 合計>0
       orderBtn.disabled = !tableOk || !currentSessionId || total === 0;
 
       renderNav();
+      updateBadge();
     }
 
     function addItem(id, qty){
-      if (isSoldOut(id)) {
-        toast("この商品は品切れです");
-        return;
-      }
       const m = MENU.find(x => x.id === id);
       if (!m) return;
+      if (stock?.[id]?.soldOut) { toast("品切れです"); return; }
 
-      const n = Math.max(1, Math.min(20, Number(qty) || 1));
+      const n = Math.max(1, Math.min(10, Number(qty) || 1));
       if (!cart[id]) cart[id] = { id:m.id, name:m.name, price:m.price, qty:0 };
       cart[id].qty += n;
 
@@ -1235,18 +1202,32 @@
       renderCart();
     }
 
-    // menu click
     menuEl.addEventListener("click", (e) => {
-      const minus = e.target.closest("[data-draft-minus]");
-      const plus  = e.target.closest("[data-draft-plus]");
-      const add   = e.target.closest("[data-add]");
+      const btnAdd = e.target.closest("[data-add]");
+      const btnMinus = e.target.closest("[data-step-minus]");
+      const btnPlus  = e.target.closest("[data-step-plus]");
 
-      if (minus) { setDraftQty(minus.getAttribute("data-draft-minus"), getDraftQty(minus.getAttribute("data-draft-minus")) - 1); return; }
-      if (plus)  { setDraftQty(plus.getAttribute("data-draft-plus"), getDraftQty(plus.getAttribute("data-draft-plus")) + 1); return; }
-      if (add)   { addItem(add.getAttribute("data-add"), getDraftQty(add.getAttribute("data-add"))); return; }
+      if (btnMinus){
+        const id = btnMinus.getAttribute("data-step-minus");
+        setAddQty(id, getAddQty(id) - 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+      if (btnPlus){
+        const id = btnPlus.getAttribute("data-step-plus");
+        setAddQty(id, getAddQty(id) + 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+      if (btnAdd){
+        const id = btnAdd.getAttribute("data-add");
+        addItem(id, getAddQty(id));
+        return;
+      }
     });
 
-    // cart click
     cartListEl.addEventListener("click", (e) => {
       const minus = e.target.closest("[data-minus]");
       const plus  = e.target.closest("[data-plus]");
@@ -1254,40 +1235,25 @@
       if (plus)  changeQty(plus.dataset.plus, +1);
     });
 
-    // Thanks modal
-    const thanksOverlay = document.getElementById("thanksOverlay");
-    const thanksText = document.getElementById("thanksText");
-    const thanksClose = document.getElementById("thanksClose");
-    function openThanks(message){
-      thanksText.textContent = message;
-      thanksOverlay.classList.add("show");
-      thanksOverlay.setAttribute("aria-hidden", "false");
-    }
-    function closeThanks(){
-      thanksOverlay.classList.remove("show");
-      thanksOverlay.setAttribute("aria-hidden", "true");
-    }
-    thanksClose.addEventListener("click", closeThanks);
-    thanksOverlay.addEventListener("click", (e) => { if (e.target === thanksOverlay) closeThanks(); });
-
-    // ========= 注文送信 =========
+    // ===== 注文送信 =====
     orderBtn.addEventListener("click", async () => {
       if (!tableOk) { toast("テーブル番号が無効です"); return; }
-      if (!currentSessionId) { toast("セッション取得中です。少し待ってください"); return; }
+      if (!currentSessionId) { toast("セッションが未設定です（管理で会計/作成）"); return; }
 
       const items = cartItems();
       const total = calcTotal();
       if (!items.length || total <= 0) { toast("商品を選んでください"); return; }
 
       orderBtn.disabled = true;
+      const oldText = orderBtn.textContent;
       orderBtn.textContent = "送信中…";
 
       try{
-        const docRef = await addDoc(collection(db, "orders"), {
-          table,
-          sessionId: currentSessionId,   // ★混ざり防止の鍵
+        await addDoc(collection(db, "orders"), {
+          table: table,
+          sessionId: currentSessionId,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
-          total,
+          total: total,
           status: "new",
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
@@ -1297,187 +1263,220 @@
         saveCart();
         renderCart();
 
-        openThanks(`ご注文ありがとうございました。\n注文番号：${docRef.id}`);
-        toast("注文を送信しました。ありがとうございます！");
-        scrollToId("history-content");
-        setActiveTab("history");
+        // ② 注文完了後に「ありがとうございます」
+        toast("ありがとうございます！注文を送信しました。");
       } catch(err){
         console.error(err);
-        toast("送信に失敗しました（設定/ルールを確認）");
+        toast("送信に失敗しました（Firestoreルール/設定を確認）");
       } finally {
-        orderBtn.textContent = "注文完了";
+        orderBtn.textContent = oldText;
         orderBtn.disabled = !tableOk || !currentSessionId || calcTotal() === 0;
       }
     });
 
-    // ========= 注文履歴（table + sessionId で表示） =========
-    const historyListEl = document.getElementById("historyList");
-    const historyHintEl = document.getElementById("historyHint");
-    const adminHistoryControls = document.getElementById("adminHistoryControls");
-    const clearSessionBtn = document.getElementById("clearSessionBtn");
-    const refreshHistoryBtn = document.getElementById("refreshHistoryBtn");
+    // ===== 注文履歴 =====
+    const historyList = document.getElementById("historyList");
 
-    let unsubscribeHistory = null;
-
-    function fmtTime(ts){
-      try{
-        if (!ts) return "—";
-        const d = ts.toDate ? ts.toDate() : new Date(ts);
-        const hh = String(d.getHours()).padStart(2,"0");
-        const mm = String(d.getMinutes()).padStart(2,"0");
-        return `${hh}:${mm}`;
-      } catch { return "—"; }
-    }
-
-    function renderHistoryEmpty(){
-      historyListEl.innerHTML = `<li style="color:var(--muted);font-weight:900;">（このセッションの注文履歴はまだありません）</li>`;
-    }
-
-    function bindHistory(){
-      if (!tableOk || !currentSessionId) { renderHistoryEmpty(); return; }
-
-      if (unsubscribeHistory) unsubscribeHistory();
-
-      const qy = query(
-        collection(db, "orders"),
-        where("table", "==", table),
-        where("sessionId", "==", currentSessionId),
-        orderBy("createdAt", "desc")
-      );
-
-      unsubscribeHistory = onSnapshot(qy, (snap) => {
-        if (snap.empty) { renderHistoryEmpty(); return; }
-
-        const rows = [];
-        snap.forEach(docSnap => {
-          const d = docSnap.data();
-          const id = docSnap.id;
-          const itemsText = (d.items || []).map(it => `・${it.name} ×${it.qty}`).join("\n");
-          rows.push({ id, d, itemsText });
-        });
-
-        historyListEl.innerHTML = rows.map(r => `
-          <li class="historyCard" data-oid="${r.id}">
-            <div class="historyTop">
-              <div class="historyTime">${fmtTime(r.d.createdAt)} / テーブル${r.d.table}</div>
-              <div class="historyTotal">${yen(r.d.total)}</div>
+    function renderHistoryRows(rows){
+      if (!rows.length){
+        historyList.innerHTML = `<li class="simpleRow"><div class="rowMeta">（このセッションの注文履歴はまだありません）</div></li>`;
+        return;
+      }
+      historyList.innerHTML = rows.map(r => {
+        const items = (r.items || []).map(it => `${it.name} ×${it.qty}`).join(" / ");
+        return `
+          <li class="simpleRow">
+            <div class="rowTop">
+              <div class="rowTitle">${yen(r.total || 0)}</div>
+              <div class="rowMeta">${fmtTime(r._createdAt)}</div>
             </div>
-            <div class="historyItems">${r.itemsText || ""}</div>
-
-            ${isAdmin ? `
-              <div class="rowBtns">
-                <button class="tinyBtn dangerBtn" data-del="${r.id}">完全削除</button>
-              </div>
-              <div style="color:rgba(255,255,255,.45);font-size:12px;font-weight:900;margin-top:6px;">
-                ※「完全削除」はFirestoreルールでdelete許可が必要。できない場合は会計（履歴クリア）を使ってください。
-              </div>
-            ` : ``}
+            <div class="mini">${items}</div>
+            <div class="rowMeta" style="margin-top:8px;">ステータス: ${r.status || "-"}</div>
           </li>
-        `).join("");
-      }, (err) => {
-        console.error(err);
-        historyListEl.innerHTML = `<li style="color:var(--muted);font-weight:900;">（履歴の取得に失敗しました。Firestoreルール/インデックスを確認）</li>`;
-      });
+        `;
+      }).join("");
     }
 
-    // 管理：会計（履歴クリア）＝ sessionId を更新
-    async function clearSession(){
-      if (!tableOk) return;
-      const ok = confirm("会計（履歴クリア）しますか？\nこのテーブルの“新しいお客様の回”に切り替わります。");
-      if (!ok) return;
-
-      const sid = newSessionId();
+    async function refreshHistory(){
+      if (!tableOk || !currentSessionId){
+        renderHistoryRows([]);
+        return;
+      }
       try{
-        await setDoc(tableStateRef, { table, sessionId: sid, updatedAt: serverTimestamp() }, { merge: true });
-        currentSessionId = sid;
-        sessionShortEl.textContent = String(currentSessionId).slice(-6);
-        toast("会計しました（新セッションに切替）");
-        cart = {};
-        saveCart();
-        renderCart();
-        bindHistory();
-      } catch(err){
+        const qy = query(
+          collection(db, "orders"),
+          where("table", "==", table),
+          where("sessionId", "==", currentSessionId),
+          orderBy("createdAt", "desc")
+        );
+        const snaps = await getDocs(qy);
+        const rows = [];
+        snaps.forEach(s => {
+          const d = s.data() || {};
+          let created = null;
+          try{ created = d.createdAt?.toDate?.() || null; } catch {}
+          rows.push({ id: s.id, ...d, _createdAt: created || new Date() });
+        });
+        // status="cleared" は履歴から除外（管理で無効化したもの）
+        renderHistoryRows(rows.filter(x => x.status !== "cleared"));
+      } catch (err){
         console.error(err);
-        toast("会計に失敗（table_state への書き込み権限が必要）");
+        historyList.innerHTML = `<li class="simpleRow"><div class="rowMeta">履歴を取得できません（Firestoreルールの read 設定が必要です）</div></li>`;
       }
     }
 
-    // 管理：完全削除（可能なら）
-    historyListEl.addEventListener("click", async (e) => {
-      const btn = e.target.closest("[data-del]");
-      if (!btn) return;
-      const id = btn.getAttribute("data-del");
-      const ok = confirm("この注文を完全削除しますか？（戻せません）");
-      if (!ok) return;
+    // ===== Admin auth & actions =====
+    const adminStatus = document.getElementById("adminStatus");
+    const loginBox = document.getElementById("loginBox");
+    const adminActions = document.getElementById("adminActions");
+    const adminEmail = document.getElementById("adminEmail");
+    const adminPass = document.getElementById("adminPass");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const clearOrdersBtn = document.getElementById("clearOrdersBtn");
+    const stockList = document.getElementById("stockList");
 
-      try{
-        await deleteDoc(doc(db, "orders", id));
-        toast("削除しました");
-      } catch(err){
-        console.error(err);
-        toast("削除できません（Firestoreルールでdeleteを許可していない可能性）");
+    function setAdminUI(user){
+      if (user){
+        adminStatus.textContent = `ログイン中: ${user.email || ""}`;
+        loginBox.style.display = "none";
+        adminActions.style.display = "block";
+      } else {
+        adminStatus.textContent = "未ログイン";
+        loginBox.style.display = "block";
+        adminActions.style.display = "none";
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      setAdminUI(user);
+      if (user){
+        renderStockAdmin().catch(()=>{});
       }
     });
 
-    clearSessionBtn?.addEventListener("click", clearSession);
-    refreshHistoryBtn?.addEventListener("click", () => { bindHistory(); toast("更新しました"); });
+    loginBtn.addEventListener("click", async () => {
+      const email = adminEmail.value.trim();
+      const pass = adminPass.value;
+      if (!email || !pass){ toast("メールとパスワードを入力"); return; }
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+        toast("ログインしました");
+      } catch (e){
+        console.error(e);
+        toast("ログイン失敗（メール/パスワード/ルール確認）");
+      }
+    });
 
-    // ========= 管理：品切れUI =========
-    const adminCard = document.getElementById("adminCard");
-    const soldoutListEl = document.getElementById("soldoutList");
+    logoutBtn.addEventListener("click", async () => {
+      try{ await signOut(auth); toast("ログアウトしました"); } catch {}
+    });
 
-    function renderAdminSoldOut(){
-      if (!isAdmin) return;
-      adminCard.style.display = "block";
+    // 会計＝新しい sessionId を発行して table_state を更新
+    checkoutBtn.addEventListener("click", async () => {
+      if (!tableOk) { toast("テーブルが無効"); return; }
+      const ok = confirm("会計します。次のお客様に切り替えますか？");
+      if (!ok) return;
 
-      const ordered = [];
-      for (const c of CATEGORIES) {
-        const items = MENU.filter(m => m.category === c.id);
-        for (const m of items) ordered.push({ c, m });
+      try{
+        const ref = doc(db, "table_state", `table_${table}`);
+        const sid = newSessionId();
+        await setDoc(ref, {
+          table: table,
+          sessionId: sid,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        currentSessionId = sid;
+        const tail = sid.length > 14 ? "…" + sid.slice(-12) : sid;
+        sessionPill.style.display = "inline-flex";
+        sessionText.textContent = tail;
+
+        // カートもクリア（次のお客様用）
+        cart = {};
+        saveCart();
+        renderCart();
+        toast("会計完了：新しいセッションに切り替えました");
+      } catch (e){
+        console.error(e);
+        toast("会計に失敗（table_state の write ルール/管理者判定）");
+      }
+    });
+
+    // “削除”ではなく、事故防止のため status を cleared にする（管理だけ）
+    clearOrdersBtn.addEventListener("click", async () => {
+      if (!tableOk || !currentSessionId) { toast("セッション未設定"); return; }
+      const ok = confirm("このセッションの注文を「無効」にします（履歴から除外）。続行？");
+      if (!ok) return;
+
+      try{
+        const qy = query(
+          collection(db, "orders"),
+          where("table", "==", table),
+          where("sessionId", "==", currentSessionId)
+        );
+        const snaps = await getDocs(qy);
+        const batch = writeBatch(db);
+        snaps.forEach(s => {
+          batch.update(s.ref, { status: "cleared", updatedAt: serverTimestamp() });
+        });
+        await batch.commit();
+        toast("このセッションの注文を無効化しました");
+      } catch (e){
+        console.error(e);
+        toast("処理失敗（orders の read/update ルールが管理者に必要）");
+      }
+    });
+
+    async function renderStockAdmin(){
+      // 管理画面：品切れON/OFF
+      stockList.innerHTML = "";
+      const items = MENU.map(m => ({ id:m.id, name:m.name }));
+      for (const it of items){
+        const sold = !!(stock?.[it.id]?.soldOut);
+        const row = document.createElement("div");
+        row.className = "toggleRow";
+        row.innerHTML = `
+          <div style="min-width:0;">
+            <strong>${it.name}</strong>
+            <div class="rowMeta">ID: ${it.id}</div>
+          </div>
+          <div class="sw ${sold ? "on" : ""}" data-sw="${it.id}" title="品切れ"></div>
+        `;
+        stockList.appendChild(row);
       }
 
-      soldoutListEl.innerHTML = ordered.map(({c, m}) => {
-        const on = isSoldOut(m.id);
-        return `
-          <div class="toggleRow">
-            <div style="min-width:0;">
-              <strong>${m.name}</strong>
-              <div style="color:var(--muted);font-size:12px;font-weight:900;margin-top:2px;">${c.label}</div>
-            </div>
-            <label>
-              <input type="checkbox" data-soldout-toggle="${m.id}" ${on ? "checked":""}>
-              品切れ
-            </label>
-          </div>
-        `;
-      }).join("");
+      stockList.querySelectorAll("[data-sw]").forEach(el => {
+        el.addEventListener("click", async () => {
+          const id = el.getAttribute("data-sw");
+          const now = !!(stock?.[id]?.soldOut);
+          const next = !now;
 
-      soldoutListEl.querySelectorAll("[data-soldout-toggle]").forEach(inp => {
-        inp.addEventListener("change", () => {
-          const id = inp.getAttribute("data-soldout-toggle");
-          setSoldOut(id, inp.checked);
-          toast(inp.checked ? "品切れにしました" : "品切れ解除しました");
+          try{
+            // stock/{itemId} を更新
+            const ref = doc(db, "stock", id);
+            await setDoc(ref, { soldOut: next, updatedAt: serverTimestamp() }, { merge: true });
+            stock[id] = { ...(stock[id] || {}), soldOut: next };
+            el.classList.toggle("on", next);
+
+            // 客画面にも反映
+            renderMenu();
+            toast(next ? "品切れにしました" : "販売再開しました");
+          } catch (e){
+            console.error(e);
+            toast("品切れ更新に失敗（stock の write ルール/管理者判定）");
+          }
         });
       });
     }
 
-    // ========= 初期描画 =========
+    // ===== 初期描画 =====
     renderNav();
+    await loadStock();
     renderMenu();
-    renderCart();
-
-    // 管理用表示
-    if (isAdmin){
-      historyHintEl.style.display = "block";
-      historyHintEl.textContent = "管理モード：会計（履歴クリア）で前の客の履歴が表示されないようにできます。";
-      adminHistoryControls.style.display = "flex";
-    }
-
-    // セッション読み込み → 履歴バインド
     await loadSession();
     renderCart();
-    bindHistory();
-    renderAdminSoldOut();
   </script>
 </body>
 </html>
