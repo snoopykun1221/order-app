@@ -477,7 +477,7 @@
       z-index: 1001;
       transform: translateX(-102%);
       transition: transform .18s ease;
-      padding: 14px;
+      padding: calc(14px + env(safe-area-inset-top)) 14px 14px; /* ✅ 上が見切れない */
       background: rgba(10,12,16,.92);
       backdrop-filter: blur(12px);
       border-right: 1px solid rgba(255,255,255,.10);
@@ -578,7 +578,6 @@
     .mini{ font-size:12px; color: var(--muted); margin-top:8px; line-height:1.4; }
 
     .adminBox{ padding:14px; }
-    .adminLine{ border-top:1px solid var(--line); margin:14px 0; }
 
     .field{
       display:flex; flex-direction:column; gap:6px;
@@ -660,6 +659,24 @@
       letter-spacing:.04em;
     }
     .gateBody{ padding:14px 16px 16px; }
+
+    /* ✅ 管理画面を「会計＆履歴無効化 / 品切れ / 注文管理」に分割 */
+    .adminSection{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: rgba(0,0,0,.16);
+    }
+    .adminSectionHead{
+      padding:12px 14px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      letter-spacing:.04em;
+    }
+    .adminSectionBody{ padding:12px 14px; }
 
     @media (max-width: 979px){
       .wrap{ padding: var(--pad-mobile) 12px 96px; }
@@ -755,6 +772,7 @@
 
       <p class="sub">ごゆっくりお選びください</p>
 
+      <!-- ✅ セッション表示は使うが、お客画面では非表示にする（JSで常に display:none） -->
       <div class="pill" id="sessionPill" style="display:none;">
         セッション <strong id="sessionText">-</strong>
       </div>
@@ -817,45 +835,52 @@
 
           <div id="adminActions" style="display:none;">
 
-            <!-- ✅ テーブルごと会計＆履歴無効化（1〜10） -->
-            <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">会計＆履歴無効化（テーブル別）</div>
-            <div class="mini">各テーブルの sessionId を新しくして、直前セッションの注文を status=cleared にします（履歴から非表示）。</div>
-            <div id="resetList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
-
-            <div class="adminLine"></div>
-
-            <!-- ✅ 品切れ（全テーブル共通） -->
-            <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">品切れ ON/OFF（全テーブル共通）</div>
-            <div class="mini">ここでONにすると、テーブル1〜10のお客様画面でも「品切れ」になり追加できません。</div>
-            <div id="stockList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
-
-            <div class="adminLine"></div>
-
-            <!-- ✅ 注文管理（未完了/完了/一覧） -->
-            <div style="font-weight:1000; color:var(--gold); letter-spacing:.04em;">注文管理（テーブル1〜10）</div>
-            <div class="mini">お客の注文がここに集約されます。</div>
-
-            <div class="tabs" style="margin-top:10px;">
-              <button id="adminTabNew" class="tabBtn active">未完了 <span id="cntNew" class="badge">0</span></button>
-              <button id="adminTabDone" class="tabBtn">完了 <span id="cntDone" class="badge">0</span></button>
-              <button id="adminTabAll" class="tabBtn">一覧 <span id="cntAll" class="badge">0</span></button>
+            <div class="adminSection">
+              <div class="adminSectionHead">会計＆履歴無効化（テーブル別）</div>
+              <div class="adminSectionBody">
+                <div class="mini">各テーブルの sessionId を新しくして、直前セッションの注文を status=cleared にします（履歴から非表示）。</div>
+                <div id="resetList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+              </div>
             </div>
 
-            <ul id="adminOrdersList" class="simpleList" style="padding:12px 0 0;"></ul>
+            <div class="adminSection">
+              <div class="adminSectionHead">品切れ ON/OFF（全テーブル共通）</div>
+              <div class="adminSectionBody">
+                <div class="mini">ここでONにすると、テーブル1〜12のお客様画面でも「品切れ」になり追加できません。</div>
+                <div id="stockList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
+              </div>
+            </div>
 
-            <div class="adminLine"></div>
-            <button id="logoutBtn" class="ghostBtn">ログアウト</button>
+            <div class="adminSection">
+              <div class="adminSectionHead">注文管理（テーブル1〜12）</div>
+              <div class="adminSectionBody">
+                <div class="mini">お客の注文／会計通知がここに集約されます。</div>
+
+                <div class="tabs" style="margin-top:10px;">
+                  <button id="adminTabNew" class="tabBtn active">未完了 <span id="cntNew" class="badge">0</span></button>
+                  <button id="adminTabDone" class="tabBtn">完了 <span id="cntDone" class="badge">0</span></button>
+                  <button id="adminTabAll" class="tabBtn">一覧 <span id="cntAll" class="badge">0</span></button>
+                </div>
+
+                <ul id="adminOrdersList" class="simpleList" style="padding:12px 0 0;"></ul>
+
+                <div style="margin-top:10px;">
+                  <button id="logoutBtn" class="ghostBtn" style="margin:0;">ログアウト</button>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
     </div>
 
-    <div class="foot">※ 表示価格は税込です</div>
+    <div class="foot">※ 表示価格は税込です / 当店はテーブルチャージ 330円を頂いております</div>
   </div>
 
   <div id="toast" class="toast"></div>
 
-  <!-- Bottom nav（✅ 1〜10だけ。管理ボタンは削除） -->
+  <!-- Bottom nav（✅ 1〜12だけ。管理ボタンは削除） -->
   <div id="bottomNav" class="bottomNav">
     <div class="tabs">
       <button id="tabOrder" class="tabBtn active">オーダー <span id="cartBadge" class="badge">0</span></button>
@@ -867,8 +892,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import {
       getFirestore, collection, addDoc, serverTimestamp,
-      doc, getDoc, setDoc, updateDoc,
-      query, where, getDocs, writeBatch
+      doc, getDoc, setDoc,
+      query, where, getDocs, writeBatch, onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     import {
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
@@ -886,6 +911,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    // ✅ テーブルは 1〜12
+    const MAX_TABLE = 12;
 
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
@@ -959,14 +987,31 @@
       return `s_${t}_${r}`;
     }
 
+    // ✅ 新規通知用（簡易ビープ）
+    function beep(){
+      try{
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.value = 880;
+        g.gain.value = 0.06;
+        o.connect(g); g.connect(ctx.destination);
+        o.start();
+        setTimeout(()=>{ o.stop(); ctx.close(); }, 120);
+      } catch {}
+    }
+
     // ===== URL params =====
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
-    // ✅ ルール：1〜10=お客, 708=スタッフ
-    const isCustomerTable = tableOk && table >= 1 && table <= 10;
+    // ✅ ルール：1〜12=お客, 708=スタッフ
+    const isCustomerTable = tableOk && table >= 1 && table <= MAX_TABLE;
     const isAdminTable = tableOk && table === 708;
 
     const tablePill = document.getElementById("tablePill");
@@ -978,7 +1023,7 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ===== Session pill =====
+    // ===== Session pill（表示はしない） =====
     const sessionPill = document.getElementById("sessionPill");
     const sessionText = document.getElementById("sessionText");
 
@@ -1096,10 +1141,12 @@
     async function loadSession(){
       if (!tableOk) return;
 
-      // ✅ お客（1〜10）は table_state の sessionId を使う
+      // ✅ 表示は消す（お客にセッションを見せない）
+      sessionPill.style.display = "none";
+
+      // ✅ お客（1〜12）は table_state の sessionId を使う
       if (isCustomerTable){
         currentSessionId = await loadSessionForTable(table);
-        sessionPill.style.display = "inline-flex";
         if (currentSessionId){
           const tail = currentSessionId.length > 14 ? "…" + currentSessionId.slice(-12) : currentSessionId;
           sessionText.textContent = tail;
@@ -1112,7 +1159,6 @@
 
       // ✅ 708はセッション表示だけ（任意）
       if (isAdminTable){
-        sessionPill.style.display = "inline-flex";
         sessionText.textContent = "管理";
       }
     }
@@ -1401,7 +1447,6 @@
           collection(db, "public_orders"),
           where("table", "==", table),
           where("sessionId", "==", currentSessionId)
-          // orderBy は使わない（インデックス回避）
         );
         const snaps = await getDocs(qy);
         const rows = [];
@@ -1520,7 +1565,7 @@
       });
     }
 
-    // ===== 708：テーブル別 会計＆履歴無効化（1〜10） =====
+    // ===== 708：テーブル別 会計＆履歴無効化（1〜12） =====
     async function resetTable(t){
       // 1) 現在のsessionIdを取得
       const oldSid = await loadSessionForTable(t);
@@ -1551,12 +1596,24 @@
         snaps2.forEach(s => batch2.update(s.ref, { status:"cleared" }));
         await batch2.commit();
       }
+
+      // ✅ 会計イベントを orders に記録（708で気づけるようにする）
+      await addDoc(collection(db, "orders"), {
+        table: t,
+        sessionId: oldSid || "",
+        items: [],
+        total: 0,
+        status: "cashout",
+        note: "会計",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
     }
 
     async function renderTableResetList(){
       if (!isAdminTable) return;
       resetList.innerHTML = "";
-      for (let t=1; t<=10; t++){
+      for (let t=1; t<=MAX_TABLE; t++){
         const btn = document.createElement("button");
         btn.className = "orderBtn";
         btn.style.boxShadow = "none";
@@ -1571,7 +1628,6 @@
             btn.textContent = "処理中…";
             await resetTable(t);
             toast(`テーブル${t}を会計しました`);
-            await refreshAdminOrders();
             btn.textContent = old;
           } catch(e){
             console.error(e);
@@ -1611,17 +1667,19 @@
     function statusLabel(s){
       if (s === "done") return "完了";
       if (s === "canceled") return "取消";
+      if (s === "cashout") return "会計";
       return "未完了";
     }
 
     function formatOrderTitle(r){
       const when = fmtTime(r._createdAt);
+      if (r.status === "cashout") return `テーブル ${r.table} お会計（${when}）`;
       return `テーブル ${r.table} が注文されました（${when}）`;
     }
 
     function renderAdminOrdersFromCache(){
       const rowsAll = adminOrdersCache.filter(x => x.status !== "cleared");
-      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new");
+      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new" || x.status === "cashout");
       const rowsDone = rowsAll.filter(x => x.status === "done");
 
       cntAll.textContent = String(rowsAll.length);
@@ -1640,13 +1698,18 @@
       adminOrdersList.innerHTML = show.map(r => {
         const items = (r.items || []).map(it => `${it.name} ×${it.qty}`).join(" / ");
         const st = statusLabel(r.status || "new");
+
+        const detail = r.status === "cashout"
+          ? `<div class="mini">会計通知です（注文ではありません）</div>`
+          : `<div class="mini">合計: ${yen(r.total || 0)}<br>${items}</div>`;
+
         return `
           <li class="simpleRow" data-oid="${r.id}">
             <div class="rowTop">
               <div class="rowTitle">${formatOrderTitle(r)}</div>
               <div class="rowMeta">${st}</div>
             </div>
-            <div class="mini">合計: ${yen(r.total || 0)}<br>${items}</div>
+            ${detail}
 
             <div style="display:flex; gap:10px; margin-top:10px;">
               <button class="ghostBtn" style="margin:0; flex:1;" data-set="done">完了</button>
@@ -1658,33 +1721,68 @@
       }).join("");
     }
 
-    async function refreshAdminOrders(){
+    // ✅ 708：リアルタイム監視（in は最大10件 → 1..10 / 11..12 の2本）
+    let lastSeenNewCount = 0;
+    let snapRowsA = [];
+    let snapRowsB = [];
+    let unsubA = null;
+    let unsubB = null;
+
+    function mergeAndRenderFromSnapshots(){
+      const rows = [...snapRowsA, ...snapRowsB];
+      rows.sort((a,b)=> (b._createdAt?.getTime?.()||0) - (a._createdAt?.getTime?.()||0));
+      adminOrdersCache = rows;
+
+      // new + cashout を「未完了」として通知対象に
+      const rowsAll = adminOrdersCache.filter(x => x.status !== "cleared");
+      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new" || x.status === "cashout");
+
+      if (rowsNew.length > lastSeenNewCount){
+        beep();
+        try{ navigator.vibrate?.(200); } catch {}
+        toast("新しい通知があります");
+        document.title = `(${rowsNew.length}) ひつじや 管理`;
+        setTimeout(()=> { document.title = "ひつじや 管理"; }, 1800);
+      }
+      lastSeenNewCount = rowsNew.length;
+
+      renderAdminOrdersFromCache();
+    }
+
+    function startAdminRealtime(){
       if (!isAdminTable) return;
+      // 既存unsubscribe
+      try{ unsubA?.(); } catch {}
+      try{ unsubB?.(); } catch {}
+      unsubA = null; unsubB = null;
 
-      try{
-        const tables = Array.from({length: 10}, (_,i)=> i+1);
-        const qy = query(
-          collection(db, "orders"),
-          where("table", "in", tables)
-          // orderByは使わない（インデックス回避）
-        );
+      const tablesA = Array.from({length: 10}, (_,i)=> i+1); // 1..10
+      const tablesB = [11, 12];
 
-        const snaps = await getDocs(qy);
-        const rows = [];
+      const qA = query(collection(db, "orders"), where("table", "in", tablesA));
+      const qB = query(collection(db, "orders"), where("table", "in", tablesB));
+
+      unsubA = onSnapshot(qA, (snaps)=>{
+        snapRowsA = [];
         snaps.forEach(s => {
           const d = s.data() || {};
           let created = null;
           try{ created = d.createdAt?.toDate?.() || null; } catch {}
-          rows.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
+          snapRowsA.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
         });
+        mergeAndRenderFromSnapshots();
+      });
 
-        rows.sort((a,b)=> (b._createdAt?.getTime?.()||0) - (a._createdAt?.getTime?.()||0));
-        adminOrdersCache = rows;
-        renderAdminOrdersFromCache();
-      } catch(e){
-        console.error(e);
-        adminOrdersList.innerHTML = `<li class="simpleRow"><div class="rowMeta">注文を取得できません（orders の read ルール/管理者ログイン確認）</div></li>`;
-      }
+      unsubB = onSnapshot(qB, (snaps)=>{
+        snapRowsB = [];
+        snaps.forEach(s => {
+          const d = s.data() || {};
+          let created = null;
+          try{ created = d.createdAt?.toDate?.() || null; } catch {}
+          snapRowsB.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
+        });
+        mergeAndRenderFromSnapshots();
+      });
     }
 
     adminOrdersList.addEventListener("click", async (e) => {
@@ -1700,7 +1798,7 @@
         const ref = doc(db, "orders", oid);
         await setDoc(ref, { status: next, updatedAt: serverTimestamp() }, { merge:true });
         toast("更新しました");
-        await refreshAdminOrders();
+        // リアルタイム監視が勝手に反映するので refresh は不要
       } catch(err){
         console.error(err);
         toast("更新失敗（orders update ルール/管理者判定）");
@@ -1717,7 +1815,7 @@
       // 708はカテゴリ/メニュー要らないのでハンバーガーも隠す
       if (hamburger) hamburger.style.display = "none";
     } else {
-      // お客画面（1〜10）
+      // お客画面（1〜12）
       setTab("order");
     }
 
@@ -1729,7 +1827,12 @@
         await loadStock();
         await renderStockAdmin();
         await renderTableResetList();
-        await refreshAdminOrders();
+        startAdminRealtime(); // ✅ これで “ずっと凝視しなくても” 気づける
+      } else {
+        // ログアウト時は監視停止
+        try{ unsubA?.(); } catch {}
+        try{ unsubB?.(); } catch {}
+        unsubA = null; unsubB = null;
       }
     });
 
@@ -1742,9 +1845,9 @@
     await loadSession();
     renderCart();
 
-    // 1〜10以外は（例えば708を除く変な番号）案内だけ
+    // 1〜12以外は（例えば708を除く変な番号）案内だけ
     if (!isCustomerTable && !isAdminTable && tableOk){
-      toast("このテーブル番号は無効です（1〜10、または708）");
+      toast("このテーブル番号は無効です（1〜12、または708）");
     }
   </script>
 </body>
