@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>注文管理</title>
   <style>
-    <div style="position:fixed;top:0;left:0;right:0;z-index:999999;background:#0ff;color:#000;font-weight:900;padding:6px 10px;text-align:center;">
-  ORDER_HTML_TEST
-</div>
     body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif; margin:0; background:#f6f7fb; }
     header { padding:18px 16px; background:#0b1220; color:#fff; }
     main { max-width: 1180px; margin: 0 auto; padding: 16px; }
@@ -48,6 +45,11 @@
   </style>
 </head>
 <body>
+  <!-- ✅ テストバナー：styleの外、body直下に置く -->
+  <div style="position:fixed;top:0;left:0;right:0;z-index:999999;background:#0ff;color:#000;font-weight:900;padding:6px 10px;text-align:center;">
+    ORDER_HTML_TEST
+  </div>
+
   <header>
     <h1>注文管理画面</h1>
   </header>
@@ -321,8 +323,6 @@
           status: nextStatus,
           updatedAt: serverTimestamp()
         });
-        // 👇 自動でタブ移動しない
-        // Firestoreのリアルタイム更新で表示が自然に変わる
       } catch (err) {
         infoEl.textContent = "更新エラー: " + (err?.message ?? String(err));
       }
