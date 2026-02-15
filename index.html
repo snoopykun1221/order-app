@@ -171,6 +171,24 @@
       letter-spacing:.04em;
     }
 
+    /* ✅ 管理708：3つの欄（セクション） */
+    .adminSection{
+      margin-top:12px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: rgba(0,0,0,.16);
+    }
+    .adminSectionHead{
+      padding:12px 14px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      letter-spacing:.04em;
+    }
+    .adminSectionBody{ padding:12px 14px; }
+
     /* Menu area */
     .menuWrap{ padding:14px; }
     .section{ margin: 8px 0 18px; scroll-margin-top: 70px; }
@@ -253,7 +271,7 @@
       gap:10px;
       align-items:center;
       justify-content:space-between;
-      flex-wrap:wrap; /* 重要 */
+      flex-wrap:wrap;
     }
     .stepper{
       display:flex; align-items:center; gap:8px;
@@ -261,7 +279,7 @@
       background: rgba(255,255,255,.03);
       border-radius: 14px;
       padding:6px 8px;
-      flex: 1 1 160px; /* 重要 */
+      flex: 1 1 160px;
       min-width: 160px;
       justify-content:center;
     }
@@ -295,7 +313,7 @@
       transition: .15s;
       white-space:nowrap;
       height: 44px;
-      flex: 1 1 160px; /* 重要 */
+      flex: 1 1 160px;
       min-width: 160px;
     }
     .addBtn:hover{ background: rgba(200,164,90,.16); }
@@ -477,7 +495,8 @@
       z-index: 1001;
       transform: translateX(-102%);
       transition: transform .18s ease;
-      padding: calc(14px + env(safe-area-inset-top)) 14px 14px; /* ✅ 上が見切れない */
+      /* ✅ ①：上が見切れないように1行分の余白 + safe-area */
+      padding: calc(24px + env(safe-area-inset-top)) 14px 14px;
       background: rgba(10,12,16,.92);
       backdrop-filter: blur(12px);
       border-right: 1px solid rgba(255,255,255,.10);
@@ -493,6 +512,7 @@
       padding: 6px 4px 12px;
       border-bottom: 1px solid rgba(255,255,255,.10);
       margin-bottom: 10px;
+      margin-top: 6px; /* さらに少し下げる */
     }
     .drawerTitle{
       font-weight: 1000;
@@ -660,24 +680,6 @@
     }
     .gateBody{ padding:14px 16px 16px; }
 
-    /* ✅ 管理画面を「会計＆履歴無効化 / 品切れ / 注文管理」に分割 */
-    .adminSection{
-      margin-top:12px;
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      overflow:hidden;
-      background: rgba(0,0,0,.16);
-    }
-    .adminSectionHead{
-      padding:12px 14px;
-      font-weight:1000;
-      color:var(--gold);
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      letter-spacing:.04em;
-    }
-    .adminSectionBody{ padding:12px 14px; }
-
     @media (max-width: 979px){
       .wrap{ padding: var(--pad-mobile) 12px 96px; }
       header{ padding: 8px 0 14px; margin-bottom: 14px; }
@@ -772,7 +774,7 @@
 
       <p class="sub">ごゆっくりお選びください</p>
 
-      <!-- ✅ セッション表示は使うが、お客画面では非表示にする（JSで常に display:none） -->
+      <!-- ✅ ③ セッション表示は消す（要素は残すが常に非表示） -->
       <div class="pill" id="sessionPill" style="display:none;">
         セッション <strong id="sessionText">-</strong>
       </div>
@@ -809,6 +811,9 @@
             </div>
 
             <button id="orderBtn" class="orderBtn" disabled>この内容で注文</button>
+
+            <!-- ✅ ⑤ 会計を呼ぶ（スタッフが気づけるように orders に通知を積む） -->
+            <button id="checkoutBtn" class="ghostBtn" disabled>会計をお願いする</button>
           </div>
         </section>
       </div>
@@ -835,6 +840,7 @@
 
           <div id="adminActions" style="display:none;">
 
+            <!-- ✅ ②：3つの欄に分割 -->
             <div class="adminSection">
               <div class="adminSectionHead">会計＆履歴無効化（テーブル別）</div>
               <div class="adminSectionBody">
@@ -854,7 +860,7 @@
             <div class="adminSection">
               <div class="adminSectionHead">注文管理（テーブル1〜12）</div>
               <div class="adminSectionBody">
-                <div class="mini">お客の注文／会計通知がここに集約されます。</div>
+                <div class="mini">お客の注文／会計呼び出しがここに集約されます。</div>
 
                 <div class="tabs" style="margin-top:10px;">
                   <button id="adminTabNew" class="tabBtn active">未完了 <span id="cntNew" class="badge">0</span></button>
@@ -864,9 +870,7 @@
 
                 <ul id="adminOrdersList" class="simpleList" style="padding:12px 0 0;"></ul>
 
-                <div style="margin-top:10px;">
-                  <button id="logoutBtn" class="ghostBtn" style="margin:0;">ログアウト</button>
-                </div>
+                <button id="logoutBtn" class="ghostBtn" style="margin-top:10px;">ログアウト</button>
               </div>
             </div>
 
@@ -875,7 +879,8 @@
       </section>
     </div>
 
-    <div class="foot">※ 表示価格は税込です / 当店はテーブルチャージ 330円を頂いております</div>
+    <!-- ✅ ⑥ 文言変更 -->
+    <div class="foot">※ 表示価格は税込です／当店はテーブルチャージ 330円を頂いております</div>
   </div>
 
   <div id="toast" class="toast"></div>
@@ -893,7 +898,7 @@
     import {
       getFirestore, collection, addDoc, serverTimestamp,
       doc, getDoc, setDoc,
-      query, where, getDocs, writeBatch, onSnapshot
+      query, where, getDocs, writeBatch
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
     import {
       getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
@@ -911,9 +916,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-    // ✅ テーブルは 1〜12
-    const MAX_TABLE = 12;
 
     const CATEGORIES = [
       { id:"osusume",    label:"おすすめ" },
@@ -978,7 +980,7 @@
       t.textContent = msg;
       t.style.display = "block";
       clearTimeout(toast._timer);
-      toast._timer = setTimeout(()=> t.style.display = "none", 2200);
+      toast._timer = setTimeout(()=> t.style.display = "none", 2400);
     }
 
     function newSessionId(){
@@ -987,31 +989,14 @@
       return `s_${t}_${r}`;
     }
 
-    // ✅ 新規通知用（簡易ビープ）
-    function beep(){
-      try{
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return;
-        const ctx = new Ctx();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = 880;
-        g.gain.value = 0.06;
-        o.connect(g); g.connect(ctx.destination);
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, 120);
-      } catch {}
-    }
-
     // ===== URL params =====
     const qs = new URLSearchParams(location.search);
     const tableParam = qs.get("table");
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
-    // ✅ ルール：1〜12=お客, 708=スタッフ
-    const isCustomerTable = tableOk && table >= 1 && table <= MAX_TABLE;
+    // ✅ ①：ルール：1〜12=お客, 708=スタッフ
+    const isCustomerTable = tableOk && table >= 1 && table <= 12;
     const isAdminTable = tableOk && table === 708;
 
     const tablePill = document.getElementById("tablePill");
@@ -1023,7 +1008,7 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ===== Session pill（表示はしない） =====
+    // ===== Session pill（③：表示しない） =====
     const sessionPill = document.getElementById("sessionPill");
     const sessionText = document.getElementById("sessionText");
 
@@ -1057,7 +1042,6 @@
     function setTab(which){
       if (tabOrder) tabOrder.classList.remove("active");
       if (tabHistory) tabHistory.classList.remove("active");
-
       for (const v of [viewOrder, viewHistory, viewAdmin]) v.classList.remove("active");
 
       if (which === "order"){
@@ -1081,7 +1065,6 @@
     }
 
     tabOrder?.addEventListener("click", () => {
-      // すでにオーダー画面なら下へ
       if (viewOrder.classList.contains("active")) {
         scrollToOrder();
         return;
@@ -1099,6 +1082,7 @@
     const cartListEl = document.getElementById("cartList");
     const totalEl = document.getElementById("total");
     const orderBtn = document.getElementById("orderBtn");
+    const checkoutBtn = document.getElementById("checkoutBtn");
     const cartBadge = document.getElementById("cartBadge");
 
     const CART_KEY = tableOk ? `cart_table_${table}` : "cart_table_unknown";
@@ -1141,17 +1125,14 @@
     async function loadSession(){
       if (!tableOk) return;
 
-      // ✅ 表示は消す（お客にセッションを見せない）
-      sessionPill.style.display = "none";
-
       // ✅ お客（1〜12）は table_state の sessionId を使う
       if (isCustomerTable){
         currentSessionId = await loadSessionForTable(table);
-        if (currentSessionId){
-          const tail = currentSessionId.length > 14 ? "…" + currentSessionId.slice(-12) : currentSessionId;
-          sessionText.textContent = tail;
-        } else {
-          sessionText.textContent = "未設定";
+
+        // ✅ ③ セッションPillは出さない（常に非表示）
+        if (sessionPill) sessionPill.style.display = "none";
+
+        if (!currentSessionId){
           toast("セッション未設定です（スタッフが会計/開始してください）");
         }
         return;
@@ -1159,7 +1140,8 @@
 
       // ✅ 708はセッション表示だけ（任意）
       if (isAdminTable){
-        sessionText.textContent = "管理";
+        if (sessionPill) sessionPill.style.display = "inline-flex";
+        if (sessionText) sessionText.textContent = "管理";
       }
     }
 
@@ -1168,9 +1150,7 @@
       try{
         const snaps = await getDocs(query(collection(db, "stock")));
         snaps.forEach(s => { stock[s.id] = s.data() || {}; });
-      } catch {
-        // 読めなくても動作は続行
-      }
+      } catch {}
     }
 
     function goCategory(catId){
@@ -1305,6 +1285,9 @@
       // ✅ お客だけ注文可能
       orderBtn.disabled = !isCustomerTable || !currentSessionId || total === 0;
 
+      // ✅ ⑤ 会計ボタンは「セッションがある時だけ」有効
+      checkoutBtn.disabled = !isCustomerTable || !currentSessionId;
+
       renderNav();
       updateBadge();
     }
@@ -1379,6 +1362,7 @@
 
       try{
         const payload = {
+          type: "order",
           table: table,
           sessionId: currentSessionId,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
@@ -1393,6 +1377,7 @@
 
         // 2) お客用履歴 public_orders（read 可能）
         await addDoc(collection(db, "public_orders"), {
+          type: "order",
           table: table,
           sessionId: currentSessionId,
           items: payload.items,
@@ -1411,6 +1396,39 @@
       } finally {
         orderBtn.textContent = oldText;
         orderBtn.disabled = !isCustomerTable || !currentSessionId || calcTotal() === 0;
+      }
+    });
+
+    // ===== ⑤ 会計を呼ぶ（スタッフが一覧で気づけるよう orders に記録） =====
+    checkoutBtn.addEventListener("click", async () => {
+      if (!isCustomerTable) return;
+      if (!currentSessionId) { toast("セッション未設定です"); return; }
+
+      const ok = confirm("スタッフをお呼びします。会計をお願いしてよろしいですか？");
+      if (!ok) return;
+
+      checkoutBtn.disabled = true;
+      const old = checkoutBtn.textContent;
+      checkoutBtn.textContent = "送信中…";
+
+      try{
+        await addDoc(collection(db, "orders"), {
+          type: "checkout",
+          table: table,
+          sessionId: currentSessionId,
+          items: [],
+          total: 0,
+          status: "checkout",     // ✅ 管理画面で目立つ
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        toast("スタッフをお呼びしました（会計）");
+      } catch(e){
+        console.error(e);
+        toast("会計の送信に失敗しました（ルール/権限確認）");
+      } finally {
+        checkoutBtn.textContent = old;
+        checkoutBtn.disabled = !isCustomerTable || !currentSessionId;
       }
     });
 
@@ -1555,7 +1573,7 @@
             stock[id] = { ...(stock[id] || {}), soldOut: next };
             el.classList.toggle("on", next);
 
-            renderMenu(); // お客側UIに即反映（同ページで見てる場合）
+            renderMenu();
             toast(next ? "品切れにしました" : "販売再開しました");
           } catch (e){
             console.error(e);
@@ -1567,15 +1585,12 @@
 
     // ===== 708：テーブル別 会計＆履歴無効化（1〜12） =====
     async function resetTable(t){
-      // 1) 現在のsessionIdを取得
       const oldSid = await loadSessionForTable(t);
 
-      // 2) 新しいsessionIdを発行して table_state 更新
       const newSid = newSessionId();
       const stRef = doc(db, "table_state", `table_${t}`);
       await setDoc(stRef, { table: t, sessionId: newSid, updatedAt: serverTimestamp() }, { merge:true });
 
-      // 3) 直前セッションの orders を cleared
       if (oldSid){
         const snaps1 = await getDocs(query(
           collection(db, "orders"),
@@ -1586,7 +1601,6 @@
         snaps1.forEach(s => batch1.update(s.ref, { status:"cleared", updatedAt: serverTimestamp() }));
         await batch1.commit();
 
-        // 4) 直前セッションの public_orders も cleared（お客履歴から消す）
         const snaps2 = await getDocs(query(
           collection(db, "public_orders"),
           where("table", "==", t),
@@ -1596,24 +1610,12 @@
         snaps2.forEach(s => batch2.update(s.ref, { status:"cleared" }));
         await batch2.commit();
       }
-
-      // ✅ 会計イベントを orders に記録（708で気づけるようにする）
-      await addDoc(collection(db, "orders"), {
-        table: t,
-        sessionId: oldSid || "",
-        items: [],
-        total: 0,
-        status: "cashout",
-        note: "会計",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
     }
 
     async function renderTableResetList(){
       if (!isAdminTable) return;
       resetList.innerHTML = "";
-      for (let t=1; t<=MAX_TABLE; t++){
+      for (let t=1; t<=12; t++){
         const btn = document.createElement("button");
         btn.className = "orderBtn";
         btn.style.boxShadow = "none";
@@ -1628,6 +1630,7 @@
             btn.textContent = "処理中…";
             await resetTable(t);
             toast(`テーブル${t}を会計しました`);
+            await refreshAdminOrders();
             btn.textContent = old;
           } catch(e){
             console.error(e);
@@ -1651,6 +1654,7 @@
 
     let adminFilter = "new"; // "new" | "done" | "all"
     let adminOrdersCache = [];
+    let adminSeenIds = new Set(); // ✅ ⑤ 新着検知用
 
     function setAdminFilter(f){
       adminFilter = f;
@@ -1667,19 +1671,28 @@
     function statusLabel(s){
       if (s === "done") return "完了";
       if (s === "canceled") return "取消";
-      if (s === "cashout") return "会計";
+      if (s === "checkout") return "会計";
       return "未完了";
     }
 
     function formatOrderTitle(r){
       const when = fmtTime(r._createdAt);
-      if (r.status === "cashout") return `テーブル ${r.table} お会計（${when}）`;
-      return `テーブル ${r.table} が注文されました（${when}）`;
+      const t = r.table;
+      const tp = r.type || "order";
+      if (tp === "checkout" || r.status === "checkout"){
+        return `テーブル ${t} お会計の呼び出し（${when}）`;
+      }
+      return `テーブル ${t} が注文されました（${when}）`;
     }
 
     function renderAdminOrdersFromCache(){
       const rowsAll = adminOrdersCache.filter(x => x.status !== "cleared");
-      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new" || x.status === "cashout");
+
+      // ✅ checkout も「未完了」に入れる
+      const rowsNew = rowsAll.filter(x => {
+        const st = (x.status || "new");
+        return st === "new" || st === "checkout";
+      });
       const rowsDone = rowsAll.filter(x => x.status === "done");
 
       cntAll.textContent = String(rowsAll.length);
@@ -1698,10 +1711,7 @@
       adminOrdersList.innerHTML = show.map(r => {
         const items = (r.items || []).map(it => `${it.name} ×${it.qty}`).join(" / ");
         const st = statusLabel(r.status || "new");
-
-        const detail = r.status === "cashout"
-          ? `<div class="mini">会計通知です（注文ではありません）</div>`
-          : `<div class="mini">合計: ${yen(r.total || 0)}<br>${items}</div>`;
+        const total = (r.type === "checkout" || r.status === "checkout") ? "—" : yen(r.total || 0);
 
         return `
           <li class="simpleRow" data-oid="${r.id}">
@@ -1709,7 +1719,9 @@
               <div class="rowTitle">${formatOrderTitle(r)}</div>
               <div class="rowMeta">${st}</div>
             </div>
-            ${detail}
+            <div class="mini">
+              合計: ${total}${items ? `<br>${items}` : ``}
+            </div>
 
             <div style="display:flex; gap:10px; margin-top:10px;">
               <button class="ghostBtn" style="margin:0; flex:1;" data-set="done">完了</button>
@@ -1721,68 +1733,47 @@
       }).join("");
     }
 
-    // ✅ 708：リアルタイム監視（in は最大10件 → 1..10 / 11..12 の2本）
-    let lastSeenNewCount = 0;
-    let snapRowsA = [];
-    let snapRowsB = [];
-    let unsubA = null;
-    let unsubB = null;
-
-    function mergeAndRenderFromSnapshots(){
-      const rows = [...snapRowsA, ...snapRowsB];
-      rows.sort((a,b)=> (b._createdAt?.getTime?.()||0) - (a._createdAt?.getTime?.()||0));
-      adminOrdersCache = rows;
-
-      // new + cashout を「未完了」として通知対象に
-      const rowsAll = adminOrdersCache.filter(x => x.status !== "cleared");
-      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new" || x.status === "cashout");
-
-      if (rowsNew.length > lastSeenNewCount){
-        beep();
-        try{ navigator.vibrate?.(200); } catch {}
-        toast("新しい通知があります");
-        document.title = `(${rowsNew.length}) ひつじや 管理`;
-        setTimeout(()=> { document.title = "ひつじや 管理"; }, 1800);
-      }
-      lastSeenNewCount = rowsNew.length;
-
-      renderAdminOrdersFromCache();
-    }
-
-    function startAdminRealtime(){
+    async function refreshAdminOrders(){
       if (!isAdminTable) return;
-      // 既存unsubscribe
-      try{ unsubA?.(); } catch {}
-      try{ unsubB?.(); } catch {}
-      unsubA = null; unsubB = null;
 
-      const tablesA = Array.from({length: 10}, (_,i)=> i+1); // 1..10
-      const tablesB = [11, 12];
+      try{
+        const tables = Array.from({length: 12}, (_,i)=> i+1);
+        const qy = query(
+          collection(db, "orders"),
+          where("table", "in", tables)
+        );
 
-      const qA = query(collection(db, "orders"), where("table", "in", tablesA));
-      const qB = query(collection(db, "orders"), where("table", "in", tablesB));
+        const snaps = await getDocs(qy);
+        const rows = [];
+        const newIds = new Set();
 
-      unsubA = onSnapshot(qA, (snaps)=>{
-        snapRowsA = [];
         snaps.forEach(s => {
           const d = s.data() || {};
           let created = null;
           try{ created = d.createdAt?.toDate?.() || null; } catch {}
-          snapRowsA.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
+          rows.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
+          newIds.add(s.id);
         });
-        mergeAndRenderFromSnapshots();
-      });
 
-      unsubB = onSnapshot(qB, (snaps)=>{
-        snapRowsB = [];
-        snaps.forEach(s => {
-          const d = s.data() || {};
-          let created = null;
-          try{ created = d.createdAt?.toDate?.() || null; } catch {}
-          snapRowsB.push({ id: s.id, ...d, _createdAt: created || new Date(0) });
-        });
-        mergeAndRenderFromSnapshots();
-      });
+        rows.sort((a,b)=> (b._createdAt?.getTime?.()||0) - (a._createdAt?.getTime?.()||0));
+
+        // ✅ ⑤ 新着があったらトーストで知らせる（凝視不要）
+        const hasNew = [...newIds].some(id => !adminSeenIds.has(id));
+        adminSeenIds = newIds;
+        if (hasNew){
+          toast("新しい注文／会計呼び出しがあります");
+          // タイトルにも反映（気づきやすい）
+          try{
+            document.title = `(${rows.filter(x => x.status !== "cleared" && (x.status==="new" || x.status==="checkout")).length}) ひつじや｜管理`;
+          } catch {}
+        }
+
+        adminOrdersCache = rows;
+        renderAdminOrdersFromCache();
+      } catch(e){
+        console.error(e);
+        adminOrdersList.innerHTML = `<li class="simpleRow"><div class="rowMeta">注文を取得できません（orders の read ルール/管理者ログイン確認）</div></li>`;
+      }
     }
 
     adminOrdersList.addEventListener("click", async (e) => {
@@ -1798,7 +1789,7 @@
         const ref = doc(db, "orders", oid);
         await setDoc(ref, { status: next, updatedAt: serverTimestamp() }, { merge:true });
         toast("更新しました");
-        // リアルタイム監視が勝手に反映するので refresh は不要
+        await refreshAdminOrders();
       } catch(err){
         console.error(err);
         toast("更新失敗（orders update ルール/管理者判定）");
@@ -1812,14 +1803,13 @@
     if (isAdminTable){
       if (bottomNav) bottomNav.style.display = "none";
       setTab("admin");
-      // 708はカテゴリ/メニュー要らないのでハンバーガーも隠す
       if (hamburger) hamburger.style.display = "none";
     } else {
-      // お客画面（1〜12）
       setTab("order");
     }
 
     // ===== Auth監視（708は未ログインならゲート強制） =====
+    let adminTimer = null;
     onAuthStateChanged(auth, async (user) => {
       setAdminUI(user);
 
@@ -1827,18 +1817,20 @@
         await loadStock();
         await renderStockAdmin();
         await renderTableResetList();
-        startAdminRealtime(); // ✅ これで “ずっと凝視しなくても” 気づける
+        await refreshAdminOrders();
+
+        // ✅ ⑤：定期更新（10秒）で新着検知
+        if (adminTimer) clearInterval(adminTimer);
+        adminTimer = setInterval(() => refreshAdminOrders().catch(()=>{}), 10000);
       } else {
-        // ログアウト時は監視停止
-        try{ unsubA?.(); } catch {}
-        try{ unsubB?.(); } catch {}
-        unsubA = null; unsubB = null;
+        if (adminTimer) clearInterval(adminTimer);
+        adminTimer = null;
+        try{ document.title = "北海道本格ジンギスカン ひつじや｜ご注文"; } catch {}
       }
     });
 
     // ===== 初期描画（お客側） =====
     renderNav();
-
     await loadStock();
     renderMenu();
 
