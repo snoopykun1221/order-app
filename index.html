@@ -155,6 +155,14 @@
     .navBtn:hover{ background: rgba(200,164,90,.10); border-color: rgba(200,164,90,.35); }
     .navBtn small{ color:var(--muted); font-weight:800; }
 
+    /* ✅ 追加：いま見てるカテゴリをハイライト */
+    .navBtn.active{
+      background: rgba(200,164,90,.12);
+      border-color: rgba(200,164,90,.55);
+      color: var(--gold);
+    }
+    .navBtn.active small{ color: rgba(255,255,255,.85); }
+
     @media (max-width: 979px){
       .navCard{ display:none; }
     }
@@ -264,6 +272,16 @@
       min-height: 240px;
       position:relative;
       overflow:hidden;
+    }
+
+    /* ✅ 追加：カート追加時のフラッシュ（追加できた感） */
+    .itemCard.flash{
+      animation: cardFlash .42s ease;
+    }
+    @keyframes cardFlash{
+      0%   { box-shadow: 0 0 0 rgba(200,164,90,0); transform: translateY(0); }
+      45%  { box-shadow: 0 0 0 4px rgba(200,164,90,.45); transform: translateY(-1px); }
+      100% { box-shadow: 0 0 0 rgba(200,164,90,0); transform: translateY(0); }
     }
 
     .imgBox{
@@ -487,7 +505,10 @@
     .hamburger{
       display:none;
       position: fixed;
-      top: 14px;
+
+      /* ✅ safe-area対応 */
+      top: calc(env(safe-area-inset-top) + 14px);
+
       left: 14px;
       z-index: 1002;
       width: 44px;
@@ -526,14 +547,23 @@
 
     .drawer{
       position: fixed;
-      top: 0;
+
+      /* ✅ safe-area分だけ下げる */
+      top: env(safe-area-inset-top);
+
       left: 0;
-      height: 100dvh;
+
+      /* ✅ safe-areaを引いた高さにする */
+      height: calc(100dvh - env(safe-area-inset-top));
+
       width: min(320px, 86vw);
       z-index: 1001;
       transform: translateX(-102%);
       transition: transform .18s ease;
-      padding: calc(24px + env(safe-area-inset-top)) 14px 14px;
+
+      /* ✅ 修正：上が見えない対策（1行分だけ上padding増やす） */
+      padding: 36px 14px 14px;
+
       background: rgba(10,12,16,.92);
       backdrop-filter: blur(12px);
       border-right: 1px solid rgba(255,255,255,.10);
@@ -819,6 +849,11 @@
       <div id="tablePill" class="pill" style="display:none;">
         テーブル <strong id="tableNo">-</strong>
       </div>
+
+      <!-- ✅ 追加：今見ているカテゴリ（自動更新） -->
+      <div id="currentCatPill" class="pill" style="display:none;">
+        表示中 <strong id="currentCatText">-</strong>
+      </div>
     </header>
 
     <!-- ====== VIEW: Order (menu + cart) ====== -->
@@ -994,7 +1029,9 @@
       { id:"lamb_chop_1",       category:"youniku", name:"骨付きラムチョップ（1本）", desc:"", price:1298, img:"images/lamb_chop.jpg" },
       { id:"aburi_nigiri_2",    category:"youniku", name:"炙り生ラムの握り（2貫）", desc:"", price:968 },
 
-      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"", price:748 },
+      /* ✅ 変更：野菜盛り合わせに「ザ定番」 */
+      { id:"yasai_moriawase",   category:"yasai", name:"野菜盛り合わせ", desc:"ザ定番", price:748 },
+
       { id:"moyashi",           category:"yasai", name:"もやし", desc:"", price:418 },
       { id:"tamanegi",          category:"yasai", name:"玉ねぎ", desc:"", price:418 },
       { id:"naganegi",          category:"yasai", name:"長ネギ", desc:"", price:418 },
@@ -1060,6 +1097,21 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
+    // ✅ 追加：現在カテゴリ表示（お客テーブルだけ表示）
+    const currentCatPill = document.getElementById("currentCatPill");
+    const currentCatText = document.getElementById("currentCatText");
+
+    function setCurrentCategoryLabel(catId){
+      const c = CATEGORIES.find(x => x.id === catId);
+      if (!c) return;
+      if (isCustomerTable){
+        currentCatPill.style.display = "inline-flex";
+        currentCatText.textContent = c.label;
+      } else {
+        currentCatPill.style.display = "none";
+      }
+    }
+
     // ===== Session pill（表示しない） =====
     const sessionPill = document.getElementById("sessionPill");
     const sessionText = document.getElementById("sessionText");
@@ -1096,7 +1148,6 @@
     const tabHistory = document.getElementById("tabHistory");
 
     function setTab(which){
-      // ✅ タブ切替のたびにドロワーを必ず閉じる（残り事故をゼロにする）
       closeDrawer();
 
       if (tabOrder) tabOrder.classList.remove("active");
@@ -1186,7 +1237,6 @@
       if (isCustomerTable){
         currentSessionId = await loadSessionForTable(table);
 
-        // セッションPillは常に非表示
         if (sessionPill) sessionPill.style.display = "none";
 
         if (!currentSessionId){
@@ -1313,6 +1363,9 @@
           </div>
         `;
       }).join("");
+
+      // ✅ 追加：メニュー再描画後にカテゴリ追跡（IntersectionObserver）を張り直す
+      setupCategoryObserver();
     }
 
     function renderCart(){
@@ -1345,6 +1398,52 @@
       updateBadge();
     }
 
+    // ✅ 追加：カテゴリのハイライト更新（PC/ドロワー両方）
+    function setActiveCategory(catId){
+      // navの「注文」は除外してカテゴリだけ対象
+      const allNavBtns = document.querySelectorAll('.navBtn[data-nav]');
+      allNavBtns.forEach(a => {
+        const key = a.getAttribute('data-nav');
+        const on = (key === catId);
+        if (key && key !== "order") a.classList.toggle('active', on);
+      });
+
+      setCurrentCategoryLabel(catId);
+    }
+
+    // ✅ 追加：スクロールに合わせてカテゴリ自動判定
+    let catObserver = null;
+    function setupCategoryObserver(){
+      if (catObserver) {
+        try { catObserver.disconnect(); } catch {}
+      }
+
+      const sections = Array.from(document.querySelectorAll('.section[id^="cat-"]'));
+      if (!sections.length) return;
+
+      // 初期表示（先頭カテゴリ）
+      const firstId = sections[0].id.replace('cat-','');
+      setActiveCategory(firstId);
+
+      catObserver = new IntersectionObserver((entries)=>{
+        // 見えてる中で「一番上っぽい」やつを採用
+        const visible = entries.filter(e=>e.isIntersecting);
+        if (!visible.length) return;
+
+        visible.sort((a,b)=> (a.boundingClientRect.top - b.boundingClientRect.top));
+        const topOne = visible[0];
+        const id = topOne.target.id.replace('cat-','');
+        setActiveCategory(id);
+      },{
+        // 画面中央付近で切り替わるように
+        root: null,
+        rootMargin: "-35% 0px -55% 0px",
+        threshold: [0.01, 0.1, 0.25]
+      });
+
+      sections.forEach(s => catObserver.observe(s));
+    }
+
     function addItem(id, qty){
       const m = MENU.find(x => x.id === id);
       if (!m) return;
@@ -1356,6 +1455,17 @@
 
       saveCart();
       renderCart();
+
+      // ✅ 追加：カードが一瞬光る（追加できた感）
+      const card = document.querySelector(`.itemCard[data-item="${CSS.escape(id)}"]`);
+      if (card){
+        card.classList.remove("flash");
+        // 再発火用にreflow
+        void card.offsetWidth;
+        card.classList.add("flash");
+        setTimeout(()=> card.classList.remove("flash"), 520);
+      }
+
       toast(`${m.name} を +${n} 追加しました`);
     }
 
@@ -1450,7 +1560,7 @@
       }
     });
 
-    // ===== 会計を呼ぶ =====
+    // ===== 会計を呼ぶ（✅ confirm あり：二段階確認） =====
     checkoutBtn.addEventListener("click", async () => {
       if (!isCustomerTable) return;
       if (!currentSessionId) { toast("セッション未設定です"); return; }
@@ -1588,14 +1698,12 @@
       }
     });
 
-    // ✅ ログアウトボタンが3つあるのでまとめて対応
     document.querySelectorAll("#logoutBtn, #logoutBtn2, #logoutBtn3").forEach(btn=>{
       btn?.addEventListener("click", async () => {
         try{ await signOut(auth); toast("ログアウトしました"); } catch {}
       });
     });
 
-    // ✅ 708 メイン切替（会計/品切れ/注文管理）
     function setAdminMainView(name){
       document.querySelectorAll(".adminNavBtn").forEach(b=>{
         b.classList.toggle("active", b.dataset.adminview === name);
@@ -1614,7 +1722,6 @@
       b.addEventListener("click", ()=> setAdminMainView(b.dataset.adminview));
     });
 
-    // ===== 708：品切れON/OFF =====
     async function renderStockAdmin(){
       if (!isAdminTable) return;
       stockList.innerHTML = "";
@@ -1655,7 +1762,6 @@
       });
     }
 
-    // ===== 708：テーブル別 会計＆履歴無効化（1〜12） =====
     async function resetTable(t){
       const oldSid = await loadSessionForTable(t);
 
@@ -1715,7 +1821,6 @@
       }
     }
 
-    // ===== 708：注文管理（未完了/完了/一覧） =====
     const adminTabNew = document.getElementById("adminTabNew");
     const adminTabDone = document.getElementById("adminTabDone");
     const adminTabAll = document.getElementById("adminTabAll");
@@ -1724,7 +1829,7 @@
     const cntAll = document.getElementById("cntAll");
     const adminOrdersList = document.getElementById("adminOrdersList");
 
-    let adminFilter = "new"; // "new" | "done" | "all"
+    let adminFilter = "new";
     let adminOrdersCache = [];
     let adminSeenIds = new Set();
     let adminTimer = null;
@@ -1866,14 +1971,12 @@
       }
     });
 
-    // ===== 初期表示の分岐 =====
     const bottomNav = document.getElementById("bottomNav");
 
     if (isAdminTable){
       if (bottomNav) bottomNav.style.display = "none";
       setTab("admin");
 
-      // ✅ 708ではカテゴリUIを完全に消す（隠れて残る事故防止）
       if (hamburger) hamburger.style.display = "none";
       if (drawerOverlay) drawerOverlay.style.display = "none";
       if (drawer) drawer.style.display = "none";
@@ -1881,12 +1984,10 @@
       setTab("order");
     }
 
-    // ===== Auth監視（708は未ログインならゲート強制） =====
     onAuthStateChanged(auth, async (user) => {
       setAdminUI(user);
 
       if (user && isAdminTable){
-        // ✅ 初期表示：URLの ?adminview= で指定されていれば反映
         try{
           const u = new URL(location.href);
           const init = u.searchParams.get("adminview");
@@ -1907,7 +2008,6 @@
       }
     });
 
-    // ===== 初期描画（お客側） =====
     renderNav();
     await loadStock();
     renderMenu();
@@ -1917,6 +2017,11 @@
 
     if (!isCustomerTable && !isAdminTable && tableOk){
       toast("このテーブル番号は無効です（1〜12、または708）");
+    }
+
+    // ✅ 初期カテゴリ表示
+    if (isCustomerTable){
+      setCurrentCategoryLabel(CATEGORIES[0]?.id);
     }
   </script>
 </body>
