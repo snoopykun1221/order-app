@@ -36,12 +36,6 @@
       overflow-x: hidden;
     }
 
-    /* ✅ ドロワー開いてる時はスクロールロック */
-    body.menu-open{
-      overflow: hidden;
-      touch-action: none;
-    }
-
     .wrap{ max-width:1200px; margin:0 auto; padding:var(--pad-desktop) 16px 86px; }
 
     header{
@@ -176,7 +170,7 @@
       letter-spacing:.04em;
     }
 
-    /* ✅ 管理708：セクション（中身は切替で表示） */
+    /* ✅ 管理708：3つの欄（セクション） */
     .adminSection{
       margin-top:12px;
       border:1px solid var(--line);
@@ -193,39 +187,6 @@
       letter-spacing:.04em;
     }
     .adminSectionBody{ padding:12px 14px; }
-
-    /* ✅ 708：メインメニュー切替（会計/品切れ/注文管理） */
-    .adminNavTabs{
-      display:flex;
-      gap:8px;
-      margin-top:12px;
-      padding:8px;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 14px;
-      background: rgba(0,0,0,.18);
-      position: sticky;
-      top: 10px;
-      z-index: 30;
-      backdrop-filter: blur(8px);
-    }
-    .adminNavBtn{
-      flex:1;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      color: rgba(255,255,255,.9);
-      padding: 10px 8px;
-      border-radius: 12px;
-      font-weight: 1000;
-      cursor:pointer;
-      font-size: 13px;
-    }
-    .adminNavBtn.active{
-      border-color: rgba(200,164,90,.45);
-      background: rgba(200,164,90,.10);
-      color: var(--gold);
-    }
-    .adminView{ display:none; }
-    .adminView.active{ display:block; }
 
     /* Menu area */
     .menuWrap{ padding:14px; }
@@ -487,8 +448,9 @@
     .hamburger{
       display:none;
       position: fixed;
-      top: 14px;
-      left: 14px;
+      /* ✅ iPhoneの上の安全領域ぶん下げる */
+      top: calc(12px + env(safe-area-inset-top));
+      left: 12px;
       z-index: 1002;
       width: 44px;
       height: 44px;
@@ -533,7 +495,10 @@
       z-index: 1001;
       transform: translateX(-102%);
       transition: transform .18s ease;
-      padding: calc(24px + env(safe-area-inset-top)) 14px 14px;
+
+      /* ✅ ドロワー上も安全領域ぶん確保（見切れ対策） */
+      padding: calc(46px + env(safe-area-inset-top)) 14px 14px;
+
       background: rgba(10,12,16,.92);
       backdrop-filter: blur(12px);
       border-right: 1px solid rgba(255,255,255,.10);
@@ -549,7 +514,7 @@
       padding: 6px 4px 12px;
       border-bottom: 1px solid rgba(255,255,255,.10);
       margin-bottom: 10px;
-      margin-top: 6px;
+      margin-top: 0;
     }
     .drawerTitle{
       font-weight: 1000;
@@ -811,7 +776,6 @@
 
       <p class="sub">ごゆっくりお選びください</p>
 
-      <!-- ✅ セッション表示は消す（要素は残すが常に非表示） -->
       <div class="pill" id="sessionPill" style="display:none;">
         セッション <strong id="sessionText">-</strong>
       </div>
@@ -876,54 +840,36 @@
 
           <div id="adminActions" style="display:none;">
 
-            <!-- ✅ 708：メニュー切替 -->
-            <div class="adminNavTabs">
-              <button class="adminNavBtn active" data-adminview="reset">会計＆履歴無効化</button>
-              <button class="adminNavBtn" data-adminview="stock">品切れ</button>
-              <button class="adminNavBtn" data-adminview="orders">注文管理</button>
-            </div>
-
-            <!-- 1) 会計＆履歴無効化 -->
-            <div class="adminView active" data-adminview="reset">
-              <div class="adminSection">
-                <div class="adminSectionHead">会計＆履歴無効化（テーブル別）</div>
-                <div class="adminSectionBody">
-                  <div class="mini">各テーブルの sessionId を新しくして、直前セッションの注文を status=cleared にします（履歴から非表示）。</div>
-                  <div id="resetList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
-                </div>
+            <div class="adminSection">
+              <div class="adminSectionHead">会計＆履歴無効化（テーブル別）</div>
+              <div class="adminSectionBody">
+                <div class="mini">各テーブルの sessionId を新しくして、直前セッションの注文を status=cleared にします（履歴から非表示）。</div>
+                <div id="resetList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
               </div>
-              <button id="logoutBtn" class="ghostBtn" style="margin-top:10px;">ログアウト</button>
             </div>
 
-            <!-- 2) 品切れ -->
-            <div class="adminView" data-adminview="stock">
-              <div class="adminSection">
-                <div class="adminSectionHead">品切れ ON/OFF（全テーブル共通）</div>
-                <div class="adminSectionBody">
-                  <div class="mini">ここでONにすると、テーブル1〜12のお客様画面でも「品切れ」になり追加できません。</div>
-                  <div id="stockList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
-                </div>
+            <div class="adminSection">
+              <div class="adminSectionHead">品切れ ON/OFF（全テーブル共通）</div>
+              <div class="adminSectionBody">
+                <div class="mini">ここでONにすると、テーブル1〜12のお客様画面でも「品切れ」になり追加できません。</div>
+                <div id="stockList" style="display:flex; flex-direction:column; gap:10px; margin-top:10px;"></div>
               </div>
-              <button id="logoutBtn2" class="ghostBtn" style="margin-top:10px;">ログアウト</button>
             </div>
 
-            <!-- 3) 注文管理 -->
-            <div class="adminView" data-adminview="orders">
-              <div class="adminSection">
-                <div class="adminSectionHead">注文管理（テーブル1〜12）</div>
-                <div class="adminSectionBody">
-                  <div class="mini">お客の注文／会計呼び出しがここに集約されます。</div>
+            <div class="adminSection">
+              <div class="adminSectionHead">注文管理（テーブル1〜12）</div>
+              <div class="adminSectionBody">
+                <div class="mini">お客の注文／会計呼び出しがここに集約されます。</div>
 
-                  <div class="tabs" style="margin-top:10px;">
-                    <button id="adminTabNew" class="tabBtn active">未完了 <span id="cntNew" class="badge">0</span></button>
-                    <button id="adminTabDone" class="tabBtn">完了 <span id="cntDone" class="badge">0</span></button>
-                    <button id="adminTabAll" class="tabBtn">一覧 <span id="cntAll" class="badge">0</span></button>
-                  </div>
-
-                  <ul id="adminOrdersList" class="simpleList" style="padding:12px 0 0;"></ul>
-
-                  <button id="logoutBtn3" class="ghostBtn" style="margin-top:10px;">ログアウト</button>
+                <div class="tabs" style="margin-top:10px;">
+                  <button id="adminTabNew" class="tabBtn active">未完了 <span id="cntNew" class="badge">0</span></button>
+                  <button id="adminTabDone" class="tabBtn">完了 <span id="cntDone" class="badge">0</span></button>
+                  <button id="adminTabAll" class="tabBtn">一覧 <span id="cntAll" class="badge">0</span></button>
                 </div>
+
+                <ul id="adminOrdersList" class="simpleList" style="padding:12px 0 0;"></ul>
+
+                <button id="logoutBtn" class="ghostBtn" style="margin-top:10px;">ログアウト</button>
               </div>
             </div>
 
@@ -937,7 +883,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- Bottom nav（1〜12だけ） -->
+  <!-- Bottom nav（管理ボタンは無し） -->
   <div id="bottomNav" class="bottomNav">
     <div class="tabs">
       <button id="tabOrder" class="tabBtn active">オーダー <span id="cartBadge" class="badge">0</span></button>
@@ -1047,7 +993,7 @@
     const table = Number(tableParam);
     const tableOk = Number.isFinite(table) && table > 0;
 
-    // 1〜12=お客, 708=スタッフ
+    // ✅ ルール：1〜12=お客, 708=スタッフ
     const isCustomerTable = tableOk && table >= 1 && table <= 12;
     const isAdminTable = tableOk && table === 708;
 
@@ -1060,7 +1006,6 @@
       toast("URLに ?table=1 のようにテーブル番号を付けてください");
     }
 
-    // ===== Session pill（表示しない） =====
     const sessionPill = document.getElementById("sessionPill");
     const sessionText = document.getElementById("sessionText");
 
@@ -1069,20 +1014,16 @@
     const drawer = document.getElementById("drawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
     const drawerClose = document.getElementById("drawerClose");
-
     function openDrawer(){
       drawer.classList.add("show");
       drawerOverlay.classList.add("show");
       drawer.setAttribute("aria-hidden", "false");
-      document.body.classList.add("menu-open");
     }
     function closeDrawer(){
       drawer.classList.remove("show");
       drawerOverlay.classList.remove("show");
       drawer.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("menu-open");
     }
-
     hamburger?.addEventListener("click", openDrawer);
     drawerClose?.addEventListener("click", closeDrawer);
     drawerOverlay?.addEventListener("click", closeDrawer);
@@ -1096,9 +1037,6 @@
     const tabHistory = document.getElementById("tabHistory");
 
     function setTab(which){
-      // ✅ タブ切替のたびにドロワーを必ず閉じる（残り事故をゼロにする）
-      closeDrawer();
-
       if (tabOrder) tabOrder.classList.remove("active");
       if (tabHistory) tabHistory.classList.remove("active");
       for (const v of [viewOrder, viewHistory, viewAdmin]) v.classList.remove("active");
@@ -1185,8 +1123,6 @@
 
       if (isCustomerTable){
         currentSessionId = await loadSessionForTable(table);
-
-        // セッションPillは常に非表示
         if (sessionPill) sessionPill.style.display = "none";
 
         if (!currentSessionId){
@@ -1400,7 +1336,7 @@
       if (plus)  changeQty(plus.dataset.plus, +1);
     });
 
-    // ===== 注文送信 =====
+    // ===== 注文送信（orders + public_orders）=====
     orderBtn.addEventListener("click", async () => {
       if (!isCustomerTable) { toast("このテーブルでは注文できません"); return; }
       if (!currentSessionId) { toast("セッション未設定です（スタッフが開始/会計）"); return; }
@@ -1415,7 +1351,6 @@
 
       try{
         const payload = {
-          type: "order",
           table: table,
           sessionId: currentSessionId,
           items: items.map(x => ({ name: x.name, qty: x.qty, price: x.price })),
@@ -1426,9 +1361,7 @@
         };
 
         await addDoc(collection(db, "orders"), payload);
-
         await addDoc(collection(db, "public_orders"), {
-          type: "order",
           table: table,
           sessionId: currentSessionId,
           items: payload.items,
@@ -1450,7 +1383,7 @@
       }
     });
 
-    // ===== 会計を呼ぶ =====
+    // ===== ✅ 会計を呼ぶ：ルールに通る形で orders に保存 =====
     checkoutBtn.addEventListener("click", async () => {
       if (!isCustomerTable) return;
       if (!currentSessionId) { toast("セッション未設定です"); return; }
@@ -1463,20 +1396,34 @@
       checkoutBtn.textContent = "送信中…";
 
       try{
-        await addDoc(collection(db, "orders"), {
-          type: "checkout",
+        const payload = {
           table: table,
           sessionId: currentSessionId,
-          items: [],
+          /* ✅ items を空にしない（ルール対策） */
+          items: [{ name: "会計呼び出し", qty: 1, price: 0 }],
           total: 0,
-          status: "checkout",
+          /* ✅ status は new にしておく（checkout 等が弾かれるの回避） */
+          status: "new",
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
+        };
+
+        await addDoc(collection(db, "orders"), payload);
+
+        // お客側の履歴にも残す（任意）
+        await addDoc(collection(db, "public_orders"), {
+          table: table,
+          sessionId: currentSessionId,
+          items: payload.items,
+          total: 0,
+          status: "new",
+          createdAt: serverTimestamp()
         });
+
         toast("スタッフをお呼びしました（会計）");
       } catch(e){
         console.error(e);
-        toast("会計の送信に失敗しました（ルール/権限確認）");
+        toast("会計の送信に失敗しました（ルール権限/フィールド制限確認）");
       } finally {
         checkoutBtn.textContent = old;
         checkoutBtn.disabled = !isCustomerTable || !currentSessionId;
@@ -1536,6 +1483,7 @@
     // ===== Admin auth & actions (708) =====
     const adminStatus = document.getElementById("adminStatus");
     const adminActions = document.getElementById("adminActions");
+    const logoutBtn = document.getElementById("logoutBtn");
     const stockList = document.getElementById("stockList");
     const resetList = document.getElementById("resetList");
 
@@ -1588,30 +1536,8 @@
       }
     });
 
-    // ✅ ログアウトボタンが3つあるのでまとめて対応
-    document.querySelectorAll("#logoutBtn, #logoutBtn2, #logoutBtn3").forEach(btn=>{
-      btn?.addEventListener("click", async () => {
-        try{ await signOut(auth); toast("ログアウトしました"); } catch {}
-      });
-    });
-
-    // ✅ 708 メイン切替（会計/品切れ/注文管理）
-    function setAdminMainView(name){
-      document.querySelectorAll(".adminNavBtn").forEach(b=>{
-        b.classList.toggle("active", b.dataset.adminview === name);
-      });
-      document.querySelectorAll(".adminView").forEach(v=>{
-        v.classList.toggle("active", v.dataset.adminview === name);
-      });
-      try{
-        const url = new URL(location.href);
-        url.searchParams.set("adminview", name);
-        history.replaceState(null, "", url.toString());
-      } catch {}
-    }
-
-    document.querySelectorAll(".adminNavBtn").forEach(b=>{
-      b.addEventListener("click", ()=> setAdminMainView(b.dataset.adminview));
+    logoutBtn?.addEventListener("click", async () => {
+      try{ await signOut(auth); toast("ログアウトしました"); } catch {}
     });
 
     // ===== 708：品切れON/OFF =====
@@ -1727,7 +1653,6 @@
     let adminFilter = "new"; // "new" | "done" | "all"
     let adminOrdersCache = [];
     let adminSeenIds = new Set();
-    let adminTimer = null;
 
     function setAdminFilter(f){
       adminFilter = f;
@@ -1744,15 +1669,18 @@
     function statusLabel(s){
       if (s === "done") return "完了";
       if (s === "canceled") return "取消";
-      if (s === "checkout") return "会計";
       return "未完了";
+    }
+
+    function isCheckoutRow(r){
+      const items = r.items || [];
+      return (Number(r.total || 0) === 0) && items.some(it => String(it.name || "").includes("会計"));
     }
 
     function formatOrderTitle(r){
       const when = fmtTime(r._createdAt);
       const t = r.table;
-      const tp = r.type || "order";
-      if (tp === "checkout" || r.status === "checkout"){
+      if (isCheckoutRow(r)){
         return `テーブル ${t} お会計の呼び出し（${when}）`;
       }
       return `テーブル ${t} が注文されました（${when}）`;
@@ -1761,10 +1689,7 @@
     function renderAdminOrdersFromCache(){
       const rowsAll = adminOrdersCache.filter(x => x.status !== "cleared");
 
-      const rowsNew = rowsAll.filter(x => {
-        const st = (x.status || "new");
-        return st === "new" || st === "checkout";
-      });
+      const rowsNew = rowsAll.filter(x => (x.status || "new") === "new");
       const rowsDone = rowsAll.filter(x => x.status === "done");
 
       cntAll.textContent = String(rowsAll.length);
@@ -1783,7 +1708,7 @@
       adminOrdersList.innerHTML = show.map(r => {
         const items = (r.items || []).map(it => `${it.name} ×${it.qty}`).join(" / ");
         const st = statusLabel(r.status || "new");
-        const total = (r.type === "checkout" || r.status === "checkout") ? "—" : yen(r.total || 0);
+        const total = isCheckoutRow(r) ? "—" : yen(r.total || 0);
 
         return `
           <li class="simpleRow" data-oid="${r.id}">
@@ -1834,7 +1759,7 @@
         if (hasNew){
           toast("新しい注文／会計呼び出しがあります");
           try{
-            document.title = `(${rows.filter(x => x.status !== "cleared" && (x.status==="new" || x.status==="checkout")).length}) ひつじや｜管理`;
+            document.title = `(${rows.filter(x => x.status !== "cleared" && (x.status==="new")).length}) ひつじや｜管理`;
           } catch {}
         }
 
@@ -1872,27 +1797,17 @@
     if (isAdminTable){
       if (bottomNav) bottomNav.style.display = "none";
       setTab("admin");
-
-      // ✅ 708ではカテゴリUIを完全に消す（隠れて残る事故防止）
       if (hamburger) hamburger.style.display = "none";
-      if (drawerOverlay) drawerOverlay.style.display = "none";
-      if (drawer) drawer.style.display = "none";
     } else {
       setTab("order");
     }
 
-    // ===== Auth監視（708は未ログインならゲート強制） =====
+    // ===== Auth監視（708） =====
+    let adminTimer = null;
     onAuthStateChanged(auth, async (user) => {
       setAdminUI(user);
 
       if (user && isAdminTable){
-        // ✅ 初期表示：URLの ?adminview= で指定されていれば反映
-        try{
-          const u = new URL(location.href);
-          const init = u.searchParams.get("adminview");
-          if (init) setAdminMainView(init);
-        } catch {}
-
         await loadStock();
         await renderStockAdmin();
         await renderTableResetList();
