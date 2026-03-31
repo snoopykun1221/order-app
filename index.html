@@ -1,159 +1,1434 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>飲み放題メニュー</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>北海道本格ジンギスカン ひつじや｜ご注文</title>
 
-<style>
-body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0b0d10;
-  color:#fff;
-}
+  <style>
+    :root{
+      --bg:#0b0d10;
+      --line:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.58);
+      --gold:#c8a45a;
+      --danger:#a40000;
+      --danger2:#7c0000;
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius:18px;
 
-.wrap{padding:16px;}
+      --pad-desktop: 26px;
+      --pad-mobile: 14px;
 
-h1{
-  text-align:center;
-  color:#c8a45a;
-}
+      --title: clamp(20px, 4.6vw, 30px);
+      --subtitle: clamp(12px, 2.6vw, 14px);
+    }
 
-.menu{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-top:20px;
-}
+    *{ box-sizing:border-box; }
 
-.item{
-  border:1px solid rgba(255,255,255,.1);
-  padding:12px;
-  border-radius:12px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:10px;
-  align-items:center;
-}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(200,164,90,.12), transparent 70%),
+        radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
+        var(--bg);
+      color:var(--text);
+      font-size:14px;
+      overflow-x:hidden;
+    }
 
-.name{font-weight:bold;}
+    body.menu-open{
+      overflow:hidden;
+      touch-action:none;
+    }
 
-.controls{
-  display:flex;
-  gap:6px;
-}
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:var(--pad-desktop) 16px 92px;
+    }
 
-button{
-  border:none;
-  padding:8px 10px;
-  border-radius:8px;
-  font-weight:bold;
-}
+    header{
+      padding:10px 0 18px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:14px;
+      position:relative;
+    }
 
-.add{background:#333;color:#fff;}
-.direct{background:#a40000;color:#fff;}
-</style>
+    .title-with-sheep{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:nowrap;
+    }
+
+    .title-text{
+      text-align:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:min(92vw, 680px);
+    }
+
+    @media (max-width: 480px){
+      .title-text{
+        white-space:normal;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        max-width:92vw;
+      }
+    }
+
+    .sheep-icon{
+      width:30px;
+      height:30px;
+      flex:0 0 auto;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
+      opacity:.95;
+      object-fit:contain;
+    }
+
+    .title{
+      font-size:var(--title);
+      font-weight:1000;
+      letter-spacing:.02em;
+      color:var(--gold);
+      margin:0 0 6px;
+      line-height:1.15;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:var(--subtitle);
+      text-align:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
+    }
+
+    .pill strong{ color:var(--text); }
+
+    .topRow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+
+    @media (min-width: 980px){
+      .layout{
+        grid-template-columns:240px 1fr 360px;
+        align-items:start;
+      }
+    }
+
+    .navCard{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:sticky;
+      top:14px;
+    }
+
+    .navTitle{
+      padding:14px 14px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      letter-spacing:.04em;
+    }
+
+    .navList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:12px;
+    }
+
+    .navBtn{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      transition:.15s;
+      cursor:pointer;
+      gap:10px;
+    }
+
+    .navBtn:hover{
+      background:rgba(200,164,90,.10);
+      border-color:rgba(200,164,90,.35);
+    }
+
+    .navBtn small{
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    .navBtn.active{
+      background:rgba(200,164,90,.14);
+      border-color:rgba(200,164,90,.55);
+      color:var(--gold);
+    }
+
+    @media (max-width: 979px){
+      .navCard{ display:none; }
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panelTitle{
+      padding:14px 16px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      letter-spacing:.04em;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .nowCat{
+      font-size:12px;
+      color:rgba(255,255,255,.86);
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      padding:6px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    .menuWrap{ padding:14px; }
+
+    .section{
+      margin:8px 0 18px;
+      scroll-margin-top:86px;
+    }
+
+    .sectionHead{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 10px 12px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
+    }
+
+    .sectionHead h2{
+      margin:0;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      color:var(--text);
+    }
+
+    .sectionHead p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .menuGrid{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .itemCard{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(0,0,0,.20);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      position:relative;
+      overflow:hidden;
+      transition:transform .08s ease;
+    }
+
+    .itemCard.flash{
+      box-shadow:0 0 0 2px rgba(200,164,90,.55), 0 18px 60px rgba(0,0,0,.55);
+      transform:translateY(-1px);
+    }
+
+    .flashMark{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.30);
+      font-weight:1000;
+    }
+
+    .itemCard.flash .flashMark{ display:flex; }
+
+    .itemCard h3{
+      margin:0;
+      font-size:15px;
+      font-weight:1000;
+      letter-spacing:.02em;
+      line-height:1.2;
+    }
+
+    .desc{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      min-height:0;
+    }
+
+    .tagline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.86);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .tag.gold{
+      border-color:rgba(200,164,90,.35);
+      background:rgba(200,164,90,.10);
+      color:var(--gold);
+    }
+
+    .stepRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      align-items:center;
+    }
+
+    .stepper{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:6px 8px;
+      justify-content:center;
+      min-width:0;
+    }
+
+    .stepBtn{
+      width:34px;
+      height:34px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      font-weight:1000;
+      cursor:pointer;
+      font-size:18px;
+      flex:0 0 auto;
+    }
+
+    .stepQty{
+      min-width:22px;
+      text-align:center;
+      font-weight:1000;
+      font-size:16px;
+      flex:0 0 auto;
+    }
+
+    .actionBtns{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      min-width:0;
+    }
+
+    .addBtn,
+    .directBtn{
+      border-radius:14px;
+      font-weight:1000;
+      cursor:pointer;
+      transition:.15s;
+      white-space:nowrap;
+      height:44px;
+      min-width:0;
+      font-size:14px;
+      padding:10px 12px;
+    }
+
+    .addBtn{
+      border:1px solid rgba(200,164,90,.65);
+      background:rgba(200,164,90,.10);
+      color:var(--gold);
+    }
+
+    .directBtn{
+      border:1px solid rgba(164,0,0,.7);
+      background:linear-gradient(180deg, rgba(164,0,0,.95), rgba(124,0,0,.95));
+      color:#fff;
+    }
+
+    .addBtn:hover{ background:rgba(200,164,90,.16); }
+    .directBtn:hover{ filter:brightness(1.05); }
+
+    .addBtn:active,
+    .directBtn:active{ transform:translateY(1px); }
+
+    .addBtn:disabled,
+    .directBtn:disabled{ opacity:.5; cursor:not-allowed; }
+
+    @media (max-width: 720px){
+      .stepRow{
+        grid-template-columns:1fr;
+      }
+
+      .actionBtns{
+        grid-template-columns:1fr 1fr;
+      }
+    }
+
+    .cartBody{
+      padding:14px 16px 16px;
+      position:sticky;
+      top:14px;
+    }
+
+    @media (max-width: 979px){
+      .cartBody{ position:static; }
+    }
+
+    .cartList{
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .cartRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,.20);
+    }
+
+    .cartName{
+      font-weight:1000;
+      font-size:14px;
+      line-height:1.25;
+    }
+
+    .cartMeta{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+
+    .qtyBox{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+    }
+
+    .qtyBtn{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:1000;
+      cursor:pointer;
+      font-size:18px;
+    }
+
+    .qtyBtn:hover{ background:rgba(255,255,255,.06); }
+
+    .qty{
+      min-width:26px;
+      text-align:center;
+      font-weight:1000;
+      font-size:18px;
+    }
+
+    .sumRow{
+      margin-top:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding-top:12px;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-weight:900;
+      font-size:14px;
+    }
+
+    .sumVal{
+      color:var(--gold);
+      font-size:22px;
+      font-weight:1000;
+    }
+
+    .orderBtn{
+      margin-top:12px;
+      width:100%;
+      border:0;
+      background:linear-gradient(180deg, var(--danger), var(--danger2));
+      color:#fff;
+      font-weight:1000;
+      letter-spacing:.08em;
+      padding:16px 14px;
+      border-radius:16px;
+      cursor:pointer;
+      box-shadow:0 18px 50px rgba(164,0,0,.35);
+      transition:.15s;
+    }
+
+    .orderBtn:hover{ filter:brightness(1.03); }
+    .orderBtn:active{ transform:translateY(1px); }
+    .orderBtn:disabled{ opacity:.55; cursor:not-allowed; box-shadow:none; }
+
+    .ghostBtn{
+      margin-top:10px;
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.9);
+      font-weight:1000;
+      padding:12px 14px;
+      border-radius:16px;
+      cursor:pointer;
+    }
+
+    .ghostBtn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .foot{
+      margin-top:18px;
+      text-align:center;
+      color:rgba(255,255,255,.45);
+      font-size:12px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:76px;
+      transform:translateX(-50%);
+      background:rgba(16,19,24,.92);
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      font-weight:900;
+      display:none;
+      max-width:min(560px, 92vw);
+      z-index:9999;
+      text-align:center;
+    }
+
+    .hamburger{
+      display:none;
+      position:fixed;
+      top:calc(env(safe-area-inset-top) + 14px);
+      left:14px;
+      z-index:1002;
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.30);
+      backdrop-filter:blur(10px);
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      gap:3px;
+      flex-direction:column;
+    }
+
+    .hamburger span{
+      width:18px;
+      height:2px;
+      background:rgba(255,255,255,.85);
+      border-radius:2px;
+      display:block;
+    }
+
+    .drawerOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      z-index:1000;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+
+    .drawerOverlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .drawer{
+      position:fixed;
+      top:env(safe-area-inset-top);
+      left:0;
+      height:calc(100dvh - env(safe-area-inset-top));
+      width:min(320px, 86vw);
+      z-index:1001;
+      transform:translateX(-102%);
+      transition:transform .18s ease;
+      padding:24px 14px 14px;
+      background:rgba(10,12,16,.92);
+      backdrop-filter:blur(12px);
+      border-right:1px solid rgba(255,255,255,.10);
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      overflow:auto;
+    }
+
+    .drawer.show{ transform:translateX(0); }
+
+    .drawerHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:6px 4px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      margin-bottom:10px;
+      margin-top:6px;
+    }
+
+    .drawerTitle{
+      font-weight:1000;
+      color:var(--gold);
+      letter-spacing:.04em;
+    }
+
+    .drawerClose{
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.9);
+      font-size:18px;
+      cursor:pointer;
+    }
+
+    .bottomNav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(10,12,16,.82);
+      backdrop-filter:blur(12px);
+      border-top:1px solid rgba(255,255,255,.10);
+      z-index:9998;
+    }
+
+    .tabs{
+      display:flex;
+      gap:10px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .tabBtn{
+      flex:1;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.9);
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:1000;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .tabBtn.active{
+      border-color:rgba(200,164,90,.45);
+      background:rgba(200,164,90,.10);
+      color:var(--gold);
+    }
+
+    .badge{
+      min-width:22px;
+      height:22px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);
+      color:rgba(255,255,255,.9);
+      font-size:12px;
+      font-weight:1000;
+      padding:0 6px;
+    }
+
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    .simpleList{
+      margin:0;
+      padding:14px;
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .simpleRow{
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(0,0,0,.20);
+      padding:12px;
+    }
+
+    .rowTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .rowTitle{ font-weight:1000; }
+    .rowMeta{ color:var(--muted); font-size:12px; }
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.4;
+    }
+
+    @media (max-width: 979px){
+      .wrap{ padding:var(--pad-mobile) 12px 96px; }
+      header{ padding:8px 0 14px; margin-bottom:14px; }
+      .menuWrap{ padding:12px; }
+      .panelTitle{ padding:12px 14px; }
+      .cartBody{ padding:12px 14px 14px; }
+      .card{ box-shadow:0 10px 30px rgba(0,0,0,.45); }
+      .hamburger{ display:flex; }
+    }
+  </style>
 </head>
 
 <body>
+  <button id="hamburger" class="hamburger" aria-label="カテゴリを開く">
+    <span></span><span></span><span></span>
+  </button>
 
-<div class="wrap">
-  <h1>飲み放題メニュー</h1>
+  <div id="drawerOverlay" class="drawerOverlay"></div>
 
-  <div id="menu" class="menu"></div>
-</div>
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawerHead">
+      <div class="drawerTitle">カテゴリ</div>
+      <button id="drawerClose" class="drawerClose" aria-label="閉じる">×</button>
+    </div>
+    <div id="drawerNav" class="navList"></div>
+  </aside>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+  <div class="wrap">
+    <header>
+      <div class="title-with-sheep">
+        <img src="./assets/sheep.png" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none';">
+        <div class="title-text">
+          <h1 class="title">飲み放題メニュー</h1>
+          <p class="sub">ごゆっくりお選びください</p>
+        </div>
+        <img src="./assets/sheep.png" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none';">
+      </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBwehY...",
-  authDomain: "order-app-ec18b.firebaseapp.com",
-  projectId: "order-app-ec18b",
-};
+      <div class="topRow">
+        <div id="tablePill" class="pill" style="display:none;">
+          テーブル <strong id="tableNo">-</strong>
+        </div>
+      </div>
+    </header>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    <div id="viewOrder" class="view active">
+      <div class="layout">
+        <aside class="navCard">
+          <div class="navTitle">カテゴリ</div>
+          <div id="catNav" class="navList"></div>
+        </aside>
 
-// ===== メニュー =====
-const MENU = [
-  {id:"beer1", name:"クラシック"},
-  {id:"beer2", name:"黒ラベル"},
-  {id:"soft1", name:"カルピス"},
-  {id:"high1", name:"ハイボール"},
-];
+        <section class="card">
+          <div class="panelTitle">
+            <span>メニュー</span>
+            <span class="nowCat" id="nowCatChip">-</span>
+          </div>
+          <div class="menuWrap" id="menu"></div>
+        </section>
 
-// ===== URL table取得 =====
-const params = new URLSearchParams(location.search);
-const table = Number(params.get("table"));
-const tableOk = Number.isFinite(table) && table > 0;
+        <section class="card" id="order-content">
+          <div class="panelTitle">ご注文内容</div>
+          <div class="cartBody">
+            <ul id="cartList" class="cartList"></ul>
 
-// ===== 振動 =====
-function vibrate(){
-  if(navigator.vibrate) navigator.vibrate(60);
-}
+            <div class="sumRow">
+              <span>合計点数</span>
+              <span id="total" class="sumVal">0</span>
+            </div>
 
-// ===== 即注文 =====
-async function directOrder(item){
-  if(!tableOk){
-    alert("table必要");
-    return;
-  }
+            <button id="orderBtn" class="orderBtn" disabled>この内容で注文（飲み放題）</button>
+            <button id="clearBtn" class="ghostBtn" disabled>カートを空にする</button>
+          </div>
+        </section>
+      </div>
+    </div>
 
-  try{
-    await addDoc(collection(db,"orders"),{
-      table,
-      items:[{name:item.name,qty:1}],
-      total:0,
-      totalQty:1,
-      createdAt:serverTimestamp()
-    });
+    <div id="viewHistory" class="view">
+      <section class="card">
+        <div class="panelTitle">注文履歴（この端末）</div>
+        <ul id="historyList" class="simpleList"></ul>
+      </section>
+    </div>
 
-    vibrate();
-    alert(item.name+" 注文！");
-  }catch(e){
-    alert("失敗");
-  }
-}
+    <div class="foot">※ 飲み放題の範囲・ルールは店舗の案内に従ってください</div>
+  </div>
 
-// ===== カート（簡易） =====
-let cart = [];
+  <div id="toast" class="toast"></div>
 
-function addCart(item){
-  cart.push(item.name);
-  alert("カート追加");
-}
-
-// ===== 描画 =====
-const menuEl = document.getElementById("menu");
-
-menuEl.innerHTML = MENU.map(m=>`
-  <div class="item">
-    <div class="name">${m.name}</div>
-    <div class="controls">
-      <button class="add" data-add="${m.id}">カート</button>
-      <button class="direct" data-direct="${m.id}">注文</button>
+  <div id="bottomNav" class="bottomNav">
+    <div class="tabs">
+      <button id="tabOrder" class="tabBtn active">オーダー <span id="cartBadge" class="badge">0</span></button>
+      <button id="tabHistory" class="tabBtn">履歴</button>
     </div>
   </div>
-`).join("");
 
-menuEl.addEventListener("click",(e)=>{
-  const add = e.target.closest("[data-add]");
-  const direct = e.target.closest("[data-direct]");
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  if(add){
-    const m = MENU.find(x=>x.id===add.dataset.add);
-    addCart(m);
-  }
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+      authDomain: "order-app-ec18b.firebaseapp.com",
+      projectId: "order-app-ec18b",
+      storageBucket: "order-app-ec18b.firebasestorage.app",
+      messagingSenderId: "756193856808",
+      appId: "1:756193856808:web:f2200287017adaf895541d"
+    };
 
-  if(direct){
-    const m = MENU.find(x=>x.id===direct.dataset.direct);
-    directOrder(m);
-  }
-});
-</script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
+    const CATEGORIES = [
+      { id:"beer", label:"ビール" },
+      { id:"high", label:"ハイボール" },
+      { id:"sour", label:"サワー" },
+      { id:"cock", label:"カクテル" },
+      { id:"wine", label:"ワイン" },
+      { id:"soft", label:"ソフトドリンク" },
+    ];
+
+    const MENU = [
+      { id:"beer_classic", category:"beer", name:"クラシック", desc:"", tags:["飲み放題"] },
+      { id:"beer_black", category:"beer", name:"黒ラベル", desc:"", tags:["飲み放題"] },
+
+      { id:"high_std", category:"high", name:"ハイボール", desc:"", tags:["飲み放題"] },
+      { id:"high_coke", category:"high", name:"コークハイ", desc:"", tags:["飲み放題"] },
+      { id:"high_ginger", category:"high", name:"ジンジャーハイ", desc:"", tags:["飲み放題"] },
+
+      { id:"sour_lemon", category:"sour", name:"レモンサワー", desc:"", tags:["飲み放題"] },
+      { id:"sour_grape", category:"sour", name:"グレープフルーツサワー", desc:"", tags:["飲み放題"] },
+      { id:"sour_ume", category:"sour", name:"梅サワー", desc:"", tags:["飲み放題"] },
+
+      { id:"cock_cassis_orange", category:"cock", name:"カシスオレンジ", desc:"", tags:["飲み放題"] },
+      { id:"cock_fuzzy", category:"cock", name:"ファジーネーブル", desc:"", tags:["飲み放題"] },
+      { id:"cock_cassis_soda", category:"cock", name:"カシスソーダ", desc:"", tags:["飲み放題"] },
+
+      { id:"wine_red", category:"wine", name:"赤ワイン", desc:"", tags:["飲み放題"] },
+      { id:"wine_white", category:"wine", name:"白ワイン", desc:"", tags:["飲み放題"] },
+
+      { id:"soft_calpis", category:"soft", name:"カルピス", desc:"", tags:["飲み放題"] },
+      { id:"soft_oolong", category:"soft", name:"ウーロン茶", desc:"", tags:["飲み放題"] },
+      { id:"soft_cola", category:"soft", name:"コーラ", desc:"", tags:["飲み放題"] },
+      { id:"soft_ginger", category:"soft", name:"ジンジャーエール", desc:"", tags:["飲み放題"] },
+      { id:"soft_orange", category:"soft", name:"オレンジジュース", desc:"", tags:["飲み放題"] }
+    ];
+
+    const qs = new URLSearchParams(location.search);
+    const tableParam = qs.get("table");
+    const table = Number(tableParam);
+    const tableOk = Number.isFinite(table) && table > 0;
+
+    const tablePill = document.getElementById("tablePill");
+    const tableNoEl = document.getElementById("tableNo");
+    if (tableOk) {
+      tablePill.style.display = "inline-flex";
+      tableNoEl.textContent = String(table);
+    }
+
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => t.style.display = "none", 2400);
+    }
+
+    function safeText(v, fallback="-"){
+      if (v === null || v === undefined) return fallback;
+      const s = String(v).trim();
+      return s.length ? s : fallback;
+    }
+
+    function vibrateOnSuccess(ms = 60){
+      try{
+        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+          navigator.vibrate(ms);
+        }
+      } catch {}
+    }
+
+    const hamburger = document.getElementById("hamburger");
+    const drawer = document.getElementById("drawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const drawerClose = document.getElementById("drawerClose");
+
+    function openDrawer(){
+      drawer.classList.add("show");
+      drawerOverlay.classList.add("show");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+
+    function closeDrawer(){
+      drawer.classList.remove("show");
+      drawerOverlay.classList.remove("show");
+      drawer.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("menu-open");
+    }
+
+    hamburger?.addEventListener("click", openDrawer);
+    drawerClose?.addEventListener("click", closeDrawer);
+    drawerOverlay?.addEventListener("click", closeDrawer);
+
+    const viewOrder = document.getElementById("viewOrder");
+    const viewHistory = document.getElementById("viewHistory");
+    const tabOrder = document.getElementById("tabOrder");
+    const tabHistory = document.getElementById("tabHistory");
+
+    function setTab(which){
+      closeDrawer();
+      tabOrder?.classList.toggle("active", which === "order");
+      tabHistory?.classList.toggle("active", which === "history");
+      viewOrder.classList.toggle("active", which === "order");
+      viewHistory.classList.toggle("active", which === "history");
+      if (which === "history") renderHistory();
+      if (which === "order") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+    }
+
+    tabOrder?.addEventListener("click", () => setTab("order"));
+    tabHistory?.addEventListener("click", () => setTab("history"));
+
+    function scrollToOrder(){
+      const el = document.getElementById("order-content");
+      if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+      closeDrawer();
+    }
+
+    const catNavEl = document.getElementById("catNav");
+    const drawerNavEl = document.getElementById("drawerNav");
+    const menuEl = document.getElementById("menu");
+    const cartListEl = document.getElementById("cartList");
+    const totalEl = document.getElementById("total");
+    const orderBtn = document.getElementById("orderBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const cartBadge = document.getElementById("cartBadge");
+    const nowCatChip = document.getElementById("nowCatChip");
+
+    const CART_KEY = tableOk ? `drink_cart_table_${table}` : "drink_cart_table_unknown";
+    const HISTORY_KEY = tableOk ? `drink_history_table_${table}` : "drink_history_table_unknown";
+
+    let cart = {};
+    try {
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) cart = JSON.parse(saved) || {};
+    } catch {}
+
+    function saveCart(){
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      } catch {}
+    }
+
+    function cartItems(){
+      return Object.values(cart).filter(x => x.qty > 0);
+    }
+
+    function cartQtyTotal(){
+      return cartItems().reduce((sum, x) => sum + x.qty, 0);
+    }
+
+    function updateBadge(){
+      if (cartBadge) cartBadge.textContent = String(cartQtyTotal());
+    }
+
+    const addQty = {};
+    function getAddQty(id){
+      const v = Number(addQty[id] ?? 1);
+      return Math.max(1, Math.min(10, v));
+    }
+
+    function setAddQty(id, v){
+      addQty[id] = Math.max(1, Math.min(10, Number(v) || 1));
+    }
+
+    function addItem(id, qty){
+      const m = MENU.find(x => x.id === id);
+      if (!m) return;
+
+      const n = Math.max(1, Math.min(10, Number(qty) || 1));
+      if (!cart[id]) cart[id] = { id:m.id, name:m.name, qty:0 };
+      cart[id].qty += n;
+
+      saveCart();
+      renderCart();
+
+      const card = menuEl.querySelector(`.itemCard[data-item="${CSS.escape(id)}"]`);
+      if (card){
+        card.classList.add("flash");
+        clearTimeout(card._flashTimer);
+        card._flashTimer = setTimeout(() => card.classList.remove("flash"), 420);
+      }
+
+      toast(`${m.name} を +${n} カートに追加しました`);
+    }
+
+    async function directOrder(id, qty){
+      if (!tableOk){
+        toast("URLに ?table=1 のようにテーブル番号が必要です");
+        return;
+      }
+
+      const m = MENU.find(x => x.id === id);
+      if (!m) return;
+
+      const n = Math.max(1, Math.min(10, Number(qty) || 1));
+
+      try{
+        await addDoc(collection(db, "orders"), {
+          type: "drink",
+          table: table,
+          items: [{ name: m.name, qty: n }],
+          total: 0,
+          totalQty: n,
+          status: "new",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        vibrateOnSuccess(60);
+        toast(`${m.name} ×${n} をすぐ注文しました`);
+      } catch (e){
+        console.error(e);
+        toast("送信に失敗しました");
+      }
+    }
+
+    function changeQty(id, delta){
+      if (!cart[id]) return;
+      cart[id].qty = Math.max(0, cart[id].qty + delta);
+      if (cart[id].qty === 0) delete cart[id];
+      saveCart();
+      renderCart();
+    }
+
+    function clearCart(){
+      cart = {};
+      saveCart();
+      renderCart();
+    }
+
+    function renderCart(){
+      const items = cartItems();
+
+      if (!items.length){
+        cartListEl.innerHTML = `<li style="color:var(--muted);padding:6px 2px;">（まだ選ばれていません）</li>`;
+      } else {
+        cartListEl.innerHTML = items.map(x => `
+          <li class="cartRow" data-id="${x.id}">
+            <div style="min-width:0;">
+              <div class="cartName">${x.name}</div>
+              <div class="cartMeta">飲み放題</div>
+            </div>
+            <div class="qtyBox">
+              <button class="qtyBtn" data-minus="${x.id}">−</button>
+              <div class="qty">${x.qty}</div>
+              <button class="qtyBtn" data-plus="${x.id}">＋</button>
+            </div>
+          </li>
+        `).join("");
+      }
+
+      totalEl.textContent = String(cartQtyTotal());
+      orderBtn.disabled = !tableOk || cartQtyTotal() === 0;
+      clearBtn.disabled = cartQtyTotal() === 0;
+
+      renderNav();
+      updateBadge();
+    }
+
+    cartListEl.addEventListener("click", (e) => {
+      const minus = e.target.closest("[data-minus]");
+      const plus = e.target.closest("[data-plus]");
+      if (minus) changeQty(minus.dataset.minus, -1);
+      if (plus) changeQty(plus.dataset.plus, +1);
+    });
+
+    clearBtn.addEventListener("click", () => {
+      const ok = confirm("カートを空にします。よろしいですか？");
+      if (!ok) return;
+      clearCart();
+      toast("カートを空にしました");
+    });
+
+    function goCategory(catId){
+      const el = document.getElementById(`cat-${catId}`);
+      if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+      closeDrawer();
+    }
+
+    function renderNavInto(container){
+      if (!container) return;
+
+      const counts = new Map();
+      for (const c of CATEGORIES) {
+        counts.set(c.id, MENU.filter(m => m.category === c.id).length);
+      }
+
+      container.innerHTML = [
+        `<a class="navBtn" data-nav="order" href="#order-content">
+          <span>注文</span><small>${cartQtyTotal()}</small>
+        </a>`,
+        ...CATEGORIES.map(c => {
+          const count = counts.get(c.id) ?? 0;
+          return `<a class="navBtn" data-nav="${c.id}" href="#cat-${c.id}">
+            <span>${c.label}</span><small>${count}</small>
+          </a>`;
+        })
+      ].join("");
+
+      container.querySelectorAll("a.navBtn").forEach(a => {
+        a.addEventListener("click", (e) => {
+          const key = a.getAttribute("data-nav");
+          if (!key) return;
+          e.preventDefault();
+          if (key === "order") scrollToOrder();
+          else goCategory(key);
+        });
+      });
+    }
+
+    let currentActiveCatId = CATEGORIES[0]?.id || "";
+
+    function renderNav(){
+      renderNavInto(catNavEl);
+      renderNavInto(drawerNavEl);
+      setActiveNav(currentActiveCatId);
+    }
+
+    function setActiveNav(catId){
+      currentActiveCatId = catId || currentActiveCatId;
+      const label = CATEGORIES.find(c => c.id === currentActiveCatId)?.label || "-";
+      if (nowCatChip) nowCatChip.textContent = label;
+
+      document.querySelectorAll(".navBtn[data-nav]").forEach(a => {
+        const key = a.getAttribute("data-nav");
+        a.classList.toggle("active", key === currentActiveCatId);
+      });
+    }
+
+    function renderMenu(){
+      const byCat = new Map();
+      for (const c of CATEGORIES) byCat.set(c.id, []);
+      for (const m of MENU) {
+        if (!byCat.has(m.category)) byCat.set(m.category, []);
+        byCat.get(m.category).push(m);
+      }
+
+      menuEl.innerHTML = CATEGORIES.map(c => {
+        const items = byCat.get(c.id) || [];
+        const rows = items.map(m => {
+          const qty = getAddQty(m.id);
+          const tags = Array.isArray(m.tags) ? m.tags : [];
+          const tagsHtml = tags.length ? `
+            <div class="tagline">
+              ${tags.map(t => `<span class="tag ${t === "飲み放題" ? "gold" : ""}">${t}</span>`).join("")}
+            </div>
+          ` : "";
+
+          return `
+            <div class="itemCard" data-item="${m.id}">
+              <div class="flashMark">✓</div>
+
+              <div class="itemMain">
+                <h3>${safeText(m.name, "-")}</h3>
+                ${m.desc ? `<p class="desc">${safeText(m.desc, "")}</p>` : ``}
+                ${tagsHtml}
+              </div>
+
+              <div class="stepRow">
+                <div class="stepper" aria-label="数量">
+                  <button class="stepBtn" data-step-minus="${m.id}">−</button>
+                  <div class="stepQty" data-step-qty="${m.id}">${qty}</div>
+                  <button class="stepBtn" data-step-plus="${m.id}">＋</button>
+                </div>
+
+                <div class="actionBtns">
+                  <button class="addBtn" data-add="${m.id}">カート追加</button>
+                  <button class="directBtn" data-direct="${m.id}">すぐ注文</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="section" id="cat-${c.id}" data-catid="${c.id}">
+            <div class="sectionHead">
+              <h2>${c.label}</h2>
+              <p>${items.length} 品</p>
+            </div>
+            <div class="menuGrid">
+              ${rows || `<div style="color:var(--muted);padding:6px 10px;">（準備中）</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    menuEl.addEventListener("click", (e) => {
+      const btnAdd = e.target.closest("[data-add]");
+      const btnDirect = e.target.closest("[data-direct]");
+      const btnMinus = e.target.closest("[data-step-minus]");
+      const btnPlus = e.target.closest("[data-step-plus]");
+
+      if (btnMinus){
+        const id = btnMinus.getAttribute("data-step-minus");
+        setAddQty(id, getAddQty(id) - 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+
+      if (btnPlus){
+        const id = btnPlus.getAttribute("data-step-plus");
+        setAddQty(id, getAddQty(id) + 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+
+      if (btnAdd){
+        const id = btnAdd.getAttribute("data-add");
+        addItem(id, getAddQty(id));
+        return;
+      }
+
+      if (btnDirect){
+        const id = btnDirect.getAttribute("data-direct");
+        directOrder(id, getAddQty(id));
+      }
+    });
+
+    function setupScrollSpy(){
+      const sections = Array.from(document.querySelectorAll(".section[data-catid]"));
+      if (!sections.length) return;
+
+      const io = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible.length){
+          const id = visible[0].target.getAttribute("data-catid");
+          if (id) setActiveNav(id);
+        }
+      }, { root:null, threshold:[0.2, 0.35, 0.5, 0.65] });
+
+      sections.forEach(s => io.observe(s));
+    }
+
+    function pushLocalHistory(record){
+      try{
+        const saved = localStorage.getItem(HISTORY_KEY);
+        const arr = saved ? (JSON.parse(saved) || []) : [];
+        arr.unshift(record);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0, 50)));
+      } catch {}
+    }
+
+    function renderHistory(){
+      const historyList = document.getElementById("historyList");
+      let arr = [];
+      try{
+        const saved = localStorage.getItem(HISTORY_KEY);
+        arr = saved ? (JSON.parse(saved) || []) : [];
+      } catch {}
+
+      if (!arr.length){
+        historyList.innerHTML = `<li class="simpleRow"><div class="rowMeta">（履歴はまだありません）</div></li>`;
+        return;
+      }
+
+      historyList.innerHTML = arr.map(r => {
+        const when = r?.when ? new Date(r.when) : null;
+        const whenText = when ? when.toLocaleString("ja-JP", {
+          month:"2-digit",
+          day:"2-digit",
+          hour:"2-digit",
+          minute:"2-digit"
+        }) : "-";
+        const items = (r.items || []).map(it => `${it.name} ×${it.qty}`).join(" / ");
+
+        return `
+          <li class="simpleRow">
+            <div class="rowTop">
+              <div class="rowTitle">テーブル ${safeText(r.table, "-")}</div>
+              <div class="rowMeta">${whenText}</div>
+            </div>
+            <div class="mini">${items}</div>
+            <div class="rowMeta" style="margin-top:8px;">合計点数: ${safeText(r.totalQty, 0)}</div>
+          </li>
+        `;
+      }).join("");
+    }
+
+    orderBtn.addEventListener("click", async () => {
+      if (!tableOk){
+        toast("URLに ?table=1 のようにテーブル番号が必要です");
+        return;
+      }
+
+      const items = cartItems();
+      const totalQty = cartQtyTotal();
+      if (!items.length || totalQty === 0){
+        toast("商品を選んでください");
+        return;
+      }
+
+      const ok = confirm(`テーブル${table}の飲み物を注文します。\n点数: ${totalQty}\nよろしいですか？`);
+      if (!ok) return;
+
+      orderBtn.disabled = true;
+      clearBtn.disabled = true;
+      const oldText = orderBtn.textContent;
+      orderBtn.textContent = "送信中…";
+
+      try{
+        await addDoc(collection(db, "orders"), {
+          type: "drink",
+          table: table,
+          items: items.map(x => ({ name: x.name, qty: x.qty })),
+          total: 0,
+          totalQty: totalQty,
+          status: "new",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        vibrateOnSuccess(80);
+
+        pushLocalHistory({
+          table,
+          when: Date.now(),
+          totalQty,
+          items: items.map(x => ({ name:x.name, qty:x.qty }))
+        });
+
+        cart = {};
+        saveCart();
+        renderCart();
+
+        toast("ありがとうございます！飲み物の注文を送信しました。");
+      } catch (err){
+        console.error(err);
+        toast("送信に失敗しました（Firestoreルール/設定を確認）");
+      } finally {
+        orderBtn.textContent = oldText;
+        orderBtn.disabled = !tableOk || cartQtyTotal() === 0;
+        clearBtn.disabled = cartQtyTotal() === 0;
+      }
+    });
+
+    renderMenu();
+    renderCart();
+    renderNav();
+    setupScrollSpy();
+    setActiveNav(CATEGORIES[0]?.id || "");
+  </script>
 </body>
 </html>
