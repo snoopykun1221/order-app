@@ -8,6 +8,7 @@
   <style>
     :root{
       --bg:#3b2a20;
+      --bg2:#2b1d16;
       --line:rgba(255,245,230,.14);
       --text:#fff8f0;
       --muted:rgba(255,240,225,.72);
@@ -20,13 +21,18 @@
 
     *{ box-sizing:border-box; }
 
+    html, body{
+      max-width:100%;
+      overflow-x:hidden;
+    }
+
     body{
       margin:0;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
       background:
         radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.12), transparent 70%),
         radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.08), transparent 70%),
-        linear-gradient(180deg,#5a4030 0%, #3b2a20 55%, #2b1d16 100%);
+        linear-gradient(180deg,#5a4030 0%, var(--bg) 55%, var(--bg2) 100%);
       color:var(--text);
       font-size:14px;
       overflow-x:hidden;
@@ -40,7 +46,7 @@
     .wrap{
       max-width:1200px;
       margin:0 auto;
-      padding:20px 12px 28px;
+      padding:20px 12px 96px;
     }
 
     header{
@@ -146,6 +152,7 @@
       overflow:hidden;
       position:sticky;
       top:14px;
+      backdrop-filter:blur(3px);
     }
 
     .navTitle{
@@ -177,7 +184,7 @@
       text-decoration:none;
       font-weight:900;
       font-size:17px;
-      transition:.15s;
+      transition:.18s ease;
       cursor:pointer;
       gap:10px;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
@@ -187,6 +194,7 @@
     .navBtn:hover{
       background:rgba(224,184,107,.12);
       border-color:rgba(224,184,107,.35);
+      transform:translateY(-1px);
     }
 
     .navBtn small{
@@ -211,6 +219,7 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
+      backdrop-filter:blur(3px);
     }
 
     .panelTitle{
@@ -268,15 +277,43 @@
     .itemCard{
       border:1px solid var(--line);
       border-radius:16px;
-      background:rgba(255,248,240,.04);
       padding:12px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      min-height:170px;
+      min-height:220px;
       position:relative;
       overflow:hidden;
-      transition:transform .08s ease;
+      transition:transform .12s ease, box-shadow .18s ease;
+      background:
+        linear-gradient(180deg, rgba(255,248,240,.09), rgba(255,248,240,.045)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.07) 0 8%, transparent 9%),
+        radial-gradient(circle at 75% 35%, rgba(255,255,255,.05) 0 7%, transparent 8%),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,.04) 0 6%, transparent 7%),
+        linear-gradient(135deg, rgba(255,250,242,.10), rgba(235,220,195,.05));
+      background-size:auto, 180px 180px, 220px 220px, 200px 200px, auto;
+    }
+
+    .itemCard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.018) 0px,
+          rgba(255,255,255,.018) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      mix-blend-mode:screen;
+      opacity:.25;
+    }
+
+    .itemCard:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 30px rgba(0,0,0,.16);
     }
 
     .itemCard.flash{
@@ -297,6 +334,7 @@
       border:1px solid rgba(255,245,230,.18);
       background:rgba(60,40,30,.35);
       font-weight:1000;
+      z-index:1;
     }
 
     .itemCard.flash .flashMark{ display:flex; }
@@ -308,6 +346,8 @@
       letter-spacing:.03em;
       line-height:1.2;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      position:relative;
+      z-index:1;
     }
 
     .desc{
@@ -316,6 +356,8 @@
       color:var(--muted);
       line-height:1.35;
       min-height:14px;
+      position:relative;
+      z-index:1;
     }
 
     .tagline{
@@ -323,6 +365,8 @@
       flex-wrap:wrap;
       gap:6px;
       margin-top:2px;
+      position:relative;
+      z-index:1;
     }
 
     .tag{
@@ -346,8 +390,10 @@
 
     .stepRow{
       margin-top:auto;
-      display:flex;
-      justify-content:center;
+      display:grid;
+      gap:8px;
+      position:relative;
+      z-index:1;
     }
 
     .stepper{
@@ -355,7 +401,7 @@
       align-items:center;
       gap:10px;
       border:1px solid var(--line);
-      background:rgba(255,248,240,.04);
+      background:rgba(255,248,240,.05);
       border-radius:14px;
       padding:8px 10px;
       min-width:148px;
@@ -374,6 +420,16 @@
       font-size:18px;
       flex:0 0 auto;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      transition:transform .12s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .stepBtn:hover{
+      background:rgba(255,248,240,.14);
+    }
+
+    .stepBtn:active{
+      transform:scale(.94);
+      box-shadow:0 0 0 2px rgba(224,184,107,.18) inset;
     }
 
     .stepQty{
@@ -384,18 +440,52 @@
       flex:0 0 auto;
     }
 
+    .cartAddBtn,
+    .cartBtn,
+    .orderBtn{
+      border:none;
+      cursor:pointer;
+      font-weight:1000;
+      transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .cartAddBtn{
+      width:100%;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(224,184,107,.22), rgba(170,120,55,.18));
+      color:var(--gold);
+      border:1px solid rgba(224,184,107,.38);
+      letter-spacing:.04em;
+    }
+
+    .cartAddBtn:hover,
+    .cartBtn:hover,
+    .orderBtn:hover{
+      filter:brightness(1.04);
+    }
+
+    .cartAddBtn:active,
+    .cartBtn:active,
+    .orderBtn:active{
+      transform:scale(.97);
+    }
+
     .note{
-      margin-top:8px;
+      margin-top:2px;
       text-align:center;
       color:var(--muted);
       font-size:11px;
       line-height:1.4;
+      position:relative;
+      z-index:1;
     }
 
     .toast{
       position:fixed;
       left:50%;
-      bottom:24px;
+      bottom:84px;
       transform:translateX(-50%);
       background:rgba(56,38,28,.95);
       border:1px solid var(--line);
@@ -499,6 +589,174 @@
       cursor:pointer;
     }
 
+    .cartSheet{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:10010;
+      transform:translateY(110%);
+      transition:transform .22s ease;
+      background:linear-gradient(180deg, rgba(72,50,38,.98), rgba(48,33,25,.98));
+      border-top:1px solid var(--line);
+      border-top-left-radius:20px;
+      border-top-right-radius:20px;
+      box-shadow:0 -14px 40px rgba(0,0,0,.32);
+      max-height:72vh;
+      overflow:hidden;
+    }
+
+    .cartSheet.show{
+      transform:translateY(0);
+    }
+
+    .cartSheetHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      color:var(--gold);
+      font-weight:1000;
+      letter-spacing:.06em;
+    }
+
+    .cartSheetClose{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.05);
+      color:var(--text);
+      font-size:18px;
+      cursor:pointer;
+    }
+
+    .cartSheetBody{
+      padding:14px 14px 90px;
+      overflow:auto;
+      max-height:calc(72vh - 58px);
+    }
+
+    .cartEmpty{
+      color:var(--muted);
+      text-align:center;
+      padding:24px 10px;
+      border:1px dashed var(--line);
+      border-radius:14px;
+      background:rgba(255,248,240,.03);
+    }
+
+    .cartList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .cartRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:rgba(255,248,240,.05);
+    }
+
+    .cartName{
+      font-weight:1000;
+      line-height:1.4;
+    }
+
+    .cartMeta{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+
+    .cartQtyBox{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
+    }
+
+    .cartQtyBtn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.08);
+      color:var(--text);
+      font-size:18px;
+      cursor:pointer;
+      transition:transform .12s ease;
+    }
+
+    .cartQtyBtn:active{
+      transform:scale(.94);
+    }
+
+    .cartQty{
+      min-width:20px;
+      text-align:center;
+      font-weight:1000;
+      font-size:16px;
+    }
+
+    .bottomBar{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      display:flex;
+      gap:10px;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(52,36,27,.96);
+      border-top:1px solid var(--line);
+      backdrop-filter:blur(10px);
+      z-index:9998;
+    }
+
+    .cartBtn{
+      flex:1;
+      border-radius:14px;
+      background:linear-gradient(180deg, rgba(224,184,107,.22), rgba(170,120,55,.18));
+      color:var(--gold);
+      border:1px solid rgba(224,184,107,.38);
+      padding:14px 12px;
+      font-size:15px;
+      letter-spacing:.04em;
+    }
+
+    .orderBtn{
+      flex:1.2;
+      border-radius:14px;
+      background:linear-gradient(180deg, var(--danger), var(--danger2));
+      color:#fff;
+      padding:14px 12px;
+      font-size:15px;
+      letter-spacing:.06em;
+      box-shadow:0 10px 24px rgba(111,19,19,.25);
+    }
+
+    .btnCount{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:22px;
+      height:22px;
+      padding:0 7px;
+      margin-left:6px;
+      border-radius:999px;
+      border:1px solid rgba(255,245,230,.18);
+      background:rgba(255,248,240,.08);
+      font-size:12px;
+      color:var(--text);
+    }
+
     .foot{
       margin-top:18px;
       text-align:center;
@@ -507,7 +765,7 @@
     }
 
     @media (max-width: 979px){
-      .wrap{ padding:14px 12px 24px; }
+      .wrap{ padding:14px 12px 96px; }
       header{ padding:8px 0 14px; margin-bottom:14px; }
       .menuWrap{ padding:12px; }
       .panelTitle{ padding:12px 14px; }
@@ -522,7 +780,7 @@
       }
 
       .itemCard{
-        min-height:160px;
+        min-height:220px;
         padding:10px;
       }
 
@@ -594,10 +852,25 @@
       </section>
     </div>
 
-    <div class="foot">※ ＋を押すと1杯ずつ即注文されます</div>
+    <div class="foot">※ 数量を決めてカートに入れ、最後に注文してください</div>
   </div>
 
   <div id="toast" class="toast"></div>
+
+  <div id="cartSheet" class="cartSheet">
+    <div class="cartSheetHead">
+      <span>カート</span>
+      <button id="cartSheetClose" class="cartSheetClose" aria-label="閉じる">×</button>
+    </div>
+    <div class="cartSheetBody">
+      <div id="cartContent"></div>
+    </div>
+  </div>
+
+  <div class="bottomBar">
+    <button id="cartBtn" class="cartBtn">カート <span id="cartCount" class="btnCount">0</span></button>
+    <button id="orderBtn" class="orderBtn">注文する</button>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -659,6 +932,24 @@
 
     const tablePill = document.getElementById("tablePill");
     const tableNoEl = document.getElementById("tableNo");
+    const catNavEl = document.getElementById("catNav");
+    const drawerNavEl = document.getElementById("drawerNav");
+    const menuEl = document.getElementById("menu");
+    const cartBtn = document.getElementById("cartBtn");
+    const orderBtn = document.getElementById("orderBtn");
+    const cartCount = document.getElementById("cartCount");
+    const cartSheet = document.getElementById("cartSheet");
+    const cartContent = document.getElementById("cartContent");
+    const cartSheetClose = document.getElementById("cartSheetClose");
+
+    const CART_KEY = tableOk ? `drink_cart_table_${table}` : "drink_cart_unknown";
+    let cart = {};
+    let addQty = {};
+
+    try{
+      const saved = localStorage.getItem(CART_KEY);
+      if (saved) cart = JSON.parse(saved) || {};
+    } catch {}
 
     if (tableOk) {
       tablePill.style.display = "inline-flex";
@@ -691,6 +982,162 @@
       } catch {}
     }
 
+    function saveCart(){
+      try{
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      } catch {}
+    }
+
+    function totalCartCount(){
+      return Object.values(cart).reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    }
+
+    function updateCartCount(){
+      cartCount.textContent = String(totalCartCount());
+    }
+
+    function getAddQty(id){
+      const v = Number(addQty[id] ?? 1);
+      return Math.max(1, Math.min(10, v));
+    }
+
+    function setAddQty(id, v){
+      addQty[id] = Math.max(1, Math.min(10, Number(v) || 1));
+    }
+
+    function addToCart(id){
+      const m = MENU.find(x => x.id === id);
+      if (!m) return;
+
+      const qty = getAddQty(id);
+      if (!cart[id]) cart[id] = { id:m.id, name:m.name, qty:0 };
+      cart[id].qty += qty;
+
+      saveCart();
+      updateCartCount();
+      renderCartSheet();
+      toast(`${m.name} ×${qty} をカートに入れました`);
+
+      const card = menuEl.querySelector(`.itemCard[data-item="${CSS.escape(id)}"]`);
+      if (card){
+        card.classList.add("flash");
+        clearTimeout(card._flashTimer);
+        card._flashTimer = setTimeout(() => card.classList.remove("flash"), 420);
+      }
+    }
+
+    async function submitOrder(){
+      if (!tableOk){
+        toast("テーブル番号が必要です");
+        return;
+      }
+
+      const items = Object.values(cart).filter(x => x.qty > 0);
+      if (!items.length){
+        toast("カートが空です");
+        return;
+      }
+
+      const totalQty = items.reduce((sum, x) => sum + x.qty, 0);
+      const ok = confirm(`テーブル${table}の飲み物を注文します。\n点数: ${totalQty}\nよろしいですか？`);
+      if (!ok) return;
+
+      orderBtn.disabled = true;
+      const oldText = orderBtn.textContent;
+      orderBtn.textContent = "送信中…";
+
+      try{
+        await addDoc(collection(db, "orders"), {
+          type: "drink",
+          table: table,
+          items: items.map(x => ({ name:x.name, qty:x.qty })),
+          total: 0,
+          totalQty: totalQty,
+          status: "new",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        cart = {};
+        saveCart();
+        updateCartCount();
+        renderCartSheet();
+        closeCartSheet();
+        vibrateOnSuccess(80);
+        toast("注文しました");
+      } catch (e){
+        console.error(e);
+        toast("注文に失敗しました");
+      } finally {
+        orderBtn.textContent = oldText;
+        orderBtn.disabled = false;
+      }
+    }
+
+    function renderCartSheet(){
+      const items = Object.values(cart).filter(x => x.qty > 0);
+
+      if (!items.length){
+        cartContent.innerHTML = `<div class="cartEmpty">カートは空です</div>`;
+        return;
+      }
+
+      cartContent.innerHTML = `
+        <div class="cartList">
+          ${items.map(item => `
+            <div class="cartRow">
+              <div style="min-width:0;">
+                <div class="cartName">${item.name}</div>
+                <div class="cartMeta">飲み放題</div>
+              </div>
+              <div class="cartQtyBox">
+                <button class="cartQtyBtn" data-cart-minus="${item.id}">−</button>
+                <div class="cartQty">${item.qty}</div>
+                <button class="cartQtyBtn" data-cart-plus="${item.id}">＋</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    cartContent.addEventListener("click", (e) => {
+      const minus = e.target.closest("[data-cart-minus]");
+      const plus = e.target.closest("[data-cart-plus]");
+
+      if (minus){
+        const id = minus.getAttribute("data-cart-minus");
+        if (!cart[id]) return;
+        cart[id].qty = Math.max(0, cart[id].qty - 1);
+        if (cart[id].qty === 0) delete cart[id];
+        saveCart();
+        updateCartCount();
+        renderCartSheet();
+        return;
+      }
+
+      if (plus){
+        const id = plus.getAttribute("data-cart-plus");
+        if (!cart[id]) return;
+        cart[id].qty += 1;
+        saveCart();
+        updateCartCount();
+        renderCartSheet();
+      }
+    });
+
+    function openCartSheet(){
+      cartSheet.classList.add("show");
+    }
+
+    function closeCartSheet(){
+      cartSheet.classList.remove("show");
+    }
+
+    cartBtn.addEventListener("click", openCartSheet);
+    cartSheetClose.addEventListener("click", closeCartSheet);
+    orderBtn.addEventListener("click", submitOrder);
+
     const hamburger = document.getElementById("hamburger");
     const drawer = document.getElementById("drawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
@@ -712,60 +1159,10 @@
 
     hamburger?.addEventListener("click", openDrawer);
     drawerClose?.addEventListener("click", closeDrawer);
-    drawerOverlay?.addEventListener("click", closeDrawer);
-
-    const catNavEl = document.getElementById("catNav");
-    const drawerNavEl = document.getElementById("drawerNav");
-    const menuEl = document.getElementById("menu");
-
-    const addQty = {};
-
-    function getAddQty(id){
-      const v = Number(addQty[id] ?? 1);
-      return Math.max(1, Math.min(10, v));
-    }
-
-    function setAddQty(id, v){
-      addQty[id] = Math.max(1, Math.min(10, Number(v) || 1));
-    }
-
-    async function directOrder(id, qty){
-      if (!tableOk){
-        toast("テーブル番号が必要です");
-        return;
-      }
-
-      const m = MENU.find(x => x.id === id);
-      if (!m) return;
-
-      const n = Math.max(1, Math.min(10, Number(qty) || 1));
-
-      try{
-        await addDoc(collection(db, "orders"), {
-          type: "drink",
-          table: table,
-          items: [{ name: m.name, qty: n }],
-          total: 0,
-          totalQty: n,
-          status: "new",
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-
-        const card = menuEl.querySelector(`.itemCard[data-item="${CSS.escape(id)}"]`);
-        if (card){
-          card.classList.add("flash");
-          clearTimeout(card._flashTimer);
-          card._flashTimer = setTimeout(() => card.classList.remove("flash"), 420);
-        }
-
-        vibrateOnSuccess(60);
-        toast(`${m.name} ×${n} を注文しました`);
-      } catch (e){
-        console.error(e);
-        toast("注文に失敗しました");
-      }
-    }
+    drawerOverlay?.addEventListener("click", () => {
+      closeDrawer();
+      closeCartSheet();
+    });
 
     function goCategory(catId){
       const el = document.getElementById(`cat-${catId}`);
@@ -839,9 +1236,10 @@
                   <div class="stepQty" data-step-qty="${m.id}">${qty}</div>
                   <button class="stepBtn" data-step-plus="${m.id}">＋</button>
                 </div>
+                <button class="cartAddBtn" data-cart-add="${m.id}">カートに入れる</button>
               </div>
 
-              <div class="note">＋を押すとそのまま注文されます</div>
+              <div class="note">数量を決めてカートに入れてください</div>
             </div>
           `;
         }).join("");
@@ -860,9 +1258,10 @@
       }).join("");
     }
 
-    menuEl.addEventListener("click", async (e) => {
+    menuEl.addEventListener("click", (e) => {
       const btnMinus = e.target.closest("[data-step-minus]");
       const btnPlus = e.target.closest("[data-step-plus]");
+      const btnCartAdd = e.target.closest("[data-cart-add]");
 
       if (btnMinus){
         const id = btnMinus.getAttribute("data-step-minus");
@@ -874,14 +1273,20 @@
 
       if (btnPlus){
         const id = btnPlus.getAttribute("data-step-plus");
-        const currentQty = getAddQty(id);
-        await directOrder(id, 1);
-        setAddQty(id, currentQty + 1);
+        setAddQty(id, getAddQty(id) + 1);
         const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
         if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+
+      if (btnCartAdd){
+        const id = btnCartAdd.getAttribute("data-cart-add");
+        addToCart(id);
       }
     });
 
+    updateCartCount();
+    renderCartSheet();
     renderNav();
     renderMenu();
   </script>
