@@ -7,29 +7,38 @@
 
   <style>
     :root{
-      --bg:#3b2a20;
-      --bg2:#2b1d16;
-      --line:rgba(255,245,230,.14);
-      --text:#fff8f0;
-      --muted:rgba(255,240,225,.72);
-      --gold:#e0b86b;
-      --danger:#8f1f1f;
-      --danger2:#6f1313;
-      --ok:#3f7a4a;
-      --ok2:#2f5e38;
-      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --bg:#131110;
+      --bg2:#0c0b0a;
+      --panel:#1d1917;
+      --panel2:#26201d;
+      --card:#2b2420;
+      --card2:#332b26;
+      --line:rgba(255,244,230,.14);
+      --text:#fff9f2;
+      --muted:rgba(255,241,224,.70);
+      --gold:#dfb96e;
+      --danger:#a72922;
+      --danger2:#7b1612;
+      --ok:#3e7a4c;
+      --ok2:#2f5f39;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
       --radius:18px;
     }
 
     *{ box-sizing:border-box; }
 
+    html,body{
+      max-width:100%;
+      overflow-x:hidden;
+    }
+
     body{
       margin:0;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
       background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.12), transparent 70%),
-        radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.08), transparent 70%),
-        linear-gradient(180deg,#5a4030 0%, var(--bg) 55%, var(--bg2) 100%);
+        radial-gradient(1200px 600px at 20% -10%, rgba(223,185,110,.08), transparent 70%),
+        radial-gradient(900px 500px at 90% 0%, rgba(223,185,110,.04), transparent 70%),
+        linear-gradient(180deg, #1b1715 0%, var(--bg) 50%, var(--bg2) 100%);
       color:var(--text);
       min-height:100vh;
     }
@@ -53,17 +62,15 @@
     .titleArea{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:12px;
       min-width:0;
     }
 
     .sheep-icon{
-      width:30px;
-      height:30px;
-      flex:0 0 auto;
+      font-size:30px;
+      line-height:1;
       filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));
-      opacity:.95;
-      object-fit:contain;
+      flex:0 0 auto;
     }
 
     .titleText{
@@ -72,7 +79,7 @@
 
     .title{
       margin:0;
-      font-size:clamp(20px, 4.6vw, 30px);
+      font-size:clamp(20px,4.6vw,30px);
       font-weight:1000;
       letter-spacing:.05em;
       color:var(--gold);
@@ -96,7 +103,7 @@
       border:none;
       cursor:pointer;
       font-weight:1000;
-      transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
+      transition:transform .12s ease, filter .18s ease;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
       border-radius:14px;
       padding:12px 14px;
@@ -112,9 +119,9 @@
     }
 
     .btn.sound{
-      background:linear-gradient(180deg, rgba(224,184,107,.22), rgba(170,120,55,.18));
+      background:linear-gradient(180deg, rgba(223,185,110,.22), rgba(170,120,55,.18));
       color:var(--gold);
-      border:1px solid rgba(224,184,107,.38);
+      border:1px solid rgba(223,185,110,.38);
     }
 
     .btn.reload{
@@ -125,7 +132,7 @@
 
     .stats{
       display:grid;
-      grid-template-columns:repeat(3, 1fr);
+      grid-template-columns:repeat(4, 1fr);
       gap:12px;
       margin-bottom:16px;
     }
@@ -134,7 +141,7 @@
       border:1px solid var(--line);
       border-radius:16px;
       padding:14px;
-      background:linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03));
+      background:linear-gradient(180deg, rgba(255,248,240,.04), rgba(255,248,240,.02));
       box-shadow:var(--shadow);
     }
 
@@ -145,7 +152,7 @@
     }
 
     .statValue{
-      font-size:26px;
+      font-size:24px;
       font-weight:1000;
       color:var(--gold);
       line-height:1.1;
@@ -155,7 +162,7 @@
       border:1px solid var(--line);
       border-radius:18px;
       overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,248,240,.05), rgba(255,248,240,.025));
+      background:linear-gradient(180deg, rgba(255,248,240,.04), rgba(255,248,240,.02));
       box-shadow:var(--shadow);
     }
 
@@ -164,7 +171,7 @@
       font-weight:1000;
       color:var(--gold);
       border-bottom:1px solid var(--line);
-      background:rgba(255,248,240,.05);
+      background:rgba(255,248,240,.04);
       letter-spacing:.08em;
       display:flex;
       align-items:center;
@@ -192,14 +199,11 @@
       border-radius:16px;
       padding:14px;
       background:
-        linear-gradient(180deg, rgba(255,248,240,.09), rgba(255,248,240,.045)),
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,.07) 0 8%, transparent 9%),
-        radial-gradient(circle at 75% 35%, rgba(255,255,255,.05) 0 7%, transparent 8%),
-        radial-gradient(circle at 40% 80%, rgba(255,255,255,.04) 0 6%, transparent 7%),
-        linear-gradient(135deg, rgba(255,250,242,.10), rgba(235,220,195,.05));
-      background-size:auto, 180px 180px, 220px 220px, 200px 200px, auto;
+        linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03)),
+        linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
       position:relative;
       overflow:hidden;
+      transition:transform .12s ease, box-shadow .18s ease;
     }
 
     .orderCard::before{
@@ -210,12 +214,17 @@
       background:
         repeating-linear-gradient(
           0deg,
-          rgba(255,255,255,.018) 0px,
-          rgba(255,255,255,.018) 1px,
+          rgba(255,255,255,.01) 0px,
+          rgba(255,255,255,.01) 1px,
           transparent 1px,
-          transparent 4px
+          transparent 5px
         );
-      opacity:.25;
+      opacity:.10;
+    }
+
+    .orderCard:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
     }
 
     .orderHead{
@@ -248,8 +257,8 @@
       gap:6px;
       padding:4px 10px;
       border-radius:999px;
-      border:1px solid rgba(224,184,107,.35);
-      background:rgba(224,184,107,.10);
+      border:1px solid rgba(223,185,110,.35);
+      background:rgba(223,185,110,.10);
       color:var(--gold);
       font-size:12px;
       font-weight:1000;
@@ -336,7 +345,7 @@
       left:50%;
       bottom:24px;
       transform:translateX(-50%);
-      background:rgba(56,38,28,.95);
+      background:rgba(40,31,27,.96);
       border:1px solid var(--line);
       color:var(--text);
       padding:12px 14px;
@@ -349,7 +358,7 @@
       text-align:center;
     }
 
-    @media (max-width: 800px){
+    @media (max-width:900px){
       .topbar{
         flex-direction:column;
         align-items:flex-start;
@@ -361,7 +370,7 @@
       }
 
       .stats{
-        grid-template-columns:1fr;
+        grid-template-columns:1fr 1fr;
       }
 
       .orderHead{
@@ -372,6 +381,12 @@
         text-align:left;
       }
     }
+
+    @media (max-width:560px){
+      .stats{
+        grid-template-columns:1fr;
+      }
+    }
   </style>
 </head>
 
@@ -379,10 +394,10 @@
   <div class="wrap">
     <div class="topbar">
       <div class="titleArea">
-        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+        <div class="sheep-icon" aria-hidden="true">🐑</div>
         <div class="titleText">
           <h1 class="title">注文管理</h1>
-          <p class="sub">飲み放題オーダーをリアルタイムで確認できます</p>
+          <p class="sub">ドリンクオーダーをリアルタイムで確認できます</p>
         </div>
       </div>
 
@@ -400,6 +415,10 @@
       <div class="statCard">
         <div class="statLabel">合計点数</div>
         <div id="statQtyCount" class="statValue">0</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">最新テーブル</div>
+        <div id="statTable" class="statValue">-</div>
       </div>
       <div class="statCard">
         <div class="statLabel">音の状態</div>
@@ -448,6 +467,7 @@
     const orderList = document.getElementById("orderList");
     const statOrderCount = document.getElementById("statOrderCount");
     const statQtyCount = document.getElementById("statQtyCount");
+    const statTable = document.getElementById("statTable");
     const statSound = document.getElementById("statSound");
     const soundBtn = document.getElementById("soundBtn");
     const reloadBtn = document.getElementById("reloadBtn");
@@ -495,6 +515,7 @@
 
     function playSound(){
       if (!soundEnabled) return;
+
       try{
         const ctx = ensureAudio();
         if (!ctx) return;
@@ -568,6 +589,8 @@
         return sum + totalQty(data.items || []);
       }, 0);
       statQtyCount.textContent = String(qtySum);
+
+      statTable.textContent = docs.length ? String(docs[0].data().table ?? "-") : "-";
 
       if (!docs.length){
         orderList.innerHTML = `<div class="empty">現在、注文はありません</div>`;
