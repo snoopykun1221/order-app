@@ -274,12 +274,13 @@
       font-size:12px;
       text-align:right;
       line-height:1.5;
+      white-space:nowrap;
     }
 
     .badge{
       display:inline-flex;
       align-items:center;
-      gap:6px;
+      justify-content:center;
       padding:4px 10px;
       border-radius:999px;
       border:1px solid rgba(223,185,110,.35);
@@ -288,6 +289,8 @@
       font-size:12px;
       font-weight:1000;
       margin-top:8px;
+      white-space:nowrap;
+      line-height:1;
     }
 
     .doneBadge{
@@ -332,14 +335,9 @@
       z-index:1;
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       gap:12px;
       flex-wrap:wrap;
-    }
-
-    .totalQty{
-      color:var(--text);
-      font-weight:1000;
     }
 
     .cardActions{
@@ -765,13 +763,10 @@
           <div class="orderHead">
             <div>
               <div class="tableNo">テーブル ${data.table ?? "-"}</div>
-              <div class="badge ${isCompleted ? "doneBadge" : ""}">
-                ${isCompleted ? "完了済み" : (data.type === "drink" ? "ドリンク注文" : "注文")}
-              </div>
+              ${isCompleted ? `<div class="badge doneBadge">完了済み</div>` : ``}
             </div>
             <div class="orderMeta">
-              <div>${formatTime(data.createdAt)}</div>
-              <div>合計 ${qty} 点</div>
+              <div>${formatTime(data.createdAt)} / 合計 ${qty} 点</div>
             </div>
           </div>
 
@@ -785,7 +780,6 @@
           </div>
 
           <div class="orderFoot">
-            <div class="totalQty">注文点数：${qty}</div>
             <div class="cardActions">
               ${isCompleted
                 ? `<button class="deleteBtn" data-delete="${d.id}">削除</button>`
