@@ -105,8 +105,13 @@
       white-space:nowrap;
     }
 
-    .btn:hover{ filter:brightness(1.04); }
-    .btn:active{ transform:scale(.97); }
+    .btn:hover{
+      filter:brightness(1.04);
+    }
+
+    .btn:active{
+      transform:scale(.97);
+    }
 
     .btn.sound{
       background:linear-gradient(180deg, rgba(223,185,110,.22), rgba(170,120,55,.18));
@@ -270,7 +275,7 @@
       justify-content:space-between;
       gap:16px;
       width:100%;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
     }
 
     .orderMainLeft{
@@ -278,6 +283,7 @@
       align-items:center;
       gap:10px;
       min-width:0;
+      flex:1;
       flex-wrap:wrap;
     }
 
@@ -489,13 +495,24 @@
       }
 
       .orderMain{
-        align-items:flex-start;
-        flex-direction:column;
-        gap:8px;
+        display:flex;
+        flex-direction:row;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        flex-wrap:nowrap;
+      }
+
+      .orderMainLeft{
+        flex:1;
+        min-width:0;
       }
 
       .orderMetaInline{
-        text-align:left;
+        text-align:right;
+        font-size:11px;
+        white-space:nowrap;
+        flex-shrink:0;
       }
     }
 
@@ -514,12 +531,21 @@
       }
 
       .titleActions{
-        width:100%;
+        width:auto;
         justify-content:flex-end;
       }
 
       .panelTitle{
-        align-items:flex-start;
+        align-items:center;
+      }
+
+      .tableNo{
+        font-size:20px;
+      }
+
+      .badge{
+        font-size:11px;
+        padding:4px 9px;
       }
     }
   </style>
@@ -667,6 +693,7 @@
         }
         soundEnabled = true;
         statSound.textContent = "ON";
+        soundBtn.textContent = "音をON";
         toast("音を有効にしました");
       } catch (e){
         console.error(e);
@@ -890,7 +917,6 @@
 
     onSnapshot(q, (snapshot) => {
       const activeDocs = renderOrders(snapshot.docs);
-
       const currentActiveIds = new Set(activeDocs.map(d => d.id));
 
       if (!initialized){
