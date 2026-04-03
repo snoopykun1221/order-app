@@ -1,95 +1,889 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-<title>北海道本格ジンギスカン ひつじや｜ご注文</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <title>北海道本格ジンギスカン ひつじや｜ご注文</title>
 
-<style>
-:root{
-  --bg:#3b2a20;
-  --line:rgba(255,245,230,.14);
-  --text:#fff8f0;
-  --muted:rgba(255,240,225,.72);
-  --gold:#e0b86b;
-  --danger:#8f1f1f;
-  --danger2:#6f1313;
-  --shadow:0 18px 60px rgba(0,0,0,.35);
-  --radius:18px;
-}
+  <style>
+    :root{
+      --bg:#3b2a20;
+      --line:rgba(255,245,230,.14);
+      --text:#fff8f0;
+      --muted:rgba(255,240,225,.72);
+      --gold:#e0b86b;
+      --danger:#8f1f1f;
+      --danger2:#6f1313;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius:18px;
+    }
 
-*{ box-sizing:border-box; }
+    *{ box-sizing:border-box; }
 
-body{
-  margin:0;
-  font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
-  background:
-    radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.12), transparent 70%),
-    radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.08), transparent 70%),
-    linear-gradient(180deg,#5a4030,#2b1d16);
-  color:var(--text);
-  font-size:14px;
-  overflow-x:hidden;
-}
+    body{
+      margin:0;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.12), transparent 70%),
+        radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.08), transparent 70%),
+        linear-gradient(180deg,#5a4030 0%, #3b2a20 55%, #2b1d16 100%);
+      color:var(--text);
+      font-size:14px;
+      overflow-x:hidden;
+    }
 
-.wrap{
-  max-width:1200px;
-  margin:0 auto;
-  padding:20px 12px 28px;
-}
+    body.menu-open{
+      overflow:hidden;
+      touch-action:none;
+    }
 
-.title{
-  font-weight:1000;
-  color:var(--gold);
-}
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:20px 12px 28px;
+    }
 
-.title,
-.navTitle,
-.panelTitle,
-.sectionHead h2{
-  font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
-  letter-spacing:.05em;
-}
+    header{
+      padding:10px 0 18px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:14px;
+      position:relative;
+    }
 
-.navBtn{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  border:1px solid var(--line);
-  background:rgba(255,248,240,.06);
-  color:var(--text);
-  padding:12px 14px;
-  border-radius:14px;
-  text-decoration:none;
-  font-weight:900;
-  font-size:17px;
-  transition:.15s;
-  cursor:pointer;
-  gap:10px;
-}
+    .title-with-sheep{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:nowrap;
+    }
 
-.navBtn small{
-  color:var(--muted);
-  font-weight:800;
-  font-size:13px;
-}
+    .title-text{
+      text-align:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:min(92vw, 680px);
+    }
 
-.card{
-  background:linear-gradient(180deg, rgba(255,248,240,.05), rgba(255,248,240,.025));
-}
+    @media (max-width: 480px){
+      .title-text{
+        white-space:normal;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        max-width:92vw;
+      }
+    }
 
-.itemCard{
-  background:rgba(255,248,240,.04);
-}
+    .sheep-icon{
+      width:30px;
+      height:30px;
+      flex:0 0 auto;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));
+      opacity:.95;
+      object-fit:contain;
+    }
 
-/* 既存CSSはそのまま続く */
-</style>
+    .title{
+      font-size:clamp(20px, 4.6vw, 30px);
+      font-weight:1000;
+      letter-spacing:.05em;
+      color:var(--gold);
+      margin:0 0 6px;
+      line-height:1.15;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:clamp(12px, 2.6vw, 14px);
+      text-align:center;
+    }
+
+    .topRow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.06);
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .pill strong{ color:var(--text); }
+
+    .layout{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+
+    @media (min-width: 980px){
+      .layout{
+        grid-template-columns:240px 1fr;
+        align-items:start;
+      }
+    }
+
+    .navCard{
+      background:linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:sticky;
+      top:14px;
+    }
+
+    .navTitle{
+      padding:14px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background:rgba(255,248,240,.05);
+      letter-spacing:.08em;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .navList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:12px;
+    }
+
+    .navBtn{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.06);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      font-size:17px;
+      transition:.15s;
+      cursor:pointer;
+      gap:10px;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      letter-spacing:.03em;
+    }
+
+    .navBtn:hover{
+      background:rgba(224,184,107,.12);
+      border-color:rgba(224,184,107,.35);
+    }
+
+    .navBtn small{
+      color:var(--muted);
+      font-weight:800;
+      font-size:13px;
+    }
+
+    .navBtn.active{
+      background:rgba(224,184,107,.16);
+      border-color:rgba(224,184,107,.55);
+      color:var(--gold);
+    }
+
+    @media (max-width: 979px){
+      .navCard{ display:none; }
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,248,240,.05), rgba(255,248,240,.025));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .panelTitle{
+      padding:14px 16px;
+      font-weight:1000;
+      color:var(--gold);
+      border-bottom:1px solid var(--line);
+      background:rgba(255,248,240,.05);
+      letter-spacing:.08em;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .menuWrap{ padding:14px; }
+
+    .section{
+      margin:8px 0 18px;
+      scroll-margin-top:86px;
+    }
+
+    .sectionHead{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 10px 12px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
+    }
+
+    .sectionHead h2{
+      margin:0;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:.06em;
+      color:var(--text);
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .sectionHead p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .menuGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .itemCard{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,248,240,.04);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:170px;
+      position:relative;
+      overflow:hidden;
+      transition:transform .08s ease;
+    }
+
+    .itemCard.flash{
+      box-shadow:0 0 0 2px rgba(224,184,107,.55), 0 18px 60px rgba(0,0,0,.35);
+      transform:translateY(-1px);
+    }
+
+    .flashMark{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,245,230,.18);
+      background:rgba(60,40,30,.35);
+      font-weight:1000;
+    }
+
+    .itemCard.flash .flashMark{ display:flex; }
+
+    .itemCard h3{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.03em;
+      line-height:1.2;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .desc{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      min-height:14px;
+    }
+
+    .tagline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,245,230,.10);
+      background:rgba(255,248,240,.05);
+      color:rgba(255,248,240,.9);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.02em;
+    }
+
+    .tag.gold{
+      border-color:rgba(224,184,107,.35);
+      background:rgba(224,184,107,.10);
+      color:var(--gold);
+    }
+
+    .stepRow{
+      margin-top:auto;
+      display:flex;
+      justify-content:center;
+    }
+
+    .stepper{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.04);
+      border-radius:14px;
+      padding:8px 10px;
+      min-width:148px;
+      justify-content:center;
+    }
+
+    .stepBtn{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.08);
+      color:var(--text);
+      font-weight:1000;
+      cursor:pointer;
+      font-size:18px;
+      flex:0 0 auto;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .stepQty{
+      min-width:24px;
+      text-align:center;
+      font-weight:1000;
+      font-size:18px;
+      flex:0 0 auto;
+    }
+
+    .note{
+      margin-top:8px;
+      text-align:center;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.4;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:24px;
+      transform:translateX(-50%);
+      background:rgba(56,38,28,.95);
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      font-weight:900;
+      display:none;
+      max-width:min(560px, 92vw);
+      z-index:9999;
+      text-align:center;
+    }
+
+    .hamburger{
+      display:none;
+      position:fixed;
+      top:calc(env(safe-area-inset-top) + 14px);
+      left:14px;
+      z-index:1002;
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(70,48,35,.40);
+      backdrop-filter:blur(10px);
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      gap:3px;
+      flex-direction:column;
+    }
+
+    .hamburger span{
+      width:18px;
+      height:2px;
+      background:rgba(255,248,240,.9);
+      border-radius:2px;
+      display:block;
+    }
+
+    .drawerOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      z-index:1000;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease;
+    }
+
+    .drawerOverlay.show{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .drawer{
+      position:fixed;
+      top:env(safe-area-inset-top);
+      left:0;
+      height:calc(100dvh - env(safe-area-inset-top));
+      width:min(320px, 86vw);
+      z-index:1001;
+      transform:translateX(-102%);
+      transition:transform .18s ease;
+      padding:24px 14px 14px;
+      background:rgba(58,40,30,.96);
+      backdrop-filter:blur(12px);
+      border-right:1px solid rgba(255,245,230,.10);
+      box-shadow:0 18px 60px rgba(0,0,0,.35);
+      overflow:auto;
+    }
+
+    .drawer.show{ transform:translateX(0); }
+
+    .drawerHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:6px 4px 12px;
+      border-bottom:1px solid rgba(255,245,230,.10);
+      margin-bottom:10px;
+      margin-top:6px;
+    }
+
+    .drawerTitle{
+      font-weight:1000;
+      color:var(--gold);
+      letter-spacing:.08em;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    }
+
+    .drawerClose{
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:rgba(255,248,240,.04);
+      color:rgba(255,248,240,.9);
+      font-size:18px;
+      cursor:pointer;
+    }
+
+    .foot{
+      margin-top:18px;
+      text-align:center;
+      color:rgba(255,240,225,.5);
+      font-size:12px;
+    }
+
+    @media (max-width: 979px){
+      .wrap{ padding:14px 12px 24px; }
+      header{ padding:8px 0 14px; margin-bottom:14px; }
+      .menuWrap{ padding:12px; }
+      .panelTitle{ padding:12px 14px; }
+      .card{ box-shadow:0 10px 30px rgba(0,0,0,.30); }
+      .hamburger{ display:flex; }
+    }
+
+    @media (max-width: 640px){
+      .menuGrid{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+      }
+
+      .itemCard{
+        min-height:160px;
+        padding:10px;
+      }
+
+      .itemCard h3{
+        font-size:15px;
+      }
+
+      .stepper{
+        min-width:100%;
+        gap:8px;
+      }
+
+      .stepBtn{
+        width:32px;
+        height:32px;
+      }
+
+      .stepQty{
+        font-size:16px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <button id="hamburger" class="hamburger" aria-label="カテゴリを開く">
+    <span></span><span></span><span></span>
+  </button>
 
-<!-- ここから下はあなたの元コードそのまま使う -->
-<!-- HTMLもJSも一切削ってない -->
+  <div id="drawerOverlay" class="drawerOverlay"></div>
 
+  <aside id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawerHead">
+      <div class="drawerTitle">カテゴリ</div>
+      <button id="drawerClose" class="drawerClose" aria-label="閉じる">×</button>
+    </div>
+    <div id="drawerNav" class="navList"></div>
+  </aside>
+
+  <div class="wrap">
+    <header>
+      <div class="title-with-sheep">
+        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+        <div class="title-text">
+          <h1 class="title">北海道本格ジンギスカン ひつじや</h1>
+          <p class="sub">ごゆっくりお選びください</p>
+        </div>
+        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+      </div>
+
+      <div class="topRow">
+        <div id="tablePill" class="pill" style="display:none;">
+          テーブル <strong id="tableNo">-</strong>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="navCard">
+        <div class="navTitle">カテゴリ</div>
+        <div id="catNav" class="navList"></div>
+      </aside>
+
+      <section class="card">
+        <div class="panelTitle">
+          <span>メニュー</span>
+        </div>
+        <div class="menuWrap" id="menu"></div>
+      </section>
+    </div>
+
+    <div class="foot">※ ＋を押すと1杯ずつ即注文されます</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBwehYqjyO7R982qHjTMiNGjQ2yPNEA7YU",
+      authDomain: "order-app-ec18b.firebaseapp.com",
+      projectId: "order-app-ec18b",
+      storageBucket: "order-app-ec18b.firebasestorage.app",
+      messagingSenderId: "756193856808",
+      appId: "1:756193856808:web:f2200287017adaf895541d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const CATEGORIES = [
+      { id:"beer", label:"ビール" },
+      { id:"high", label:"ハイボール" },
+      { id:"sour", label:"サワー" },
+      { id:"cock", label:"カクテル" },
+      { id:"wine", label:"ワイン" },
+      { id:"soft", label:"ソフトドリンク" }
+    ];
+
+    const MENU = [
+      { id:"beer_classic", category:"beer", name:"クラシック", desc:"", tags:["飲み放題"] },
+      { id:"beer_black", category:"beer", name:"黒ラベル", desc:"", tags:["飲み放題"] },
+
+      { id:"high_std", category:"high", name:"ハイボール", desc:"", tags:["飲み放題"] },
+      { id:"high_coke", category:"high", name:"コークハイ", desc:"", tags:["飲み放題"] },
+      { id:"high_ginger", category:"high", name:"ジンジャーハイ", desc:"", tags:["飲み放題"] },
+
+      { id:"sour_lemon", category:"sour", name:"レモンサワー", desc:"", tags:["飲み放題"] },
+      { id:"sour_grape", category:"sour", name:"グレープフルーツサワー", desc:"", tags:["飲み放題"] },
+      { id:"sour_ume", category:"sour", name:"梅サワー", desc:"", tags:["飲み放題"] },
+
+      { id:"cock_cassis_orange", category:"cock", name:"カシスオレンジ", desc:"", tags:["飲み放題"] },
+      { id:"cock_fuzzy", category:"cock", name:"ファジーネーブル", desc:"", tags:["飲み放題"] },
+      { id:"cock_cassis_soda", category:"cock", name:"カシスソーダ", desc:"", tags:["飲み放題"] },
+
+      { id:"wine_red", category:"wine", name:"赤ワイン", desc:"", tags:["飲み放題"] },
+      { id:"wine_white", category:"wine", name:"白ワイン", desc:"", tags:["飲み放題"] },
+
+      { id:"soft_calpis", category:"soft", name:"カルピス", desc:"", tags:["飲み放題"] },
+      { id:"soft_oolong", category:"soft", name:"ウーロン茶", desc:"", tags:["飲み放題"] },
+      { id:"soft_cola", category:"soft", name:"コーラ", desc:"", tags:["飲み放題"] },
+      { id:"soft_ginger", category:"soft", name:"ジンジャーエール", desc:"", tags:["飲み放題"] },
+      { id:"soft_orange", category:"soft", name:"オレンジジュース", desc:"", tags:["飲み放題"] }
+    ];
+
+    const qs = new URLSearchParams(location.search);
+    const tableParam = qs.get("table");
+    const table = Number(tableParam);
+    const tableOk = Number.isFinite(table) && table > 0;
+
+    const tablePill = document.getElementById("tablePill");
+    const tableNoEl = document.getElementById("tableNo");
+
+    if (tableOk) {
+      tablePill.style.display = "inline-flex";
+      tableNoEl.textContent = String(table);
+    }
+
+    function toast(msg){
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.style.display = "block";
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => t.style.display = "none", 2200);
+    }
+
+    if (!tableOk){
+      toast("URLに ?table=1 のようにテーブル番号を付けてください");
+    }
+
+    function safeText(v, fallback="-"){
+      if (v === null || v === undefined) return fallback;
+      const s = String(v).trim();
+      return s.length ? s : fallback;
+    }
+
+    function vibrateOnSuccess(ms = 60){
+      try{
+        if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+          navigator.vibrate(ms);
+        }
+      } catch {}
+    }
+
+    const hamburger = document.getElementById("hamburger");
+    const drawer = document.getElementById("drawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+    const drawerClose = document.getElementById("drawerClose");
+
+    function openDrawer(){
+      drawer.classList.add("show");
+      drawerOverlay.classList.add("show");
+      drawer.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+
+    function closeDrawer(){
+      drawer.classList.remove("show");
+      drawerOverlay.classList.remove("show");
+      drawer.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("menu-open");
+    }
+
+    hamburger?.addEventListener("click", openDrawer);
+    drawerClose?.addEventListener("click", closeDrawer);
+    drawerOverlay?.addEventListener("click", closeDrawer);
+
+    const catNavEl = document.getElementById("catNav");
+    const drawerNavEl = document.getElementById("drawerNav");
+    const menuEl = document.getElementById("menu");
+
+    const addQty = {};
+
+    function getAddQty(id){
+      const v = Number(addQty[id] ?? 1);
+      return Math.max(1, Math.min(10, v));
+    }
+
+    function setAddQty(id, v){
+      addQty[id] = Math.max(1, Math.min(10, Number(v) || 1));
+    }
+
+    async function directOrder(id, qty){
+      if (!tableOk){
+        toast("テーブル番号が必要です");
+        return;
+      }
+
+      const m = MENU.find(x => x.id === id);
+      if (!m) return;
+
+      const n = Math.max(1, Math.min(10, Number(qty) || 1));
+
+      try{
+        await addDoc(collection(db, "orders"), {
+          type: "drink",
+          table: table,
+          items: [{ name: m.name, qty: n }],
+          total: 0,
+          totalQty: n,
+          status: "new",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        const card = menuEl.querySelector(`.itemCard[data-item="${CSS.escape(id)}"]`);
+        if (card){
+          card.classList.add("flash");
+          clearTimeout(card._flashTimer);
+          card._flashTimer = setTimeout(() => card.classList.remove("flash"), 420);
+        }
+
+        vibrateOnSuccess(60);
+        toast(`${m.name} ×${n} を注文しました`);
+      } catch (e){
+        console.error(e);
+        toast("注文に失敗しました");
+      }
+    }
+
+    function goCategory(catId){
+      const el = document.getElementById(`cat-${catId}`);
+      if (el) el.scrollIntoView({ behavior:"smooth", block:"start" });
+      closeDrawer();
+    }
+
+    function renderNavInto(container){
+      if (!container) return;
+
+      const counts = new Map();
+      for (const c of CATEGORIES) {
+        counts.set(c.id, MENU.filter(m => m.category === c.id).length);
+      }
+
+      container.innerHTML = CATEGORIES.map(c => {
+        const count = counts.get(c.id) ?? 0;
+        return `<a class="navBtn" data-nav="${c.id}" href="#cat-${c.id}">
+          <span>${c.label}</span><small>${count}</small>
+        </a>`;
+      }).join("");
+
+      container.querySelectorAll("a.navBtn").forEach(a => {
+        a.addEventListener("click", (e) => {
+          const key = a.getAttribute("data-nav");
+          if (!key) return;
+          e.preventDefault();
+          goCategory(key);
+        });
+      });
+    }
+
+    function renderNav(){
+      renderNavInto(catNavEl);
+      renderNavInto(drawerNavEl);
+    }
+
+    function renderMenu(){
+      const byCat = new Map();
+      for (const c of CATEGORIES) byCat.set(c.id, []);
+      for (const m of MENU) {
+        if (!byCat.has(m.category)) byCat.set(m.category, []);
+        byCat.get(m.category).push(m);
+      }
+
+      menuEl.innerHTML = CATEGORIES.map(c => {
+        const items = byCat.get(c.id) || [];
+
+        const grid = items.map(m => {
+          const qty = getAddQty(m.id);
+          const tags = Array.isArray(m.tags) ? m.tags : [];
+          const tagsHtml = tags.length ? `
+            <div class="tagline">
+              ${tags.map(t => `<span class="tag ${t === "飲み放題" ? "gold" : ""}">${t}</span>`).join("")}
+            </div>
+          ` : `<div class="tagline"></div>`;
+
+          return `
+            <div class="itemCard" data-item="${m.id}">
+              <div class="flashMark">✓</div>
+
+              <div style="min-width:0;">
+                <h3>${safeText(m.name, "-")}</h3>
+                <p class="desc">${safeText(m.desc, "")}</p>
+                ${tagsHtml}
+              </div>
+
+              <div class="stepRow">
+                <div class="stepper" aria-label="数量">
+                  <button class="stepBtn" data-step-minus="${m.id}">−</button>
+                  <div class="stepQty" data-step-qty="${m.id}">${qty}</div>
+                  <button class="stepBtn" data-step-plus="${m.id}">＋</button>
+                </div>
+              </div>
+
+              <div class="note">＋を押すとそのまま注文されます</div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="section" id="cat-${c.id}">
+            <div class="sectionHead">
+              <h2>${c.label}</h2>
+              <p>${items.length} 品</p>
+            </div>
+            <div class="menuGrid">
+              ${grid || `<div style="color:var(--muted);padding:6px 10px;">（準備中）</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    menuEl.addEventListener("click", async (e) => {
+      const btnMinus = e.target.closest("[data-step-minus]");
+      const btnPlus = e.target.closest("[data-step-plus]");
+
+      if (btnMinus){
+        const id = btnMinus.getAttribute("data-step-minus");
+        setAddQty(id, getAddQty(id) - 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+        return;
+      }
+
+      if (btnPlus){
+        const id = btnPlus.getAttribute("data-step-plus");
+        const currentQty = getAddQty(id);
+        await directOrder(id, 1);
+        setAddQty(id, currentQty + 1);
+        const qEl = menuEl.querySelector(`[data-step-qty="${CSS.escape(id)}"]`);
+        if (qEl) qEl.textContent = String(getAddQty(id));
+      }
+    });
+
+    renderNav();
+    renderMenu();
+  </script>
 </body>
 </html>
