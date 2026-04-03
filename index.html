@@ -7,19 +7,19 @@
 
   <style>
     :root{
-      --bg:#2b211b;
-      --bg2:#1f1813;
-      --panel:#3a2d25;
-      --panel2:#46372d;
-      --card:#5a4638;
-      --card2:#645042;
-      --line:rgba(255,244,230,.18);
-      --text:#fff8ef;
-      --muted:rgba(255,241,224,.78);
-      --gold:#e0b86b;
-      --danger:#a52a22;
-      --danger2:#7f1914;
-      --shadow:0 18px 60px rgba(0,0,0,.30);
+      --bg:#131110;
+      --bg2:#0c0b0a;
+      --panel:#1d1917;
+      --panel2:#26201d;
+      --card:#2b2420;
+      --card2:#332b26;
+      --line:rgba(255,244,230,.14);
+      --text:#fff9f2;
+      --muted:rgba(255,241,224,.70);
+      --gold:#dfb96e;
+      --danger:#a72922;
+      --danger2:#7b1612;
+      --shadow:0 18px 60px rgba(0,0,0,.45);
       --radius:18px;
     }
 
@@ -34,9 +34,9 @@
       margin:0;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
       background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.08), transparent 70%),
-        radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.05), transparent 70%),
-        linear-gradient(180deg, #3a2b22 0%, var(--bg) 48%, var(--bg2) 100%);
+        radial-gradient(1200px 600px at 20% -10%, rgba(223,185,110,.08), transparent 70%),
+        radial-gradient(900px 500px at 90% 0%, rgba(223,185,110,.04), transparent 70%),
+        linear-gradient(180deg, #1b1715 0%, var(--bg) 50%, var(--bg2) 100%);
       color:var(--text);
       font-size:14px;
       overflow-x:hidden;
@@ -64,7 +64,7 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      gap:10px;
+      gap:12px;
       flex-wrap:nowrap;
     }
 
@@ -76,7 +76,7 @@
       max-width:min(92vw,680px);
     }
 
-    @media (max-width: 480px){
+    @media (max-width:480px){
       .title-text{
         white-space:normal;
         display:-webkit-box;
@@ -87,16 +87,14 @@
     }
 
     .sheep-icon{
-      width:30px;
-      height:30px;
+      font-size:30px;
+      line-height:1;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));
       flex:0 0 auto;
-      object-fit:contain;
-      filter:drop-shadow(0 6px 14px rgba(0,0,0,.28));
-      opacity:.98;
     }
 
     .title{
-      font-size:clamp(20px, 4.6vw, 30px);
+      font-size:clamp(20px,4.6vw,30px);
       font-weight:1000;
       letter-spacing:.05em;
       color:var(--gold);
@@ -107,7 +105,7 @@
     .sub{
       margin:0;
       color:var(--muted);
-      font-size:clamp(12px, 2.6vw, 14px);
+      font-size:clamp(12px,2.6vw,14px);
       text-align:center;
     }
 
@@ -127,7 +125,7 @@
       padding:7px 12px;
       border-radius:999px;
       border:1px solid var(--line);
-      background:rgba(255,248,240,.05);
+      background:rgba(255,248,240,.04);
       color:var(--muted);
       font-size:12px;
     }
@@ -140,7 +138,7 @@
       gap:16px;
     }
 
-    @media (min-width: 980px){
+    @media (min-width:980px){
       .layout{
         grid-template-columns:240px 1fr;
         align-items:start;
@@ -148,7 +146,7 @@
     }
 
     .navCard{
-      background:linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03));
+      background:linear-gradient(180deg, rgba(255,248,240,.04), rgba(255,248,240,.02));
       border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -162,7 +160,7 @@
       font-weight:1000;
       color:var(--gold);
       border-bottom:1px solid var(--line);
-      background:rgba(255,248,240,.05);
+      background:rgba(255,248,240,.04);
       letter-spacing:.08em;
     }
 
@@ -178,7 +176,7 @@
       justify-content:space-between;
       align-items:center;
       border:1px solid var(--line);
-      background:rgba(255,248,240,.07);
+      background:rgba(255,248,240,.05);
       color:var(--text);
       padding:12px 14px;
       border-radius:14px;
@@ -192,8 +190,8 @@
     }
 
     .navBtn:hover{
-      background:rgba(224,184,107,.14);
-      border-color:rgba(224,184,107,.35);
+      background:rgba(223,185,110,.12);
+      border-color:rgba(223,185,110,.35);
       transform:translateY(-1px);
     }
 
@@ -203,12 +201,12 @@
       font-size:13px;
     }
 
-    @media (max-width: 979px){
+    @media (max-width:979px){
       .navCard{ display:none; }
     }
 
     .card{
-      background:linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03));
+      background:linear-gradient(180deg, rgba(255,248,240,.04), rgba(255,248,240,.02));
       border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -220,7 +218,7 @@
       font-weight:1000;
       color:var(--gold);
       border-bottom:1px solid var(--line);
-      background:rgba(255,248,240,.05);
+      background:rgba(255,248,240,.04);
       letter-spacing:.08em;
       display:flex;
       align-items:center;
@@ -277,7 +275,7 @@
       overflow:hidden;
       transition:transform .12s ease, box-shadow .18s ease;
       background:
-        linear-gradient(180deg, rgba(255,248,240,.08), rgba(255,248,240,.04)),
+        linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03)),
         linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
     }
 
@@ -289,21 +287,21 @@
       background:
         repeating-linear-gradient(
           0deg,
-          rgba(255,255,255,.012) 0px,
-          rgba(255,255,255,.012) 1px,
+          rgba(255,255,255,.01) 0px,
+          rgba(255,255,255,.01) 1px,
           transparent 1px,
           transparent 5px
         );
-      opacity:.12;
+      opacity:.10;
     }
 
     .itemCard:hover{
       transform:translateY(-1px);
-      box-shadow:0 12px 30px rgba(0,0,0,.15);
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
     }
 
     .itemCard.flash{
-      box-shadow:0 0 0 2px rgba(224,184,107,.55), 0 18px 60px rgba(0,0,0,.30);
+      box-shadow:0 0 0 2px rgba(223,185,110,.5), 0 18px 60px rgba(0,0,0,.38);
       transform:translateY(-1px);
     }
 
@@ -358,7 +356,7 @@
       align-items:center;
       gap:10px;
       border:1px solid var(--line);
-      background:rgba(255,248,240,.06);
+      background:rgba(255,248,240,.05);
       border-radius:14px;
       padding:8px 10px;
       min-width:148px;
@@ -385,7 +383,7 @@
 
     .stepBtn:active{
       transform:scale(.94);
-      box-shadow:0 0 0 2px rgba(224,184,107,.18) inset;
+      box-shadow:0 0 0 2px rgba(223,185,110,.18) inset;
     }
 
     .stepQty{
@@ -397,33 +395,37 @@
     }
 
     .cartAddBtn,
-    .orderSingleBtn{
+    .bottomOrderBtn,
+    .confirmBtn,
+    .cancelBtn{
       border:none;
       cursor:pointer;
       font-weight:1000;
       transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
       border-radius:14px;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
-      height:42px;
     }
 
     .cartAddBtn{
       width:100%;
-      background:linear-gradient(180deg, rgba(224,184,107,.22), rgba(170,120,55,.18));
+      background:linear-gradient(180deg, rgba(223,185,110,.22), rgba(170,120,55,.18));
       color:var(--gold);
-      border:1px solid rgba(224,184,107,.38);
+      border:1px solid rgba(223,185,110,.38);
       letter-spacing:.04em;
+      height:42px;
     }
 
     .cartAddBtn:hover,
-    .orderSingleBtn:hover,
-    .bottomOrderBtn:hover{
+    .bottomOrderBtn:hover,
+    .confirmBtn:hover,
+    .cancelBtn:hover{
       filter:brightness(1.04);
     }
 
     .cartAddBtn:active,
-    .orderSingleBtn:active,
-    .bottomOrderBtn:active{
+    .bottomOrderBtn:active,
+    .confirmBtn:active,
+    .cancelBtn:active{
       transform:scale(.97);
     }
 
@@ -432,7 +434,7 @@
       left:50%;
       bottom:84px;
       transform:translateX(-50%);
-      background:rgba(56,38,28,.95);
+      background:rgba(40,31,27,.96);
       border:1px solid var(--line);
       color:var(--text);
       padding:12px 14px;
@@ -455,7 +457,7 @@
       height:44px;
       border-radius:12px;
       border:1px solid var(--line);
-      background:rgba(70,48,35,.46);
+      background:rgba(35,28,24,.56);
       backdrop-filter:blur(10px);
       cursor:pointer;
       align-items:center;
@@ -472,17 +474,19 @@
       display:block;
     }
 
-    .drawerOverlay{
+    .drawerOverlay,
+    .confirmOverlay{
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,.45);
+      background:rgba(0,0,0,.48);
       z-index:1000;
       opacity:0;
       pointer-events:none;
       transition:opacity .18s ease;
     }
 
-    .drawerOverlay.show{
+    .drawerOverlay.show,
+    .confirmOverlay.show{
       opacity:1;
       pointer-events:auto;
     }
@@ -497,7 +501,7 @@
       transform:translateX(-102%);
       transition:transform .18s ease;
       padding:24px 14px 14px;
-      background:rgba(58,40,30,.97);
+      background:rgba(30,24,21,.98);
       backdrop-filter:blur(12px);
       border-right:1px solid rgba(255,245,230,.10);
       box-shadow:0 18px 60px rgba(0,0,0,.35);
@@ -540,7 +544,7 @@
       bottom:0;
       display:flex;
       padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-      background:rgba(52,36,27,.96);
+      background:rgba(24,20,18,.97);
       border-top:1px solid var(--line);
       backdrop-filter:blur(10px);
       z-index:9998;
@@ -548,8 +552,6 @@
 
     .bottomOrderBtn{
       width:100%;
-      border:none;
-      border-radius:16px;
       background:linear-gradient(180deg, var(--danger), var(--danger2));
       color:#fff;
       padding:15px 16px;
@@ -557,9 +559,6 @@
       font-weight:1000;
       letter-spacing:.06em;
       box-shadow:0 10px 24px rgba(111,19,19,.25);
-      cursor:pointer;
-      transition:transform .12s ease, filter .18s ease;
-      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
     }
 
     .btnCount{
@@ -578,6 +577,116 @@
       vertical-align:middle;
     }
 
+    .confirmModal{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(.96);
+      width:min(640px, 92vw);
+      max-height:78vh;
+      overflow:hidden;
+      z-index:10020;
+      background:linear-gradient(180deg, rgba(34,28,24,.98), rgba(22,18,16,.98));
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 24px 70px rgba(0,0,0,.45);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+    }
+
+    .confirmModal.show{
+      opacity:1;
+      pointer-events:auto;
+      transform:translate(-50%,-50%) scale(1);
+    }
+
+    .confirmHead{
+      padding:16px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      color:var(--gold);
+      font-weight:1000;
+      letter-spacing:.06em;
+    }
+
+    .confirmBody{
+      padding:14px;
+      max-height:52vh;
+      overflow:auto;
+    }
+
+    .confirmEmpty{
+      color:var(--muted);
+      text-align:center;
+      padding:24px 10px;
+      border:1px dashed var(--line);
+      border-radius:14px;
+      background:rgba(255,248,240,.03);
+    }
+
+    .confirmList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .confirmRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:rgba(255,248,240,.05);
+      padding:10px 12px;
+    }
+
+    .confirmName{
+      font-weight:1000;
+      line-height:1.4;
+    }
+
+    .confirmQty{
+      color:var(--gold);
+      font-weight:1000;
+      white-space:nowrap;
+    }
+
+    .confirmFoot{
+      padding:14px 16px 16px;
+      border-top:1px solid var(--line);
+      display:grid;
+      gap:10px;
+    }
+
+    .confirmSummary{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .confirmActions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .cancelBtn{
+      background:rgba(255,248,240,.08);
+      color:var(--text);
+      border:1px solid var(--line);
+      padding:13px 14px;
+    }
+
+    .confirmBtn{
+      background:linear-gradient(180deg, var(--danger), var(--danger2));
+      color:#fff;
+      padding:13px 14px;
+    }
+
     .foot{
       margin-top:18px;
       text-align:center;
@@ -585,7 +694,7 @@
       font-size:12px;
     }
 
-    @media (max-width: 979px){
+    @media (max-width:979px){
       .wrap{ padding:14px 12px 92px; }
       header{ padding:8px 0 14px; margin-bottom:14px; }
       .menuWrap{ padding:12px; }
@@ -594,7 +703,7 @@
       .hamburger{ display:flex; }
     }
 
-    @media (max-width: 640px){
+    @media (max-width:640px){
       .menuGrid{
         grid-template-columns:1fr 1fr;
         gap:10px;
@@ -627,6 +736,10 @@
         height:40px;
         font-size:13px;
       }
+
+      .confirmActions{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
@@ -637,6 +750,7 @@
   </button>
 
   <div id="drawerOverlay" class="drawerOverlay"></div>
+  <div id="confirmOverlay" class="confirmOverlay"></div>
 
   <aside id="drawer" class="drawer" aria-hidden="true">
     <div class="drawerHead">
@@ -646,15 +760,32 @@
     <div id="drawerNav" class="navList"></div>
   </aside>
 
+  <div id="confirmModal" class="confirmModal" aria-hidden="true">
+    <div class="confirmHead">
+      <span>注文内容の確認</span>
+      <button id="confirmClose" class="drawerClose" aria-label="閉じる">×</button>
+    </div>
+    <div class="confirmBody">
+      <div id="confirmContent"></div>
+    </div>
+    <div class="confirmFoot">
+      <div id="confirmSummary" class="confirmSummary"></div>
+      <div class="confirmActions">
+        <button id="cancelConfirm" class="cancelBtn">戻る</button>
+        <button id="finalOrderBtn" class="confirmBtn">この内容で注文する</button>
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <header>
       <div class="title-with-sheep">
-        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+        <div class="sheep-icon" aria-hidden="true">🐑</div>
         <div class="title-text">
           <h1 class="title">北海道本格ジンギスカン ひつじや</h1>
           <p class="sub">ごゆっくりお選びください</p>
         </div>
-        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+        <div class="sheep-icon" aria-hidden="true">🐑</div>
       </div>
 
       <div class="topRow">
@@ -752,6 +883,13 @@
     const menuEl = document.getElementById("menu");
     const cartCount = document.getElementById("cartCount");
     const bottomOrderBtn = document.getElementById("bottomOrderBtn");
+    const confirmModal = document.getElementById("confirmModal");
+    const confirmOverlay = document.getElementById("confirmOverlay");
+    const confirmContent = document.getElementById("confirmContent");
+    const confirmSummary = document.getElementById("confirmSummary");
+    const confirmClose = document.getElementById("confirmClose");
+    const cancelConfirm = document.getElementById("cancelConfirm");
+    const finalOrderBtn = document.getElementById("finalOrderBtn");
 
     const CART_KEY = tableOk ? `drink_cart_table_${table}` : "drink_cart_unknown";
     let cart = {};
@@ -838,6 +976,49 @@
       }
     }
 
+    function renderConfirm(){
+      const items = Object.values(cart).filter(x => x.qty > 0);
+
+      if (!items.length){
+        confirmContent.innerHTML = `<div class="confirmEmpty">カートが空です</div>`;
+        confirmSummary.textContent = "";
+        return;
+      }
+
+      confirmContent.innerHTML = `
+        <div class="confirmList">
+          ${items.map(item => `
+            <div class="confirmRow">
+              <div class="confirmName">${item.name}</div>
+              <div class="confirmQty">×${item.qty}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+
+      const totalQty = items.reduce((sum, x) => sum + x.qty, 0);
+      confirmSummary.textContent = `合計 ${totalQty} 点を注文します。内容をご確認ください。`;
+    }
+
+    function openConfirm(){
+      if (totalCartCount() === 0){
+        toast("カートが空です");
+        return;
+      }
+      renderConfirm();
+      confirmModal.classList.add("show");
+      confirmOverlay.classList.add("show");
+      confirmModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("menu-open");
+    }
+
+    function closeConfirm(){
+      confirmModal.classList.remove("show");
+      confirmOverlay.classList.remove("show");
+      confirmModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("menu-open");
+    }
+
     async function submitOrder(){
       if (!tableOk){
         toast("テーブル番号が必要です");
@@ -851,12 +1032,10 @@
       }
 
       const totalQty = items.reduce((sum, x) => sum + x.qty, 0);
-      const ok = confirm(`テーブル${table}の飲み物を注文します。\n点数: ${totalQty}\nよろしいですか？`);
-      if (!ok) return;
 
-      bottomOrderBtn.disabled = true;
-      const oldText = bottomOrderBtn.innerHTML;
-      bottomOrderBtn.textContent = "送信中…";
+      finalOrderBtn.disabled = true;
+      const oldText = finalOrderBtn.textContent;
+      finalOrderBtn.textContent = "送信中…";
 
       try{
         await addDoc(collection(db, "orders"), {
@@ -873,18 +1052,23 @@
         cart = {};
         saveCart();
         updateCartCount();
+        closeConfirm();
         vibrateOnSuccess(80);
         toast("注文しました");
       } catch (e){
         console.error(e);
         toast("注文に失敗しました");
       } finally {
-        bottomOrderBtn.innerHTML = oldText;
-        updateCartCount();
+        finalOrderBtn.textContent = oldText;
+        finalOrderBtn.disabled = false;
       }
     }
 
-    bottomOrderBtn.addEventListener("click", submitOrder);
+    bottomOrderBtn.addEventListener("click", openConfirm);
+    confirmClose.addEventListener("click", closeConfirm);
+    cancelConfirm.addEventListener("click", closeConfirm);
+    confirmOverlay.addEventListener("click", closeConfirm);
+    finalOrderBtn.addEventListener("click", submitOrder);
 
     const hamburger = document.getElementById("hamburger");
     const drawer = document.getElementById("drawer");
