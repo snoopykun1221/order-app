@@ -102,15 +102,11 @@
       border-radius:12px;
       padding:10px 12px;
       font-size:13px;
+      white-space:nowrap;
     }
 
-    .btn:hover{
-      filter:brightness(1.04);
-    }
-
-    .btn:active{
-      transform:scale(.97);
-    }
+    .btn:hover{ filter:brightness(1.04); }
+    .btn:active{ transform:scale(.97); }
 
     .btn.sound{
       background:linear-gradient(180deg, rgba(223,185,110,.22), rgba(170,120,55,.18));
@@ -152,6 +148,7 @@
       font-weight:1000;
       color:var(--gold);
       line-height:1.1;
+      white-space:nowrap;
     }
 
     .panels{
@@ -186,6 +183,13 @@
       align-items:center;
       gap:8px;
       flex-wrap:wrap;
+      min-width:0;
+    }
+
+    .panelTitleText{
+      white-space:nowrap;
+      word-break:keep-all;
+      line-height:1;
     }
 
     .countBadge{
@@ -202,6 +206,7 @@
       font-size:13px;
       font-weight:1000;
       line-height:1;
+      white-space:nowrap;
     }
 
     .panelBody{
@@ -211,6 +216,7 @@
     .muted{
       color:var(--muted);
       font-size:12px;
+      white-space:nowrap;
     }
 
     .orderList{
@@ -256,10 +262,18 @@
       position:relative;
       z-index:1;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:12px;
       margin-bottom:12px;
+    }
+
+    .orderHeadLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      flex-wrap:wrap;
     }
 
     .tableNo{
@@ -267,13 +281,6 @@
       font-weight:1000;
       color:var(--gold);
       line-height:1.1;
-    }
-
-    .orderMeta{
-      color:var(--muted);
-      font-size:12px;
-      text-align:right;
-      line-height:1.5;
       white-space:nowrap;
     }
 
@@ -288,7 +295,6 @@
       color:var(--gold);
       font-size:12px;
       font-weight:1000;
-      margin-top:8px;
       white-space:nowrap;
       line-height:1;
     }
@@ -297,6 +303,15 @@
       border-color:rgba(62,122,76,.35);
       background:rgba(62,122,76,.14);
       color:#c8f0d0;
+    }
+
+    .orderMeta{
+      color:var(--muted);
+      font-size:12px;
+      text-align:right;
+      line-height:1.4;
+      white-space:nowrap;
+      flex-shrink:0;
     }
 
     .itemList{
@@ -357,6 +372,7 @@
       cursor:pointer;
       transition:transform .12s ease, filter .18s ease;
       font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      white-space:nowrap;
     }
 
     .doneBtn:hover,
@@ -463,6 +479,7 @@
 
       .orderHead{
         flex-direction:column;
+        align-items:flex-start;
       }
 
       .orderMeta{
@@ -487,6 +504,10 @@
       .titleActions{
         width:100%;
         justify-content:flex-end;
+      }
+
+      .panelTitle{
+        align-items:flex-start;
       }
     }
   </style>
@@ -532,7 +553,7 @@
       <div class="panel">
         <div class="panelTitle">
           <div class="panelTitleLeft">
-            <span>現在の注文</span>
+            <span class="panelTitleText">現在の注文</span>
             <span id="activeCountBadge" class="countBadge">0</span>
           </div>
           <span class="muted">新しい順</span>
@@ -544,7 +565,7 @@
 
       <div class="panel">
         <div class="panelTitle">
-          <span>完了済み</span>
+          <span class="panelTitleText">完了済み</span>
           <div class="titleActions">
             <button id="toggleCompletedBtn" class="toggleBtn">折りたたむ</button>
             <button id="clearCompletedBtn" class="clearAllBtn">全削除</button>
@@ -761,13 +782,11 @@
       return `
         <div class="orderCard">
           <div class="orderHead">
-            <div>
+            <div class="orderHeadLeft">
               <div class="tableNo">テーブル ${data.table ?? "-"}</div>
               ${isCompleted ? `<div class="badge doneBadge">完了済み</div>` : ``}
             </div>
-            <div class="orderMeta">
-              <div>${formatTime(data.createdAt)} / 合計 ${qty} 点</div>
-            </div>
+            <div class="orderMeta">${formatTime(data.createdAt)} / 合計 ${qty} 点</div>
           </div>
 
           <div class="itemList">
