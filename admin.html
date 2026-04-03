@@ -266,9 +266,19 @@
       justify-content:space-between;
       gap:12px;
       margin-bottom:12px;
+      flex-wrap:wrap;
     }
 
-    .orderHeadLeft{
+    .orderMain{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      width:100%;
+      flex-wrap:wrap;
+    }
+
+    .orderMainLeft{
       display:flex;
       align-items:center;
       gap:10px;
@@ -297,6 +307,7 @@
       font-weight:1000;
       white-space:nowrap;
       line-height:1;
+      flex-shrink:0;
     }
 
     .doneBadge{
@@ -305,13 +316,13 @@
       color:#c8f0d0;
     }
 
-    .orderMeta{
+    .orderMetaInline{
       color:var(--muted);
       font-size:12px;
-      text-align:right;
       line-height:1.4;
       white-space:nowrap;
       flex-shrink:0;
+      text-align:right;
     }
 
     .itemList{
@@ -367,7 +378,6 @@
     .toggleBtn{
       border:none;
       border-radius:12px;
-      padding:10px 14px;
       font-weight:1000;
       cursor:pointer;
       transition:transform .12s ease, filter .18s ease;
@@ -392,11 +402,17 @@
     .doneBtn{
       background:linear-gradient(180deg, var(--ok), var(--ok2));
       color:#fff;
+      padding:8px 12px;
+      font-size:12px;
+      min-width:72px;
     }
 
     .deleteBtn{
       background:linear-gradient(180deg, var(--danger), var(--danger2));
       color:#fff;
+      padding:8px 12px;
+      font-size:12px;
+      min-width:72px;
     }
 
     .clearAllBtn{
@@ -477,12 +493,13 @@
         grid-template-columns:1fr 1fr;
       }
 
-      .orderHead{
-        flex-direction:column;
+      .orderMain{
         align-items:flex-start;
+        flex-direction:column;
+        gap:8px;
       }
 
-      .orderMeta{
+      .orderMetaInline{
         text-align:left;
       }
     }
@@ -782,11 +799,13 @@
       return `
         <div class="orderCard">
           <div class="orderHead">
-            <div class="orderHeadLeft">
-              <div class="tableNo">テーブル ${data.table ?? "-"}</div>
-              ${isCompleted ? `<div class="badge doneBadge">完了済み</div>` : ``}
+            <div class="orderMain">
+              <div class="orderMainLeft">
+                <div class="tableNo">テーブル ${data.table ?? "-"}</div>
+                ${isCompleted ? `<div class="badge doneBadge">完了済み</div>` : ``}
+              </div>
+              <div class="orderMetaInline">${formatTime(data.createdAt)} / 合計 ${qty} 点</div>
             </div>
-            <div class="orderMeta">${formatTime(data.createdAt)} / 合計 ${qty} 点</div>
           </div>
 
           <div class="itemList">
