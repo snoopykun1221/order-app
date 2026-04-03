@@ -7,15 +7,17 @@
 
   <style>
     :root{
-      --bg:#0b0d10;
-      --line:rgba(255,255,255,.08);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.58);
-      --gold:#c8a45a;
-      --danger:#a40000;
-      --danger2:#7c0000;
-      --ok:#1e8e3e;
-      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --bg:#3b2a20;
+      --bg2:#2b1d16;
+      --line:rgba(255,245,230,.14);
+      --text:#fff8f0;
+      --muted:rgba(255,240,225,.72);
+      --gold:#e0b86b;
+      --danger:#8f1f1f;
+      --danger2:#6f1313;
+      --ok:#3f7a4a;
+      --ok2:#2f5e38;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
       --radius:18px;
     }
 
@@ -23,32 +25,32 @@
 
     body{
       margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
       background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(200,164,90,.12), transparent 70%),
-        radial-gradient(900px 500px at 90% 0%, rgba(200,164,90,.08), transparent 70%),
-        var(--bg);
+        radial-gradient(1200px 600px at 20% -10%, rgba(224,184,107,.12), transparent 70%),
+        radial-gradient(900px 500px at 90% 0%, rgba(224,184,107,.08), transparent 70%),
+        linear-gradient(180deg,#5a4030 0%, var(--bg) 55%, var(--bg2) 100%);
       color:var(--text);
-      overflow-x:hidden;
+      min-height:100vh;
     }
 
     .wrap{
       max-width:1200px;
       margin:0 auto;
-      padding:20px 12px 90px;
+      padding:20px 12px 40px;
     }
 
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding:12px 0 18px;
+      gap:12px;
+      padding:10px 0 18px;
       border-bottom:1px solid var(--line);
-      margin-bottom:14px;
+      margin-bottom:16px;
     }
 
-    .titleWrap{
+    .titleArea{
       display:flex;
       align-items:center;
       gap:10px;
@@ -58,22 +60,23 @@
     .sheep-icon{
       width:30px;
       height:30px;
-      object-fit:contain;
-      filter: drop-shadow(0 6px 14px rgba(0,0,0,.45));
-      opacity:.95;
       flex:0 0 auto;
+      filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));
+      opacity:.95;
+      object-fit:contain;
     }
 
-    .titleBlock{
+    .titleText{
       min-width:0;
     }
 
     .title{
       margin:0;
-      color:var(--gold);
-      font-size:clamp(22px, 4vw, 30px);
+      font-size:clamp(20px, 4.6vw, 30px);
       font-weight:1000;
-      line-height:1.1;
+      letter-spacing:.05em;
+      color:var(--gold);
+      line-height:1.15;
     }
 
     .sub{
@@ -82,7 +85,7 @@
       font-size:13px;
     }
 
-    .topActions{
+    .actions{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
@@ -90,81 +93,70 @@
     }
 
     .btn{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.03);
-      color:rgba(255,255,255,.92);
-      border-radius:14px;
-      padding:10px 14px;
-      font-weight:1000;
+      border:none;
       cursor:pointer;
-      white-space:nowrap;
+      font-weight:1000;
+      transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:14px;
     }
 
     .btn:hover{
-      background:rgba(255,255,255,.06);
+      filter:brightness(1.04);
     }
 
-    .btn.gold{
-      border-color:rgba(200,164,90,.45);
-      background:rgba(200,164,90,.10);
+    .btn:active{
+      transform:scale(.97);
+    }
+
+    .btn.sound{
+      background:linear-gradient(180deg, rgba(224,184,107,.22), rgba(170,120,55,.18));
       color:var(--gold);
+      border:1px solid rgba(224,184,107,.38);
     }
 
-    .btn.red{
-      border-color:rgba(164,0,0,.35);
-      background:rgba(164,0,0,.18);
-      color:#fff;
-    }
-
-    .statusRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:var(--muted);
-      font-size:12px;
-      font-weight:900;
-    }
-
-    .pill strong{
+    .btn.reload{
+      background:rgba(255,248,240,.06);
       color:var(--text);
-    }
-
-    .pill.ok{
-      border-color:rgba(30,142,62,.35);
-      background:rgba(30,142,62,.12);
-      color:#b8f2c8;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:14px;
-    }
-
-    @media (min-width: 1000px){
-      .grid{
-        grid-template-columns: 1fr 320px;
-        align-items:start;
-      }
-    }
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
       border:1px solid var(--line);
-      border-radius:var(--radius);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .statCard{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      background:linear-gradient(180deg, rgba(255,248,240,.06), rgba(255,248,240,.03));
       box-shadow:var(--shadow);
+    }
+
+    .statLabel{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .statValue{
+      font-size:26px;
+      font-weight:1000;
+      color:var(--gold);
+      line-height:1.1;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:18px;
       overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,248,240,.05), rgba(255,248,240,.025));
+      box-shadow:var(--shadow);
     }
 
     .panelTitle{
@@ -172,16 +164,21 @@
       font-weight:1000;
       color:var(--gold);
       border-bottom:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      letter-spacing:.04em;
+      background:rgba(255,248,240,.05);
+      letter-spacing:.08em;
       display:flex;
-      justify-content:space-between;
       align-items:center;
+      justify-content:space-between;
       gap:12px;
     }
 
     .panelBody{
       padding:14px;
+    }
+
+    .muted{
+      color:var(--muted);
+      font-size:12px;
     }
 
     .orderList{
@@ -193,54 +190,79 @@
     .orderCard{
       border:1px solid var(--line);
       border-radius:16px;
-      background:rgba(0,0,0,.20);
-      padding:12px;
+      padding:14px;
+      background:
+        linear-gradient(180deg, rgba(255,248,240,.09), rgba(255,248,240,.045)),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.07) 0 8%, transparent 9%),
+        radial-gradient(circle at 75% 35%, rgba(255,255,255,.05) 0 7%, transparent 8%),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,.04) 0 6%, transparent 7%),
+        linear-gradient(135deg, rgba(255,250,242,.10), rgba(235,220,195,.05));
+      background-size:auto, 180px 180px, 220px 220px, 200px 200px, auto;
+      position:relative;
+      overflow:hidden;
     }
 
-    .orderCard.new{
-      box-shadow:0 0 0 1px rgba(200,164,90,.35);
+    .orderCard::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,.018) 0px,
+          rgba(255,255,255,.018) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+      opacity:.25;
     }
 
-    .orderTop{
+    .orderHead{
+      position:relative;
+      z-index:1;
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap:10px;
-      margin-bottom:10px;
+      gap:12px;
+      margin-bottom:12px;
     }
 
     .tableNo{
-      font-size:18px;
+      font-size:22px;
       font-weight:1000;
       color:var(--gold);
-      line-height:1.2;
+      line-height:1.1;
     }
 
-    .meta{
+    .orderMeta{
       color:var(--muted);
       font-size:12px;
-      line-height:1.4;
       text-align:right;
+      line-height:1.5;
     }
 
-    .typeBadge{
+    .badge{
       display:inline-flex;
       align-items:center;
+      gap:6px;
       padding:4px 10px;
       border-radius:999px;
-      border:1px solid rgba(200,164,90,.35);
-      background:rgba(200,164,90,.10);
+      border:1px solid rgba(224,184,107,.35);
+      background:rgba(224,184,107,.10);
       color:var(--gold);
       font-size:12px;
       font-weight:1000;
-      margin-top:6px;
+      margin-top:8px;
     }
 
-    .items{
+    .itemList{
+      position:relative;
+      z-index:1;
       display:flex;
       flex-direction:column;
       gap:8px;
-      margin-top:10px;
+      margin-bottom:12px;
     }
 
     .itemRow{
@@ -250,84 +272,63 @@
       gap:10px;
       border:1px solid var(--line);
       border-radius:12px;
-      background:rgba(255,255,255,.03);
+      background:rgba(255,248,240,.05);
       padding:10px 12px;
     }
 
     .itemName{
-      font-weight:900;
-      line-height:1.3;
+      font-weight:1000;
+      line-height:1.4;
     }
 
     .itemQty{
-      color:var(--text);
-      font-weight:1000;
       white-space:nowrap;
+      font-weight:1000;
+      color:var(--gold);
     }
 
-    .orderBottom{
-      margin-top:12px;
+    .orderFoot{
+      position:relative;
+      z-index:1;
       display:flex;
-      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
       flex-wrap:wrap;
     }
 
-    .doneBtn,
-    .deleteBtn{
-      flex:1;
-      min-width:120px;
-      border-radius:12px;
-      padding:10px 12px;
+    .totalQty{
+      color:var(--text);
       font-weight:1000;
-      cursor:pointer;
     }
 
     .doneBtn{
-      border:1px solid rgba(30,142,62,.35);
-      background:rgba(30,142,62,.16);
-      color:#eaffef;
+      background:linear-gradient(180deg, var(--ok), var(--ok2));
+      color:#fff;
+      border:none;
+      border-radius:12px;
+      padding:10px 14px;
+      font-weight:1000;
+      cursor:pointer;
+      transition:transform .12s ease, filter .18s ease;
+      font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
     }
 
-    .deleteBtn{
-      border:1px solid rgba(164,0,0,.35);
-      background:rgba(164,0,0,.18);
-      color:#fff;
+    .doneBtn:hover{
+      filter:brightness(1.05);
+    }
+
+    .doneBtn:active{
+      transform:scale(.97);
     }
 
     .empty{
-      color:var(--muted);
+      padding:22px 14px;
       text-align:center;
-      padding:20px 12px;
+      color:var(--muted);
       border:1px dashed var(--line);
       border-radius:14px;
-      background:rgba(255,255,255,.02);
-    }
-
-    .sideList{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .sideStat{
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:rgba(0,0,0,.20);
-      padding:12px;
-    }
-
-    .sideStatTitle{
-      color:var(--muted);
-      font-size:12px;
-      margin-bottom:6px;
-      font-weight:900;
-    }
-
-    .sideStatValue{
-      font-size:24px;
-      color:var(--gold);
-      font-weight:1000;
-      line-height:1.1;
+      background:rgba(255,248,240,.03);
     }
 
     .toast{
@@ -335,7 +336,7 @@
       left:50%;
       bottom:24px;
       transform:translateX(-50%);
-      background:rgba(16,19,24,.94);
+      background:rgba(56,38,28,.95);
       border:1px solid var(--line);
       color:var(--text);
       padding:12px 14px;
@@ -348,22 +349,26 @@
       text-align:center;
     }
 
-    @media (max-width: 700px){
+    @media (max-width: 800px){
       .topbar{
-        align-items:flex-start;
         flex-direction:column;
+        align-items:flex-start;
       }
 
-      .topActions{
+      .actions{
         width:100%;
         justify-content:flex-start;
       }
 
-      .orderTop{
+      .stats{
+        grid-template-columns:1fr;
+      }
+
+      .orderHead{
         flex-direction:column;
       }
 
-      .meta{
+      .orderMeta{
         text-align:left;
       }
     }
@@ -373,58 +378,43 @@
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="titleWrap">
-        <img src="assets/hitsuji.png" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
-        <div class="titleBlock">
+      <div class="titleArea">
+        <img src="assets/sheep.png.jpg" alt="ひつじ" class="sheep-icon" onerror="this.style.display='none'">
+        <div class="titleText">
           <h1 class="title">注文管理</h1>
           <p class="sub">飲み放題オーダーをリアルタイムで確認できます</p>
         </div>
       </div>
 
-      <div class="topActions">
-        <button id="enableSoundBtn" class="btn gold">音をON</button>
-        <button id="reloadBtn" class="btn">再読込</button>
+      <div class="actions">
+        <button id="soundBtn" class="btn sound">音をON</button>
+        <button id="reloadBtn" class="btn reload">再読み込み</button>
       </div>
     </div>
 
-    <div class="statusRow">
-      <div class="pill">状態 <strong id="soundStatus">音OFF</strong></div>
-      <div class="pill">表示件数 <strong id="countText">0</strong></div>
-      <div class="pill ok">対象 <strong>orders</strong></div>
+    <div class="stats">
+      <div class="statCard">
+        <div class="statLabel">現在の注文数</div>
+        <div id="statOrderCount" class="statValue">0</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">合計点数</div>
+        <div id="statQtyCount" class="statValue">0</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">音の状態</div>
+        <div id="statSound" class="statValue" style="font-size:20px;">OFF</div>
+      </div>
     </div>
 
-    <div class="grid">
-      <section class="card">
-        <div class="panelTitle">
-          <span>新着注文一覧</span>
-          <span id="latestTime" style="font-size:12px;color:rgba(255,255,255,.72);font-weight:900;">-</span>
-        </div>
-        <div class="panelBody">
-          <div id="orderList" class="orderList"></div>
-        </div>
-      </section>
-
-      <aside class="card">
-        <div class="panelTitle">概要</div>
-        <div class="panelBody">
-          <div class="sideList">
-            <div class="sideStat">
-              <div class="sideStatTitle">現在の注文数</div>
-              <div id="statOrders" class="sideStatValue">0</div>
-            </div>
-
-            <div class="sideStat">
-              <div class="sideStatTitle">合計点数</div>
-              <div id="statQty" class="sideStatValue">0</div>
-            </div>
-
-            <div class="sideStat">
-              <div class="sideStatTitle">最新テーブル</div>
-              <div id="statTable" class="sideStatValue">-</div>
-            </div>
-          </div>
-        </div>
-      </aside>
+    <div class="panel">
+      <div class="panelTitle">
+        <span>注文一覧</span>
+        <span class="muted">新しい順</span>
+      </div>
+      <div class="panelBody">
+        <div id="orderList" class="orderList"></div>
+      </div>
     </div>
   </div>
 
@@ -456,17 +446,14 @@
     const db = getFirestore(app);
 
     const orderList = document.getElementById("orderList");
-    const enableSoundBtn = document.getElementById("enableSoundBtn");
+    const statOrderCount = document.getElementById("statOrderCount");
+    const statQtyCount = document.getElementById("statQtyCount");
+    const statSound = document.getElementById("statSound");
+    const soundBtn = document.getElementById("soundBtn");
     const reloadBtn = document.getElementById("reloadBtn");
-    const soundStatus = document.getElementById("soundStatus");
-    const countText = document.getElementById("countText");
-    const latestTime = document.getElementById("latestTime");
-    const statOrders = document.getElementById("statOrders");
-    const statQty = document.getElementById("statQty");
-    const statTable = document.getElementById("statTable");
 
-    let soundEnabled = false;
     let audioCtx = null;
+    let soundEnabled = false;
     let initialized = false;
     let knownIds = new Set();
 
@@ -476,21 +463,6 @@
       t.style.display = "block";
       clearTimeout(toast._timer);
       toast._timer = setTimeout(() => t.style.display = "none", 2200);
-    }
-
-    function formatTime(ts){
-      try{
-        if (!ts?.toDate) return "-";
-        return ts.toDate().toLocaleString("ja-JP", {
-          month:"2-digit",
-          day:"2-digit",
-          hour:"2-digit",
-          minute:"2-digit",
-          second:"2-digit"
-        });
-      } catch {
-        return "-";
-      }
     }
 
     function ensureAudio(){
@@ -506,17 +478,14 @@
       try{
         const ctx = ensureAudio();
         if (!ctx){
-          soundStatus.textContent = "非対応";
           toast("この端末では音が使えません");
           return;
         }
-
         if (ctx.state === "suspended"){
           await ctx.resume();
         }
-
         soundEnabled = true;
-        soundStatus.textContent = "音ON";
+        statSound.textContent = "ON";
         toast("音を有効にしました");
       } catch (e){
         console.error(e);
@@ -524,9 +493,8 @@
       }
     }
 
-    function playNewOrderSound(){
+    function playSound(){
       if (!soundEnabled) return;
-
       try{
         const ctx = ensureAudio();
         if (!ctx) return;
@@ -563,102 +531,97 @@
       }
     }
 
-    function calcTotalQty(data){
-      const items = Array.isArray(data?.items) ? data.items : [];
-      return items.reduce((sum, item) => sum + Number(item?.qty || 0), 0);
+    function formatTime(ts){
+      try{
+        if (!ts?.toDate) return "-";
+        return ts.toDate().toLocaleString("ja-JP", {
+          month:"2-digit",
+          day:"2-digit",
+          hour:"2-digit",
+          minute:"2-digit",
+          second:"2-digit"
+        });
+      } catch {
+        return "-";
+      }
     }
 
-    function renderOrders(docs){
-      countText.textContent = String(docs.length);
-      statOrders.textContent = String(docs.length);
-
-      const totalQty = docs.reduce((sum, d) => sum + calcTotalQty(d.data()), 0);
-      statQty.textContent = String(totalQty);
-
-      if (docs[0]){
-        const top = docs[0].data();
-        statTable.textContent = top?.table ?? "-";
-        latestTime.textContent = formatTime(top?.createdAt);
-      } else {
-        statTable.textContent = "-";
-        latestTime.textContent = "-";
-      }
-
-      if (!docs.length){
-        orderList.innerHTML = `<div class="empty">まだ注文はありません</div>`;
-        return;
-      }
-
-      orderList.innerHTML = docs.map(d => {
-        const data = d.data();
-        const items = Array.isArray(data?.items) ? data.items : [];
-        const qty = calcTotalQty(data);
-
-        const itemsHtml = items.map(item => `
-          <div class="itemRow">
-            <div class="itemName">${item?.name ?? "-"}</div>
-            <div class="itemQty">×${Number(item?.qty || 0)}</div>
-          </div>
-        `).join("");
-
-        return `
-          <div class="orderCard new" data-id="${d.id}">
-            <div class="orderTop">
-              <div>
-                <div class="tableNo">テーブル ${data?.table ?? "-"}</div>
-                <div class="typeBadge">${data?.type === "drink" ? "ドリンク注文" : "注文"}</div>
-              </div>
-              <div class="meta">
-                <div>${formatTime(data?.createdAt)}</div>
-                <div>合計点数: ${qty}</div>
-              </div>
-            </div>
-
-            <div class="items">
-              ${itemsHtml || `<div class="itemRow"><div class="itemName">-</div><div class="itemQty">×0</div></div>`}
-            </div>
-
-            <div class="orderBottom">
-              <button class="doneBtn" data-done="${d.id}">完了</button>
-              <button class="deleteBtn" data-delete="${d.id}">削除</button>
-            </div>
-          </div>
-        `;
-      }).join("");
+    function totalQty(items){
+      return (items || []).reduce((sum, item) => sum + Number(item.qty || 0), 0);
     }
 
-    async function removeOrder(id){
+    async function completeOrder(id){
       try{
         await deleteDoc(doc(db, "orders", id));
-        toast("注文を削除しました");
+        toast("注文を完了にしました");
       } catch (e){
         console.error(e);
         toast("削除に失敗しました");
       }
     }
 
-    enableSoundBtn?.addEventListener("click", enableSound);
-    reloadBtn?.addEventListener("click", () => location.reload());
+    function renderOrders(docs){
+      statOrderCount.textContent = String(docs.length);
 
-    orderList?.addEventListener("click", async (e) => {
-      const doneBtn = e.target.closest("[data-done]");
-      const deleteBtn = e.target.closest("[data-delete]");
+      const qtySum = docs.reduce((sum, d) => {
+        const data = d.data();
+        return sum + totalQty(data.items || []);
+      }, 0);
+      statQtyCount.textContent = String(qtySum);
 
-      if (doneBtn){
-        const id = doneBtn.getAttribute("data-done");
-        const ok = confirm("この注文を完了として消しますか？");
-        if (!ok) return;
-        await removeOrder(id);
+      if (!docs.length){
+        orderList.innerHTML = `<div class="empty">現在、注文はありません</div>`;
         return;
       }
 
-      if (deleteBtn){
-        const id = deleteBtn.getAttribute("data-delete");
-        const ok = confirm("この注文を削除しますか？");
-        if (!ok) return;
-        await removeOrder(id);
-      }
+      orderList.innerHTML = docs.map(d => {
+        const data = d.data();
+        const items = data.items || [];
+        const qty = totalQty(items);
+
+        return `
+          <div class="orderCard">
+            <div class="orderHead">
+              <div>
+                <div class="tableNo">テーブル ${data.table ?? "-"}</div>
+                <div class="badge">${data.type === "drink" ? "ドリンク注文" : "注文"}</div>
+              </div>
+              <div class="orderMeta">
+                <div>${formatTime(data.createdAt)}</div>
+                <div>合計 ${qty} 点</div>
+              </div>
+            </div>
+
+            <div class="itemList">
+              ${items.map(item => `
+                <div class="itemRow">
+                  <div class="itemName">${item.name}</div>
+                  <div class="itemQty">×${item.qty}</div>
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="orderFoot">
+              <div class="totalQty">注文点数：${qty}</div>
+              <button class="doneBtn" data-done="${d.id}">完了</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    orderList.addEventListener("click", async (e) => {
+      const btn = e.target.closest("[data-done]");
+      if (!btn) return;
+
+      const id = btn.getAttribute("data-done");
+      const ok = confirm("この注文を完了にしますか？");
+      if (!ok) return;
+      await completeOrder(id);
     });
+
+    soundBtn.addEventListener("click", enableSound);
+    reloadBtn.addEventListener("click", () => location.reload());
 
     const q = query(
       collection(db, "orders"),
@@ -669,7 +632,7 @@
     onSnapshot(q, (snapshot) => {
       renderOrders(snapshot.docs);
 
-      const currentIds = new Set(snapshot.docs.map(doc => doc.id));
+      const currentIds = new Set(snapshot.docs.map(d => d.id));
 
       if (!initialized){
         knownIds = currentIds;
@@ -677,24 +640,24 @@
         return;
       }
 
-      let hasNewOrder = false;
-      for (const docSnap of snapshot.docs){
-        if (!knownIds.has(docSnap.id)){
-          hasNewOrder = true;
+      let hasNew = false;
+      for (const d of snapshot.docs){
+        if (!knownIds.has(d.id)){
+          hasNew = true;
           break;
         }
       }
 
-      if (hasNewOrder){
-        playNewOrderSound();
+      if (hasNew){
+        playSound();
         toast("新しい注文が入りました");
       }
 
       knownIds = currentIds;
-    }, (error) => {
-      console.error(error);
+    }, (e) => {
+      console.error(e);
+      toast("注文の取得に失敗しました");
       orderList.innerHTML = `<div class="empty">注文の取得に失敗しました</div>`;
-      toast("Firestoreの取得に失敗しました");
     });
   </script>
 </body>
