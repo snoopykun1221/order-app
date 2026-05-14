@@ -3,122 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>世界制覇トラッカー</title>
+  <title>そうまの世界制覇</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      background: #060b18;
-      color: #dce6ff;
+      background: #060b18; color: #dce6ff;
       font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Segoe UI', system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
+      min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
     }
-
-    header {
-      padding: 18px 16px 12px;
-      background: linear-gradient(180deg, #0a1228 0%, transparent 100%);
-      text-align: center;
-    }
-
+    header { padding: 18px 16px 12px; background: linear-gradient(180deg, #0a1228 0%, transparent 100%); text-align: center; }
     h1 {
-      font-size: clamp(1.3rem, 5vw, 2.2rem);
-      font-weight: 800;
-      letter-spacing: 0.04em;
+      font-size: clamp(1.3rem, 5vw, 2.2rem); font-weight: 800; letter-spacing: 0.04em;
       background: linear-gradient(135deg, #ffe066 0%, #ff9500 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 14px;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px;
     }
-
-    .stats {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .stat-box {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 14px;
-      padding: 10px 18px;
-      min-width: 100px;
-      text-align: center;
-    }
-
-    .stat-number          { font-size: 1.9rem; font-weight: 900; line-height: 1; color: #ffd24d; }
-    .stat-number.red      { color: #ff6b6b; }
-    .stat-number.green    { color: #5ef58a; }
-
-    .stat-label {
-      font-size: 0.68rem;
-      color: #6677aa;
-      margin-top: 3px;
-      letter-spacing: 0.05em;
-    }
-
-    .progress-wrap {
-      width: 90%;
-      max-width: 560px;
-      margin: 0 auto 6px;
-    }
-
-    .progress-bar {
-      height: 7px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #ffe066, #ff9500);
-      transition: width 0.4s cubic-bezier(.4,0,.2,1);
-      width: 0%;
-    }
-
-    #remaining-msg {
-      text-align: center;
-      font-size: 0.82rem;
-      color: #8899cc;
-      margin-top: 5px;
-    }
-
+    .stats { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .stat-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 10px 18px; min-width: 100px; text-align: center; }
+    .stat-number       { font-size: 1.9rem; font-weight: 900; line-height: 1; color: #ffd24d; }
+    .stat-number.red   { color: #ff6b6b; }
+    .stat-number.green { color: #5ef58a; }
+    .stat-label { font-size: 0.68rem; color: #6677aa; margin-top: 3px; letter-spacing: 0.05em; }
+    .progress-wrap { width: 90%; max-width: 560px; margin: 0 auto 6px; }
+    .progress-bar  { height: 7px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #ffe066, #ff9500); transition: width 0.4s cubic-bezier(.4,0,.2,1); width: 0%; }
+    #remaining-msg { text-align: center; font-size: 0.82rem; color: #8899cc; margin-top: 5px; }
     #remaining-msg span { color: #ffd24d; font-weight: 700; }
 
-    #map-wrap {
-      flex: 1;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 4px 8px;
-      cursor: grab;
-    }
-
+    #map-wrap { flex: 1; width: 100%; max-width: 1200px; margin: 0 auto; padding: 4px 8px; cursor: grab; }
     #map-wrap:active { cursor: grabbing; }
     svg#world { width: 100%; height: auto; display: block; }
-
     .sphere    { fill: #0b1526; }
     .graticule { fill: none; stroke: rgba(255,255,255,0.04); stroke-width: 0.4; }
     .borders   { fill: none; stroke: rgba(0,0,0,0.5); stroke-width: 0.5; pointer-events: none; }
-
-    .country {
-      stroke: rgba(0,0,0,0.4);
-      stroke-width: 0.4;
-      cursor: pointer;
-      transition: filter 0.15s ease, fill 0.18s ease;
-    }
-
+    .country { stroke: rgba(0,0,0,0.4); stroke-width: 0.4; cursor: pointer; transition: filter 0.15s ease, fill 0.18s ease; }
     .country:hover { filter: brightness(1.45); }
-
     .country[data-c="AS"] { fill: #1a4a6e; }
     .country[data-c="EU"] { fill: #1e4d3a; }
     .country[data-c="AF"] { fill: #5a2a10; }
@@ -127,220 +47,103 @@
     .country[data-c="OC"] { fill: #2a3a18; }
     .country[data-c="AN"] { fill: #1a2838; }
     .country              { fill: #1a3456; }
-
-    .country.visited {
-      fill: #ffd24d !important;
-      filter: drop-shadow(0 0 4px rgba(255,210,77,0.5));
-    }
-
+    .country.visited { fill: #ffd24d !important; filter: drop-shadow(0 0 4px rgba(255,210,77,0.5)); }
     .country.visited:hover { filter: brightness(1.15) drop-shadow(0 0 6px rgba(255,210,77,0.7)); }
 
     #tooltip {
-      position: fixed;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.12s;
-      z-index: 200;
-      background: rgba(6,11,24,0.96);
-      border: 1px solid rgba(255,210,77,0.35);
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 0.84rem;
-      white-space: nowrap;
+      position: fixed; pointer-events: none; opacity: 0; transition: opacity 0.12s; z-index: 200;
+      background: rgba(6,11,24,0.96); border: 1px solid rgba(255,210,77,0.35);
+      border-radius: 10px; padding: 8px 14px; font-size: 0.84rem; white-space: nowrap;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-
-    .tt-flag   { font-size: 1.4rem; margin-right: 6px; }
-    .tt-name   { font-weight: 700; color: #ffd24d; }
+    .tt-flag { font-size: 1.4rem; margin-right: 6px; }
+    .tt-name { font-weight: 700; color: #ffd24d; }
     .tt-status { color: #8899cc; font-size: 0.72rem; margin-top: 2px; }
 
-    .legend-row {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      font-size: 0.68rem;
-      color: #6677aa;
-      margin: 4px 0;
+    /* Continent section */
+    #continent-section { width: 100%; max-width: 1200px; margin: 8px auto 0; padding: 0 10px; }
+    .cont-section-title { font-size: 0.74rem; color: #6677aa; letter-spacing: 0.08em; margin-bottom: 8px; text-align: center; }
+    .cont-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+    @media (max-width: 480px) { .cont-grid { grid-template-columns: repeat(2, 1fr); } }
+    .cont-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 10px 12px 8px; cursor: pointer; transition: background 0.2s;
     }
+    .cont-card:hover  { background: rgba(255,255,255,0.06); }
+    .cont-card.active { border-color: rgba(255,210,77,0.45); background: rgba(255,210,77,0.05); }
+    .cont-header { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+    .cont-emoji { font-size: 0.95rem; }
+    .cont-name  { font-size: 0.7rem; color: #aabbdd; font-weight: 600; }
+    .cont-frac  { font-size: 1.15rem; font-weight: 900; color: #ffd24d; line-height: 1; margin-bottom: 1px; }
+    .cont-frac .sep { font-size: 0.65rem; color: #8899cc; font-weight: 400; margin: 0 2px; }
+    .cont-sub   { font-size: 0.58rem; color: #6677aa; margin-bottom: 5px; }
+    .cont-bar   { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .cont-fill  { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+    .cont-card[data-c="AS"] .cont-fill { background: #3a8abf; }
+    .cont-card[data-c="EU"] .cont-fill { background: #3abf7a; }
+    .cont-card[data-c="AF"] .cont-fill { background: #bf5a30; }
+    .cont-card[data-c="NA"] .cont-fill { background: #8a60d0; }
+    .cont-card[data-c="SA"] .cont-fill { background: #3abf8a; }
+    .cont-card[data-c="OC"] .cont-fill { background: #8abf40; }
+    .cont-card[data-c="AN"] .cont-fill { background: #4a8abf; }
+    .cont-filter-hint { text-align: center; font-size: 0.62rem; color: #445566; margin-top: 5px; }
 
-    .legend-row span { display: flex; align-items: center; gap: 4px; }
-
-    .ldot {
-      width: 10px; height: 10px;
-      border-radius: 3px;
-      display: inline-block;
-      flex-shrink: 0;
-    }
-
-    #list-section {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 10px 4px;
-    }
-
+    /* List */
+    #list-section { width: 100%; max-width: 1200px; margin: 8px auto 0; padding: 0 10px 4px; }
     .list-toggle {
-      width: 100%;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      color: #8899cc;
-      font-family: inherit;
-      font-size: 0.78rem;
-      padding: 8px 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background 0.2s;
+      width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; color: #8899cc; font-family: inherit; font-size: 0.78rem;
+      padding: 8px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s;
     }
-
     .list-toggle:hover { background: rgba(255,255,255,0.06); }
     .list-toggle .arrow { transition: transform 0.25s; }
     .list-toggle.open .arrow { transform: rotate(180deg); }
-
-    #visited-list {
-      display: none;
-      padding: 10px 4px 4px;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
+    #visited-list { display: none; padding: 10px 4px 4px; flex-wrap: wrap; gap: 6px; }
     #visited-list.open { display: flex; }
-
     .country-chip {
-      background: rgba(255,210,77,0.12);
-      border: 1px solid rgba(255,210,77,0.3);
-      border-radius: 20px;
-      padding: 3px 10px 3px 8px;
-      font-size: 0.75rem;
-      color: #ffd24d;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: background 0.15s;
-      white-space: nowrap;
+      background: rgba(255,210,77,0.12); border: 1px solid rgba(255,210,77,0.3);
+      border-radius: 20px; padding: 3px 10px 3px 8px; font-size: 0.75rem; color: #ffd24d;
+      cursor: pointer; display: flex; align-items: center; gap: 4px; transition: background 0.15s; white-space: nowrap;
     }
-
-    .country-chip:hover {
-      background: rgba(255,80,80,0.15);
-      border-color: rgba(255,80,80,0.4);
-      color: #ff8888;
-    }
-
+    .country-chip:hover { background: rgba(255,80,80,0.15); border-color: rgba(255,80,80,0.4); color: #ff8888; }
     .country-chip .chip-x { font-size: 0.65rem; opacity: 0.6; }
+    #list-empty { font-size: 0.75rem; color: #445577; padding: 6px 4px; display: none; }
 
-    #list-empty {
-      font-size: 0.75rem;
-      color: #445577;
-      padding: 6px 4px;
-      display: none;
-    }
-
-    footer {
-      padding: 8px 16px 18px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-
+    /* Footer */
+    .legend-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; font-size: 0.68rem; color: #6677aa; margin: 4px 0; }
+    .legend-row span { display: flex; align-items: center; gap: 4px; }
+    .ldot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+    footer { padding: 8px 16px 18px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .hint { font-size: 0.68rem; color: #445577; }
-
     .reset-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #556688;
-      padding: 6px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      transition: all 0.2s;
-      font-family: inherit;
+      background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #556688;
+      padding: 6px 16px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; transition: all 0.2s; font-family: inherit;
     }
+    .reset-btn:hover { border-color: rgba(255,80,80,0.4); color: #ff7777; background: rgba(255,50,50,0.07); }
 
-    .reset-btn:hover {
-      border-color: rgba(255,80,80,0.4);
-      color: #ff7777;
-      background: rgba(255,50,50,0.07);
-    }
-
-    #toast-wrap {
-      position: fixed;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 400;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: none;
-      align-items: center;
-    }
-
-    .toast {
-      background: #0d1a30;
-      border: 1.5px solid #ffd24d;
-      border-radius: 12px;
-      padding: 10px 22px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #ffd24d;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.5);
-      animation: toastIn 0.35s ease, toastOut 0.4s ease 2.8s forwards;
-      white-space: nowrap;
-    }
-
+    /* Toast */
+    #toast-wrap { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 400; display: flex; flex-direction: column; gap: 8px; pointer-events: none; align-items: center; }
+    .toast { background: #0d1a30; border: 1.5px solid #ffd24d; border-radius: 12px; padding: 10px 22px; font-size: 0.9rem; font-weight: 700; color: #ffd24d; box-shadow: 0 4px 24px rgba(0,0,0,0.5); animation: toastIn 0.35s ease, toastOut 0.4s ease 2.8s forwards; white-space: nowrap; }
     @keyframes toastIn  { from { opacity:0; transform:translateY(-16px) scale(0.9); } to { opacity:1; transform:none; } }
     @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateY(-8px); } }
 
-    #celebration {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(6,11,24,0.88);
-      z-index: 300;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* Celebration */
+    #celebration { display: none; position: fixed; inset: 0; background: rgba(6,11,24,0.88); z-index: 300; align-items: center; justify-content: center; }
     #celebration.show { display: flex; }
-
-    .cel-box {
-      background: #0d1a30;
-      border: 2px solid #ffd24d;
-      border-radius: 20px;
-      padding: 40px 50px;
-      text-align: center;
-      max-width: 380px;
-    }
-
-    .cel-box h2  { font-size: 2rem; color: #ffd24d; margin-bottom: 10px; }
-    .cel-box p   { color: #aabbdd; margin-bottom: 20px; }
-    .cel-box button {
-      background: #ffd24d;
-      color: #060b18;
-      border: none;
-      padding: 10px 28px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-    }
+    .cel-box { background: #0d1a30; border: 2px solid #ffd24d; border-radius: 20px; padding: 40px 50px; text-align: center; max-width: 380px; }
+    .cel-box h2 { font-size: 2rem; color: #ffd24d; margin-bottom: 10px; }
+    .cel-box p  { color: #aabbdd; margin-bottom: 20px; }
+    .cel-box button { background: #ffd24d; color: #060b18; border: none; padding: 10px 28px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>&#127760; 世界制覇トラッカー</h1>
+  <h1>&#127760; そうまの世界制覇</h1>
   <div class="stats">
     <div class="stat-box"><div class="stat-number green" id="visited-num">0</div><div class="stat-label">訪問済み</div></div>
-    <div class="stat-box"><div class="stat-number red" id="remaining-num">???</div><div class="stat-label">残り</div></div>
-    <div class="stat-box"><div class="stat-number" id="pct-num">0%</div><div class="stat-label">制覇率</div></div>
+    <div class="stat-box"><div class="stat-number red"   id="remaining-num">???</div><div class="stat-label">残り</div></div>
+    <div class="stat-box"><div class="stat-number"       id="pct-num">0%</div><div class="stat-label">制覇率</div></div>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -350,6 +153,11 @@
 
 <div id="map-wrap">
   <svg id="world" viewBox="0 0 960 500"></svg>
+</div>
+
+<div id="continent-section">
+  <div class="cont-section-title">▼ 大陸別制覇状況（タップで絞り込み）</div>
+  <div class="cont-grid" id="cont-grid"></div>
 </div>
 
 <div id="list-section">
@@ -389,199 +197,376 @@
 <div id="celebration">
   <div class="cel-box">
     <h2>&#127881; 世界制覇！</h2>
-    <p>全ての国を訪問しました！<br>本当におめでとうございます！</p>
+    <p>全ての国を訪問しました！<br>そうま、おめでとう！！</p>
     <button onclick="closeCelebration()">閉じる</button>
   </div>
 </div>
 
 <script>
-  const COUNTRIES = {
-    4:["アフガニスタン","AF","AS"],8:["アルバニア","AL","EU"],12:["アルジェリア","DZ","AF"],
-    24:["アンゴラ","AO","AF"],31:["アゼルバイジャン","AZ","AS"],32:["アルゼンチン","AR","SA"],
-    36:["オーストラリア","AU","OC"],40:["オーストリア","AT","EU"],44:["バハマ","BS","NA"],
-    48:["バーレーン","BH","AS"],50:["バングラデシュ","BD","AS"],51:["アルメニア","AM","AS"],
-    52:["バルバドス","BB","NA"],56:["ベルギー","BE","EU"],64:["ブータン","BT","AS"],
-    68:["ボリビア","BO","SA"],70:["ボスニア・ヘルツェゴビナ","BA","EU"],72:["ボツワナ","BW","AF"],
-    76:["ブラジル","BR","SA"],84:["ベリーズ","BZ","NA"],90:["ソロモン諸島","SB","OC"],
-    100:["ブルガリア","BG","EU"],104:["ミャンマー","MM","AS"],108:["ブルンジ","BI","AF"],
-    112:["ベラルーシ","BY","EU"],116:["カンボジア","KH","AS"],120:["カメルーン","CM","AF"],
-    124:["カナダ","CA","NA"],132:["カーボベルデ","CV","AF"],140:["中央アフリカ共和国","CF","AF"],
-    144:["スリランカ","LK","AS"],152:["チリ","CL","SA"],156:["中国","CN","AS"],
-    170:["コロンビア","CO","SA"],174:["コモロ","KM","AF"],178:["コンゴ共和国","CG","AF"],
-    180:["コンゴ民主共和国","CD","AF"],188:["コスタリカ","CR","NA"],191:["クロアチア","HR","EU"],
-    192:["キューバ","CU","NA"],196:["キプロス","CY","EU"],203:["チェコ","CZ","EU"],
-    204:["ベナン","BJ","AF"],208:["デンマーク","DK","EU"],212:["ドミニカ国","DM","NA"],
-    214:["ドミニカ共和国","DO","NA"],218:["エクアドル","EC","SA"],222:["エルサルバドル","SV","NA"],
-    226:["赤道ギニア","GQ","AF"],231:["エチオピア","ET","AF"],232:["エリトリア","ER","AF"],
-    233:["エストニア","EE","EU"],238:["フォークランド諸島","FK","SA"],242:["フィジー","FJ","OC"],
-    246:["フィンランド","FI","EU"],250:["フランス","FR","EU"],258:["仏領ポリネシア","PF","OC"],
-    262:["ジブチ","DJ","AF"],266:["ガボン","GA","AF"],268:["ジョージア","GE","AS"],
-    270:["ガンビア","GM","AF"],275:["パレスチナ","PS","AS"],276:["ドイツ","DE","EU"],
-    288:["ガーナ","GH","AF"],296:["キリバス","KI","OC"],300:["ギリシャ","GR","EU"],
-    308:["グレナダ","GD","NA"],320:["グアテマラ","GT","NA"],324:["ギニア","GN","AF"],
-    332:["ハイチ","HT","NA"],340:["ホンジュラス","HN","NA"],348:["ハンガリー","HU","EU"],
-    352:["アイスランド","IS","EU"],356:["インド","IN","AS"],360:["インドネシア","ID","AS"],
-    364:["イラン","IR","AS"],368:["イラク","IQ","AS"],372:["アイルランド","IE","EU"],
-    376:["イスラエル","IL","AS"],380:["イタリア","IT","EU"],384:["コートジボワール","CI","AF"],
-    388:["ジャマイカ","JM","NA"],392:["日本","JP","AS"],398:["カザフスタン","KZ","AS"],
-    400:["ヨルダン","JO","AS"],404:["ケニア","KE","AF"],408:["北朝鮮","KP","AS"],
-    410:["韓国","KR","AS"],414:["クウェート","KW","AS"],417:["キルギス","KG","AS"],
-    418:["ラオス","LA","AS"],422:["レバノン","LB","AS"],426:["レソト","LS","AF"],
-    428:["ラトビア","LV","EU"],430:["リベリア","LR","AF"],434:["リビア","LY","AF"],
-    440:["リトアニア","LT","EU"],442:["ルクセンブルク","LU","EU"],450:["マダガスカル","MG","AF"],
-    454:["マラウイ","MW","AF"],458:["マレーシア","MY","AS"],462:["モルディブ","MV","AS"],
-    466:["マリ","ML","AF"],470:["マルタ","MT","EU"],478:["モーリタニア","MR","AF"],
-    484:["メキシコ","MX","NA"],496:["モンゴル","MN","AS"],498:["モルドバ","MD","EU"],
-    499:["モンテネグロ","ME","EU"],504:["モロッコ","MA","AF"],508:["モザンビーク","MZ","AF"],
-    512:["オマーン","OM","AS"],516:["ナミビア","NA","AF"],524:["ネパール","NP","AS"],
-    528:["オランダ","NL","EU"],540:["ニューカレドニア","NC","OC"],548:["バヌアツ","VU","OC"],
-    554:["ニュージーランド","NZ","OC"],558:["ニカラグア","NI","NA"],562:["ニジェール","NE","AF"],
-    566:["ナイジェリア","NG","AF"],578:["ノルウェー","NO","EU"],583:["ミクロネシア連邦","FM","OC"],
-    584:["マーシャル諸島","MH","OC"],585:["パラオ","PW","OC"],586:["パキスタン","PK","AS"],
-    591:["パナマ","PA","NA"],598:["パプアニューギニア","PG","OC"],600:["パラグアイ","PY","SA"],
-    604:["ペルー","PE","SA"],608:["フィリピン","PH","AS"],616:["ポーランド","PL","EU"],
-    620:["ポルトガル","PT","EU"],624:["ギニアビサウ","GW","AF"],626:["東ティモール","TL","AS"],
-    630:["プエルトリコ","PR","NA"],634:["カタール","QA","AS"],642:["ルーマニア","RO","EU"],
-    643:["ロシア","RU","EU"],646:["ルワンダ","RW","AF"],659:["セントクリストファー・ネービス","KN","NA"],
-    662:["セントルシア","LC","NA"],670:["セントビンセント・グレナディーン","VC","NA"],
-    678:["サントメ・プリンシペ","ST","AF"],682:["サウジアラビア","SA","AS"],
-    686:["セネガル","SN","AF"],688:["セルビア","RS","EU"],694:["シエラレオネ","SL","AF"],
-    703:["スロバキア","SK","EU"],704:["ベトナム","VN","AS"],705:["スロベニア","SI","EU"],
-    706:["ソマリア","SO","AF"],710:["南アフリカ","ZA","AF"],716:["ジンバブエ","ZW","AF"],
-    724:["スペイン","ES","EU"],728:["南スーダン","SS","AF"],729:["スーダン","SD","AF"],
-    740:["スリナム","SR","SA"],748:["エスワティニ","SZ","AF"],752:["スウェーデン","SE","EU"],
-    756:["スイス","CH","EU"],760:["シリア","SY","AS"],762:["タジキスタン","TJ","AS"],
-    764:["タイ","TH","AS"],768:["トーゴ","TG","AF"],776:["トンガ","TO","OC"],
-    780:["トリニダード・トバゴ","TT","NA"],784:["アラブ首長国連邦","AE","AS"],
-    788:["チュニジア","TN","AF"],792:["トルコ","TR","AS"],795:["トルクメニスタン","TM","AS"],
-    798:["ツバル","TV","OC"],800:["ウガンダ","UG","AF"],804:["ウクライナ","UA","EU"],
-    807:["北マケドニア","MK","EU"],818:["エジプト","EG","AF"],826:["イギリス","GB","EU"],
-    840:["アメリカ","US","NA"],854:["ブルキナファソ","BF","AF"],858:["ウルグアイ","UY","SA"],
-    860:["ウズベキスタン","UZ","AS"],862:["ベネズエラ","VE","SA"],882:["サモア","WS","OC"],
-    887:["イエメン","YE","AS"],894:["ザンビア","ZM","AF"],
-  };
+// ── 全国データ: 数値ID → [日本語名, alpha-2コード, 大陸コード] ──
+const COUNTRIES = {
+  4:["アフガニスタン","AF","AS"], 8:["アルバニア","AL","EU"],
+  10:["南極大陸","AQ","AN"], 12:["アルジェリア","DZ","AF"],
+  20:["アンドラ","AD","EU"], 24:["アンゴラ","AO","AF"],
+  28:["アンティグア・バーブーダ","AG","NA"], 31:["アゼルバイジャン","AZ","AS"],
+  32:["アルゼンチン","AR","SA"], 36:["オーストラリア","AU","OC"],
+  40:["オーストリア","AT","EU"], 44:["バハマ","BS","NA"],
+  48:["バーレーン","BH","AS"], 50:["バングラデシュ","BD","AS"],
+  51:["アルメニア","AM","AS"], 52:["バルバドス","BB","NA"],
+  56:["ベルギー","BE","EU"], 64:["ブータン","BT","AS"],
+  68:["ボリビア","BO","SA"], 70:["ボスニア・ヘルツェゴビナ","BA","EU"],
+  72:["ボツワナ","BW","AF"], 76:["ブラジル","BR","SA"],
+  84:["ベリーズ","BZ","NA"], 90:["ソロモン諸島","SB","OC"],
+  96:["ブルネイ","BN","AS"], 100:["ブルガリア","BG","EU"],
+  104:["ミャンマー","MM","AS"], 108:["ブルンジ","BI","AF"],
+  112:["ベラルーシ","BY","EU"], 116:["カンボジア","KH","AS"],
+  120:["カメルーン","CM","AF"], 124:["カナダ","CA","NA"],
+  132:["カーボベルデ","CV","AF"], 136:["ケイマン諸島","KY","NA"],
+  140:["中央アフリカ共和国","CF","AF"], 144:["スリランカ","LK","AS"],
+  148:["チャド","TD","AF"], 152:["チリ","CL","SA"],
+  156:["中国","CN","AS"], 158:["台湾","TW","AS"],
+  170:["コロンビア","CO","SA"], 174:["コモロ","KM","AF"],
+  175:["マヨット","YT","AF"], 178:["コンゴ共和国","CG","AF"],
+  180:["コンゴ民主共和国","CD","AF"], 188:["コスタリカ","CR","NA"],
+  191:["クロアチア","HR","EU"], 192:["キューバ","CU","NA"],
+  196:["キプロス","CY","EU"], 203:["チェコ","CZ","EU"],
+  204:["ベナン","BJ","AF"], 208:["デンマーク","DK","EU"],
+  212:["ドミニカ国","DM","NA"], 214:["ドミニカ共和国","DO","NA"],
+  218:["エクアドル","EC","SA"], 222:["エルサルバドル","SV","NA"],
+  226:["赤道ギニア","GQ","AF"], 231:["エチオピア","ET","AF"],
+  232:["エリトリア","ER","AF"], 233:["エストニア","EE","EU"],
+  238:["フォークランド諸島","FK","SA"], 239:["サウスジョージア・サウスサンドウィッチ諸島","GS","AN"],
+  242:["フィジー","FJ","OC"], 246:["フィンランド","FI","EU"],
+  250:["フランス","FR","EU"], 254:["フランス領ギアナ","GF","SA"],
+  258:["フランス領ポリネシア","PF","OC"], 260:["フランス領南方・南極地域","TF","AN"],
+  262:["ジブチ","DJ","AF"], 266:["ガボン","GA","AF"],
+  268:["ジョージア","GE","AS"], 270:["ガンビア","GM","AF"],
+  275:["パレスチナ","PS","AS"], 276:["ドイツ","DE","EU"],
+  288:["ガーナ","GH","AF"], 296:["キリバス","KI","OC"],
+  300:["ギリシャ","GR","EU"], 304:["グリーンランド","GL","NA"],
+  308:["グレナダ","GD","NA"], 316:["グアム","GU","OC"],
+  320:["グアテマラ","GT","NA"], 324:["ギニア","GN","AF"],
+  328:["ガイアナ","GY","SA"], 332:["ハイチ","HT","NA"],
+  334:["ハード島・マクドナルド諸島","HM","AN"], 336:["バチカン市国","VA","EU"],
+  340:["ホンジュラス","HN","NA"], 344:["香港","HK","AS"],
+  348:["ハンガリー","HU","EU"], 352:["アイスランド","IS","EU"],
+  356:["インド","IN","AS"], 360:["インドネシア","ID","AS"],
+  364:["イラン","IR","AS"], 368:["イラク","IQ","AS"],
+  372:["アイルランド","IE","EU"], 376:["イスラエル","IL","AS"],
+  380:["イタリア","IT","EU"], 384:["コートジボワール","CI","AF"],
+  388:["ジャマイカ","JM","NA"], 392:["日本","JP","AS"],
+  398:["カザフスタン","KZ","AS"], 400:["ヨルダン","JO","AS"],
+  404:["ケニア","KE","AF"], 408:["北朝鮮","KP","AS"],
+  410:["韓国","KR","AS"], 414:["クウェート","KW","AS"],
+  417:["キルギス","KG","AS"], 418:["ラオス","LA","AS"],
+  422:["レバノン","LB","AS"], 426:["レソト","LS","AF"],
+  428:["ラトビア","LV","EU"], 430:["リベリア","LR","AF"],
+  434:["リビア","LY","AF"], 438:["リヒテンシュタイン","LI","EU"],
+  440:["リトアニア","LT","EU"], 442:["ルクセンブルク","LU","EU"],
+  446:["マカオ","MO","AS"], 450:["マダガスカル","MG","AF"],
+  454:["マラウイ","MW","AF"], 458:["マレーシア","MY","AS"],
+  462:["モルディブ","MV","AS"], 466:["マリ","ML","AF"],
+  470:["マルタ","MT","EU"], 474:["マルティニーク","MQ","NA"],
+  478:["モーリタニア","MR","AF"], 480:["モーリシャス","MU","AF"],
+  484:["メキシコ","MX","NA"], 492:["モナコ","MC","EU"],
+  496:["モンゴル","MN","AS"], 498:["モルドバ","MD","EU"],
+  499:["モンテネグロ","ME","EU"], 504:["モロッコ","MA","AF"],
+  508:["モザンビーク","MZ","AF"], 512:["オマーン","OM","AS"],
+  516:["ナミビア","NA","AF"], 524:["ネパール","NP","AS"],
+  528:["オランダ","NL","EU"], 531:["キュラソー","CW","NA"],
+  533:["アルバ","AW","NA"], 534:["シント・マールテン","SX","NA"],
+  540:["ニューカレドニア","NC","OC"], 548:["バヌアツ","VU","OC"],
+  554:["ニュージーランド","NZ","OC"], 558:["ニカラグア","NI","NA"],
+  562:["ニジェール","NE","AF"], 566:["ナイジェリア","NG","AF"],
+  570:["ニウエ","NU","OC"], 574:["ノーフォーク島","NF","OC"],
+  578:["ノルウェー","NO","EU"], 580:["北マリアナ諸島","MP","OC"],
+  583:["ミクロネシア連邦","FM","OC"], 584:["マーシャル諸島","MH","OC"],
+  585:["パラオ","PW","OC"], 586:["パキスタン","PK","AS"],
+  591:["パナマ","PA","NA"], 598:["パプアニューギニア","PG","OC"],
+  600:["パラグアイ","PY","SA"], 604:["ペルー","PE","SA"],
+  608:["フィリピン","PH","AS"], 612:["ピトケアン諸島","PN","OC"],
+  616:["ポーランド","PL","EU"], 620:["ポルトガル","PT","EU"],
+  624:["ギニアビサウ","GW","AF"], 626:["東ティモール","TL","AS"],
+  630:["プエルトリコ","PR","NA"], 634:["カタール","QA","AS"],
+  638:["レユニオン","RE","AF"], 642:["ルーマニア","RO","EU"],
+  643:["ロシア","RU","EU"], 646:["ルワンダ","RW","AF"],
+  659:["セントクリストファー・ネービス","KN","NA"], 660:["アンギラ","AI","NA"],
+  662:["セントルシア","LC","NA"], 666:["サンピエール・ミクロン","PM","NA"],
+  670:["セントビンセント・グレナディーン","VC","NA"], 674:["サンマリノ","SM","EU"],
+  678:["サントメ・プリンシペ","ST","AF"], 682:["サウジアラビア","SA","AS"],
+  686:["セネガル","SN","AF"], 688:["セルビア","RS","EU"],
+  690:["セーシェル","SC","AF"], 694:["シエラレオネ","SL","AF"],
+  702:["シンガポール","SG","AS"], 703:["スロバキア","SK","EU"],
+  704:["ベトナム","VN","AS"], 705:["スロベニア","SI","EU"],
+  706:["ソマリア","SO","AF"], 710:["南アフリカ","ZA","AF"],
+  716:["ジンバブエ","ZW","AF"], 724:["スペイン","ES","EU"],
+  728:["南スーダン","SS","AF"], 729:["スーダン","SD","AF"],
+  732:["西サハラ","EH","AF"], 740:["スリナム","SR","SA"],
+  744:["スヴァールバル・ヤンマイエン","SJ","EU"], 748:["エスワティニ","SZ","AF"],
+  752:["スウェーデン","SE","EU"], 756:["スイス","CH","EU"],
+  760:["シリア","SY","AS"], 762:["タジキスタン","TJ","AS"],
+  764:["タイ","TH","AS"], 768:["トーゴ","TG","AF"],
+  772:["トケラウ","TK","OC"], 776:["トンガ","TO","OC"],
+  780:["トリニダード・トバゴ","TT","NA"], 784:["アラブ首長国連邦","AE","AS"],
+  788:["チュニジア","TN","AF"], 792:["トルコ","TR","AS"],
+  795:["トルクメニスタン","TM","AS"], 796:["タークス・カイコス諸島","TC","NA"],
+  798:["ツバル","TV","OC"], 800:["ウガンダ","UG","AF"],
+  804:["ウクライナ","UA","EU"], 807:["北マケドニア","MK","EU"],
+  818:["エジプト","EG","AF"], 826:["イギリス","GB","EU"],
+  831:["ガーンジー","GG","EU"], 832:["ジャージー","JE","EU"],
+  833:["マン島","IM","EU"], 834:["タンザニア","TZ","AF"],
+  840:["アメリカ","US","NA"], 850:["アメリカ領ヴァージン諸島","VI","NA"],
+  854:["ブルキナファソ","BF","AF"], 858:["ウルグアイ","UY","SA"],
+  860:["ウズベキスタン","UZ","AS"], 862:["ベネズエラ","VE","SA"],
+  876:["ウォリス・フツナ","WF","OC"], 882:["サモア","WS","OC"],
+  887:["イエメン","YE","AS"], 894:["ザンビア","ZM","AF"],
+};
 
-  function flag(a2){if(!a2)return'';return[...a2.toUpperCase()].map(c=>String.fromCodePoint(0x1F1E6-65+c.charCodeAt(0))).join('');}
-  function getName(id){return(COUNTRIES[+id]||[])[0]||`(${id})`;}
-  function getAlpha2(id){return(COUNTRIES[+id]||[])[1]||'';}
-  function getContinent(id){return(COUNTRIES[+id]||[])[2]||'';}
+// ID不明の紛争地域を座標で識別
+function resolveByCoords(lon, lat) {
+  if (lat>41&&lat<44&&lon>19&&lon<23) return ["コソボ","XK","EU"];
+  if (lat>34&&lat<37&&lon>31&&lon<36) return ["北キプロス","--","EU"];
+  if (lat> 7&&lat<12&&lon>43&&lon<50) return ["ソマリランド","--","AF"];
+  // 座標ベースの大陸判定
+  let cont = 'AS';
+  if (lat < -55) cont = 'AN';
+  else if (lon>-25&&lon<50&&lat>34) cont = 'EU';
+  else if (lon>-20&&lon<55&&lat>-35&&lat<38) cont = 'AF';
+  else if (lon>25&&lat>-11&&lat<82) cont = 'AS';
+  else if (lon<-30&&lat>14) cont = 'NA';
+  else if (lon<-30&&lat<=14) cont = 'SA';
+  else if (lat<15) cont = 'OC';
+  return ["不明な地域","--", cont];
+}
 
-  let totalCountries=0;
-  const visited=new Set(JSON.parse(localStorage.getItem('wmt-visited')||'[]'));
-  const MILESTONES=[[25,'&#127881; 25ヵ国達成！'],[50,'&#127775; 50ヵ国突破！'],[100,'&#128293; 100ヵ国超え！'],[150,'&#127942; 150ヵ国！もうすぐ！']];
-  const toastedMilestones=new Set(JSON.parse(localStorage.getItem('wmt-milestones')||'[]'));
+function flag(a2) {
+  if (!a2||a2==='--') return '🏳';
+  return [...a2.toUpperCase()].map(c=>String.fromCodePoint(0x1F1E6-65+c.charCodeAt(0))).join('');
+}
 
-  function save(){localStorage.setItem('wmt-visited',JSON.stringify([...visited]));}
+const CONTINENTS = [
+  {c:'AS',label:'アジア',      emoji:'🌏'},
+  {c:'EU',label:'ヨーロッパ',  emoji:'🌍'},
+  {c:'AF',label:'アフリカ',    emoji:'🌍'},
+  {c:'NA',label:'北アメリカ',  emoji:'🌎'},
+  {c:'SA',label:'南アメリカ',  emoji:'🌎'},
+  {c:'OC',label:'オセアニア',  emoji:'🌏'},
+  {c:'AN',label:'南極大陸',    emoji:'🧊'},
+];
 
-  function showToast(html){
-    const el=document.createElement('div');el.className='toast';el.innerHTML=html;
-    document.getElementById('toast-wrap').appendChild(el);
-    setTimeout(()=>el.remove(),3300);
-  }
+// ── 状態 ──
+let totalCountries = 0;
+const visited = new Set(JSON.parse(localStorage.getItem('wmt-visited')||'[]'));
+const MILESTONES = [[25,'&#127881; 25ヵ国達成！'],[50,'&#127775; 50ヵ国突破！'],[100,'&#128293; 100ヵ国超え！'],[150,'&#127942; 150ヵ国！もうすぐ！']];
+const toastedMilestones = new Set(JSON.parse(localStorage.getItem('wmt-milestones')||'[]'));
+let activeContFilter = null;
+let featuresMeta = [];
 
-  function checkMilestones(cnt){
-    for(const[n,msg]of MILESTONES){
-      if(cnt>=n&&!toastedMilestones.has(n)){
-        toastedMilestones.add(n);
-        localStorage.setItem('wmt-milestones',JSON.stringify([...toastedMilestones]));
-        showToast(msg);
-      }
+function save() { localStorage.setItem('wmt-visited', JSON.stringify([...visited])); }
+
+function showToast(html) {
+  const el = document.createElement('div');
+  el.className='toast'; el.innerHTML=html;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>el.remove(), 3300);
+}
+
+function checkMilestones(cnt) {
+  for (const [n,msg] of MILESTONES) {
+    if (cnt>=n && !toastedMilestones.has(n)) {
+      toastedMilestones.add(n);
+      localStorage.setItem('wmt-milestones',JSON.stringify([...toastedMilestones]));
+      showToast(msg);
     }
   }
+}
 
-  function updateUI(){
-    const cnt=visited.size,rem=Math.max(0,totalCountries-cnt),pct=totalCountries>0?Math.round(cnt/totalCountries*100):0;
-    document.getElementById('visited-num').textContent=cnt;
-    document.getElementById('remaining-num').textContent=rem;
-    document.getElementById('pct-num').textContent=pct+'%';
-    document.getElementById('progress-fill').style.width=pct+'%';
-    document.getElementById('remaining-span').textContent=rem;
-    document.getElementById('list-count').textContent=cnt;
-    updateList();checkMilestones(cnt);
-    if(totalCountries>0&&cnt===totalCountries)document.getElementById('celebration').classList.add('show');
+function updateUI() {
+  const cnt = visited.size;
+  const rem = Math.max(0, totalCountries-cnt);
+  const pct = totalCountries>0 ? Math.round(cnt/totalCountries*100) : 0;
+  document.getElementById('visited-num').textContent    = cnt;
+  document.getElementById('remaining-num').textContent  = rem;
+  document.getElementById('pct-num').textContent        = pct+'%';
+  document.getElementById('progress-fill').style.width  = pct+'%';
+  document.getElementById('remaining-span').textContent = rem;
+  document.getElementById('list-count').textContent     = cnt;
+  updateContinentUI();
+  updateList();
+  checkMilestones(cnt);
+  if (totalCountries>0 && cnt===totalCountries) document.getElementById('celebration').classList.add('show');
+}
+
+// ── 大陸カード ──
+function buildContinentCards() {
+  const grid = document.getElementById('cont-grid');
+  CONTINENTS.forEach(({c,label,emoji}) => {
+    const card = document.createElement('div');
+    card.className='cont-card'; card.dataset.c=c;
+    card.innerHTML=`
+      <div class="cont-header"><span class="cont-emoji">${emoji}</span><span class="cont-name">${label}</span></div>
+      <div class="cont-frac"><span id="cv-${c}">0</span><span class="sep">/</span><span id="ct-${c}">0</span></div>
+      <div class="cont-sub" id="cs-${c}">0分の0制覇</div>
+      <div class="cont-bar"><div class="cont-fill" id="cb-${c}" style="width:0%"></div></div>`;
+    card.addEventListener('click', ()=>toggleContFilter(c));
+    grid.appendChild(card);
+  });
+}
+
+function updateContinentUI() {
+  const totals={}, visitedC={};
+  CONTINENTS.forEach(({c})=>{ totals[c]=0; visitedC[c]=0; });
+  featuresMeta.forEach(({key,continent})=>{
+    if (!continent) return;
+    totals[continent]=(totals[continent]||0)+1;
+    if (visited.has(key)) visitedC[continent]=(visitedC[continent]||0)+1;
+  });
+  CONTINENTS.forEach(({c})=>{
+    const t=totals[c]||0, v=visitedC[c]||0, p=t>0?Math.round(v/t*100):0;
+    const ev=document.getElementById('cv-'+c);
+    const et=document.getElementById('ct-'+c);
+    const es=document.getElementById('cs-'+c);
+    const eb=document.getElementById('cb-'+c);
+    if(ev) ev.textContent=v;
+    if(et) et.textContent=t;
+    if(es) es.textContent=t+'分の'+v+'制覇';
+    if(eb) eb.style.width=p+'%';
+  });
+}
+
+function toggleContFilter(c) {
+  const cards = document.querySelectorAll('.cont-card');
+  if (activeContFilter===c) {
+    activeContFilter=null;
+    cards.forEach(card=>card.classList.remove('active'));
+    d3.selectAll('.country').style('display',null);
+  } else {
+    activeContFilter=c;
+    cards.forEach(card=>card.classList.toggle('active',card.dataset.c===c));
+    d3.selectAll('.country').style('display',function(d){
+      const meta=featuresMeta.find(m=>m.key===d._key);
+      return (meta&&meta.continent===c)?null:'none';
+    });
   }
+}
 
-  function updateList(){
-    const panel=document.getElementById('visited-list'),empty=document.getElementById('list-empty');
-    const sorted=[...visited].map(id=>({id,name:getName(id),f:flag(getAlpha2(id))})).sort((a,b)=>a.name.localeCompare(b.name,'ja'));
-    panel.querySelectorAll('.country-chip').forEach(el=>el.remove());
-    if(sorted.length===0){empty.style.display='block';}
-    else{
-      empty.style.display='none';
-      sorted.forEach(({id,name,f})=>{
-        const chip=document.createElement('span');chip.className='country-chip';chip.dataset.id=id;
-        chip.innerHTML=`${f} ${name} <span class="chip-x">✕</span>`;
-        chip.addEventListener('click',()=>removeCountry(id));panel.appendChild(chip);
-      });
+// ── 訪問済みリスト ──
+function updateList() {
+  const panel=document.getElementById('visited-list');
+  const empty=document.getElementById('list-empty');
+  const sorted=[...visited].map(key=>{
+    const meta=featuresMeta.find(m=>m.key===key);
+    return meta?{key,name:meta.name,f:flag(meta.alpha2)}:null;
+  }).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'ja'));
+  panel.querySelectorAll('.country-chip').forEach(el=>el.remove());
+  if (sorted.length===0) { empty.style.display='block'; }
+  else {
+    empty.style.display='none';
+    sorted.forEach(({key,name,f})=>{
+      const chip=document.createElement('span');
+      chip.className='country-chip';
+      chip.innerHTML=`${f} ${name} <span class="chip-x">✕</span>`;
+      chip.addEventListener('click',()=>removeCountry(key));
+      panel.appendChild(chip);
+    });
+  }
+}
+
+function removeCountry(key) {
+  visited.delete(key); save();
+  d3.selectAll('.country').filter(d=>d._key===key).classed('visited',false);
+  updateUI();
+}
+
+document.getElementById('list-toggle').addEventListener('click',function(){
+  this.classList.toggle('open');
+  document.getElementById('visited-list').classList.toggle('open');
+});
+
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  if(!confirm('訪問履歴をリセットしますか？'))return;
+  visited.clear(); toastedMilestones.clear();
+  localStorage.removeItem('wmt-visited'); localStorage.removeItem('wmt-milestones');
+  save(); d3.selectAll('.country').classed('visited',false); updateUI();
+});
+
+function closeCelebration(){document.getElementById('celebration').classList.remove('show');}
+
+// ── 地図 ──
+const WIDTH=960,HEIGHT=500;
+const svg=d3.select('#world'), g=svg.append('g');
+const projection=d3.geoNaturalEarth1().scale(153).translate([WIDTH/2,HEIGHT/2]);
+const pathGen=d3.geoPath().projection(projection);
+
+g.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',pathGen);
+g.append('path').datum(d3.geoGraticule()()).attr('class','graticule').attr('d',pathGen);
+
+const tooltip=document.getElementById('tooltip');
+
+function showTip(event,meta,isV){
+  document.getElementById('tt-flag').textContent=flag(meta.alpha2);
+  document.getElementById('tt-name').textContent=meta.name;
+  document.getElementById('tt-status').textContent=isV?'✓ 訪問済み — もう一度タップで解除':'タップして訪問済みに';
+  tooltip.style.opacity='1'; moveTip(event);
+}
+function moveTip(event){
+  const x=event.clientX,y=event.clientY,tw=tooltip.offsetWidth||180,th=tooltip.offsetHeight||54;
+  tooltip.style.left=Math.min(x+14,window.innerWidth-tw-8)+'px';
+  tooltip.style.top=Math.max(y-th-8,8)+'px';
+}
+function hideTip(){tooltip.style.opacity='0';}
+
+const zoom=d3.zoom().scaleExtent([1,12]).on('zoom',ev=>g.attr('transform',ev.transform));
+svg.call(zoom);
+
+buildContinentCards();
+
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world=>{
+  const features=topojson.feature(world,world.objects.countries).features;
+  totalCountries=features.length;
+
+  // 各フィーチャーに _key / _name / _alpha2 / _continent を付与
+  features.forEach(d=>{
+    const numId=+(d.id);
+    let name,alpha2,continent;
+    if (d.id!==undefined && d.id!==null && !isNaN(numId) && numId>0 && COUNTRIES[numId]) {
+      [name,alpha2,continent]=COUNTRIES[numId];
+      d._key=String(numId);
+    } else {
+      const [lon,lat]=d3.geoCentroid(d);
+      [name,alpha2,continent]=resolveByCoords(lon,lat);
+      d._key=d.id!==undefined&&d.id!==null&&!isNaN(numId)&&numId>0
+             ? String(numId)
+             : 'geo_'+Math.round(lon*10)+'_'+Math.round(lat*10);
     }
-  }
-
-  function removeCountry(id){
-    visited.delete(String(id));save();
-    d3.selectAll('.country').filter(d=>String(d.id)===String(id)).classed('visited',false);
-    updateUI();
-  }
-
-  document.getElementById('list-toggle').addEventListener('click',function(){
-    this.classList.toggle('open');document.getElementById('visited-list').classList.toggle('open');
+    d._name=name; d._alpha2=alpha2; d._continent=continent;
+    featuresMeta.push({key:d._key,name,alpha2,continent});
   });
 
-  document.getElementById('reset-btn').addEventListener('click',()=>{
-    if(!confirm('訪問履歴をリセットしますか？'))return;
-    visited.clear();toastedMilestones.clear();
-    localStorage.removeItem('wmt-visited');localStorage.removeItem('wmt-milestones');
-    save();d3.selectAll('.country').classed('visited',false);updateUI();
-  });
+  g.selectAll('.country').data(features).join('path')
+    .attr('class',d=>'country'+(visited.has(d._key)?' visited':''))
+    .attr('data-c',d=>d._continent)
+    .attr('d',pathGen)
+    .on('click',function(event,d){
+      if(event.defaultPrevented)return;
+      const wasV=visited.has(d._key);
+      wasV?visited.delete(d._key):visited.add(d._key);
+      d3.select(this).classed('visited',!wasV);
+      save(); updateUI();
+      showTip(event,{name:d._name,alpha2:d._alpha2},!wasV);
+    })
+    .on('mousemove',function(event,d){ showTip(event,{name:d._name,alpha2:d._alpha2},visited.has(d._key)); })
+    .on('mouseleave',hideTip);
 
-  function closeCelebration(){document.getElementById('celebration').classList.remove('show');}
+  g.append('path')
+    .datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))
+    .attr('class','borders').attr('d',pathGen);
 
-  const WIDTH=960,HEIGHT=500,svg=d3.select('#world'),g=svg.append('g');
-  const projection=d3.geoNaturalEarth1().scale(153).translate([WIDTH/2,HEIGHT/2]);
-  const pathGen=d3.geoPath().projection(projection);
-
-  g.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',pathGen);
-  g.append('path').datum(d3.geoGraticule()()).attr('class','graticule').attr('d',pathGen);
-
-  const tooltip=document.getElementById('tooltip');
-
-  function showTip(event,id,isV){
-    document.getElementById('tt-flag').textContent=flag(getAlpha2(id));
-    document.getElementById('tt-name').textContent=getName(id);
-    document.getElementById('tt-status').textContent=isV?'✓ 訪問済み — もう一度タップで解除':'タップして訪問済みに';
-    tooltip.style.opacity='1';moveTip(event);
-  }
-
-  function moveTip(event){
-    const x=event.clientX,y=event.clientY,tw=tooltip.offsetWidth||180,th=tooltip.offsetHeight||54;
-    tooltip.style.left=Math.min(x+14,window.innerWidth-tw-8)+'px';
-    tooltip.style.top=Math.max(y-th-8,8)+'px';
-  }
-
-  function hideTip(){tooltip.style.opacity='0';}
-
-  const zoom=d3.zoom().scaleExtent([1,12]).on('zoom',ev=>g.attr('transform',ev.transform));
-  svg.call(zoom);
-
-  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world=>{
-    const features=topojson.feature(world,world.objects.countries).features;
-    totalCountries=features.length;
-    g.selectAll('.country').data(features).join('path')
-      .attr('class',d=>'country'+(visited.has(String(d.id))?' visited':''))
-      .attr('data-c',d=>getContinent(d.id))
-      .attr('d',pathGen)
-      .on('click',function(event,d){
-        if(event.defaultPrevented)return;
-        const id=String(d.id),wasV=visited.has(id);
-        wasV?visited.delete(id):visited.add(id);
-        d3.select(this).classed('visited',!wasV);
-        save();updateUI();showTip(event,d.id,!wasV);
-      })
-      .on('mousemove',function(event,d){showTip(event,d.id,visited.has(String(d.id)));})      .on('mouseleave',hideTip);
-    g.append('path').datum(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b)).attr('class','borders').attr('d',pathGen);
-    updateUI();
-  }).catch(()=>{
-    document.getElementById('map-wrap').innerHTML='<p style="color:#ff6b6b;text-align:center;padding:40px">地図データの読み込みに失敗しました。インターネット接続を確認してください。</p>';
-  });
+  updateUI();
+}).catch(()=>{
+  document.getElementById('map-wrap').innerHTML=
+    '<p style="color:#ff6b6b;text-align:center;padding:40px">地図データの読み込みに失敗しました。インターネット接続を確認してください。</p>';
+});
 </script>
 </body>
 </html>
