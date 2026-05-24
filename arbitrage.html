@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ヤフオク→Amazon アービトラージツール</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #090c12;
+      --panel: #161b27;
+      --card: #1c2235;
+      --card2: #232b3e;
+      --line: rgba(90, 130, 255, .13);
+      --text: #dde4f5;
+      --muted: rgba(180, 200, 240, .6);
+      --blue: #4d8df8;
+      --green: #3acf6c;
+      --yellow: #f5c63c;
+      --red: #f04c4c;
+      --orange: #f79244;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 14px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+      background: linear-gradient(180deg, #0f1622 0%, var(--bg) 100%);
+      color: var(--text);
+      font-size: 13px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== APP LAYOUT ===== */
+    .app {
+      display: grid;
+      grid-template-columns: 272px 1fr 340px;
+      grid-template-rows: 52px 1fr;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ===== HEADER ===== */
+    .app-header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(13, 17, 25, .98);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-logo {
+      font-size: 18px;
+    }
+
+    .header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: .03em;
+    }
+
+    .header-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ===== PANELS ===== */
+    .panel-left {
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .panel-middle {
+      overflow-y: auto;
+      padding: 14px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-right {
+      background: var(--panel);
+      border-left: 1px solid var(--line);
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* ===== SECTION LABELS ===== */
+    .sec-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ===== INPUTS ===== */
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-family: inherit;
+      transition: border-color .15s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--blue);
+      background: rgba(77, 141, 248, .06);
+    }
+
+    input::placeholder { color: var(--muted); opacity: .6; }
+
+    .input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap:last-child { margin-bottom: 0; }
+
+    .input-label {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 8px 12px;
+      transition: filter .15s, transform .1s, opacity .15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { filter: brightness(1.1); }
+    .btn:active { transform: scale(.96); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; filter: none; transform: none; }
+
+    .btn-primary { background: var(--blue); color: #fff; width: 100%; padding: 10px; font-size: 13px; }
+    .btn-success { background: var(--green); color: #000; width: 100%; padding: 10px; font-size: 13px; }
+    .btn-warn    { background: var(--yellow); color: #000; width: 100%; padding: 10px; font-size: 13px; }
+    .btn-outline { background: transparent; border: 1px solid var(--line); color: var(--text); }
+    .btn-outline:hover { background: rgba(255,255,255,.06); filter: none; }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-xs { padding: 3px 7px; font-size: 10px; }
+    .btn-danger-outline { background: transparent; border: 1px solid rgba(240,76,76,.35); color: var(--red); width: 100%; }
+
+    /* ===== TAGS ===== */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .tag-blue   { background: rgba(77,141,248,.18);  color: var(--blue);   }
+    .tag-green  { background: rgba(58,207,108,.18);  color: var(--green);  }
+    .tag-yellow { background: rgba(245,198,60,.18);  color: var(--yellow); }
+    .tag-red    { background: rgba(240,76,76,.18);   color: var(--red);    }
+    .tag-orange { background: rgba(247,146,68,.18);  color: var(--orange); }
+    .tag-gray   { background: rgba(255,255,255,.1);  color: var(--muted);  }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 10px 0;
+    }
+
+    /* ===== BRAND GRID ===== */
+    .brand-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+    }
+
+    .brand-check {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .1s;
+      user-select: none;
+    }
+
+    .brand-check:hover { background: rgba(255,255,255,.06); }
+
+    .brand-check input[type="checkbox"] {
+      width: auto;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+
+    .brand-check span { font-size: 11px; }
+
+    .brand-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    /* ===== PROGRESS ===== */
+    .progress-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .progress-wrap.show { display: flex; }
+
+    .progress-bar {
+      height: 3px;
+      background: rgba(255,255,255,.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width .4s ease;
+    }
+
+    .progress-text {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      display: none;
+      gap: 5px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-bar.show { display: flex; }
+
+    .filter-pill {
+      padding: 4px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .12s;
+    }
+
+    .filter-pill:hover { background: rgba(255,255,255,.06); }
+
+    .filter-pill.active {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    /* ===== RESULTS HEADER ===== */
+    .results-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .results-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sort-actions {
+      display: none;
+      gap: 5px;
+    }
+
+    .sort-actions.show { display: flex; }
+
+    /* ===== STATUS MESSAGES ===== */
+    .status-msg {
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 11px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .status-msg.error   { background: rgba(240,76,76,.12);  border: 1px solid rgba(240,76,76,.3);  color: #ff8888; }
+    .status-msg.info    { background: rgba(77,141,248,.1);  border: 1px solid rgba(77,141,248,.25); color: #88aaff; }
+    .status-msg.success { background: rgba(58,207,108,.1);  border: 1px solid rgba(58,207,108,.25); color: #66df8a; }
+    .status-msg.warn    { background: rgba(245,198,60,.1);  border: 1px solid rgba(245,198,60,.25); color: #f0c850; }
+
+    /* ===== RESULT CARDS ===== */
+    .results-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      cursor: pointer;
+      transition: border-color .15s, transform .1s, background .15s;
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .result-card:hover {
+      border-color: rgba(77,141,248,.35);
+      transform: translateY(-1px);
+    }
+
+    .result-card.is-selected {
+      border-color: var(--blue);
+      background: rgba(77,141,248,.07);
+    }
+
+    .result-card.is-picked {
+      border-color: var(--green);
+      background: rgba(58,207,108,.06);
+    }
+
+    .result-card.is-ng {
+      opacity: .55;
+    }
+
+    .result-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255,255,255,.05);
+      flex-shrink: 0;
+    }
+
+    .result-thumb-placeholder {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .result-body { min-width: 0; }
+
+    .result-title {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 5px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .result-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .result-price-col {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .result-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--yellow);
+    }
+
+    .result-price-label {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .result-profit {
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* ===== EMPTY / LOADING STATES ===== */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 44px; margin-bottom: 12px; }
+    .empty-text { font-size: 14px; font-weight: 600; }
+    .empty-sub  { font-size: 11px; margin-top: 6px; opacity: .7; line-height: 1.6; }
+
+    .spinner-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(77,141,248,.2);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== DETAIL PANEL ===== */
+    .detail-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 14px;
+      padding: 20px;
+    }
+
+    #itemDetail { display: none; }
+
+    .detail-thumb-img {
+      width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+      border-radius: 10px;
+      background: rgba(255,255,255,.04);
+      margin-bottom: 10px;
+    }
+
+    .detail-title {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--line);
+      gap: 8px;
+    }
+
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-key { font-size: 10px; color: var(--muted); }
+    .detail-val { font-size: 12px; font-weight: 600; text-align: right; }
+
+    .detail-link-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== PROFIT BOX ===== */
+    .profit-box {
+      border-radius: var(--radius);
+      padding: 14px;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+    .profit-box.empty { background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+    .profit-box.good  { background: rgba(58,207,108,.1);  border: 1px solid rgba(58,207,108,.28); }
+    .profit-box.warn  { background: rgba(245,198,60,.09); border: 1px solid rgba(245,198,60,.24); }
+    .profit-box.bad   { background: rgba(240,76,76,.09);  border: 1px solid rgba(240,76,76,.24);  }
+
+    .profit-rate {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .profit-rate.good  { color: var(--green);  }
+    .profit-rate.warn  { color: var(--yellow); }
+    .profit-rate.bad   { color: var(--red);    }
+
+    .profit-sub   { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .profit-label { font-size: 11px; font-weight: 700; margin-top: 6px; }
+    .profit-label.good  { color: var(--green);  }
+    .profit-label.warn  { color: var(--yellow); }
+    .profit-label.bad   { color: var(--red);    }
+
+    /* ===== PICK LIST ===== */
+    .pick-section { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+
+    .pick-section-hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .pick-item {
+      background: var(--card);
+      border: 1px solid rgba(58,207,108,.25);
+      border-radius: 9px;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .pick-item-name {
+      font-size: 10px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+
+    .pick-item-rate {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .pick-item-price {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.18); }
+
+    /* ===== TOOLTIP-LIKE NOTE ===== */
+    .note {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.5;
+      padding: 7px 9px;
+      border-radius: 7px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+    }
+
+    .note a { color: var(--blue); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 240px 1fr 300px; }
+    }
+
+    @media (max-width: 800px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 52px auto auto 1fr auto;
+        height: auto;
+        overflow: visible;
+      }
+      .panel-left  { border-right: none; border-bottom: 1px solid var(--line); }
+      .panel-middle { min-height: 50vh; }
+      .panel-right { border-left: none; border-top: 1px solid var(--line); }
+    }
+
+    /* ===== API FALLBACK LINKS ===== */
+    .fallback-links {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .fallback-links.show { display: flex; }
+
+    .fallback-link {
+      font-size: 11px;
+      color: var(--blue);
+      text-decoration: none;
+      padding: 5px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background .12s;
+    }
+
+    .fallback-link:hover { background: rgba(255,255,255,.06); }
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="header-logo">🛒</span>
+      <div>
+        <div class="header-title">ヤフオク → Amazon アービトラージツール</div>
+        <div class="header-sub">即決価格商品の転売利益計算・ピックアップ支援</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="headerPickBadge" class="tag tag-green" style="display:none;"></span>
+      <button class="btn btn-outline btn-sm" id="exportCsvBtn" style="display:none;">CSV出力</button>
+    </div>
+  </header>
+
+  <!-- ===== LEFT PANEL: SETTINGS ===== -->
+  <aside class="panel-left">
+
+    <!-- App ID -->
+    <div>
+      <div class="sec-label">Yahoo Japan API設定</div>
+      <div class="input-wrap">
+        <label class="input-label">App ID（アプリケーションID）</label>
+        <input type="text" id="appId" placeholder="dj00aiZpPUJhcGlLZXk..." autocomplete="off" />
+      </div>
+      <div class="note">
+        ※ <a href="https://developer.yahoo.co.jp/start/" target="_blank" rel="noopener">developer.yahoo.co.jp</a> でApp IDを取得してください。入力したApp IDはブラウザに保存されます。
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Fee settings -->
+    <div>
+      <div class="sec-label">Amazon手数料設定</div>
+      <div class="input-row">
+        <div class="input-wrap">
+          <label class="input-label">カテゴリ手数料率 (%)</label>
+          <input type="number" id="feeRate" value="8" min="1" max="30" step="0.5" />
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">FBA手数料 (円)</label>
+          <input type="number" id="fbaFee" value="0" min="0" step="10" />
+        </div>
+      </div>
+      <div class="input-wrap">
+        <label class="input-label">小口出品手数料 (円/件, 0=大口)</label>
+        <input type="number" id="perItemFee" value="0" min="0" step="10" />
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Price range -->
+    <div>
+      <div class="sec-label">仕入価格フィルター</div>
+      <div class="input-row">
+        <div class="input-wrap">
+          <label class="input-label">最低価格 (円)</label>
+          <input type="number" id="minPrice" value="500" min="0" step="100" />
+        </div>
+        <div class="input-wrap">
+          <label class="input-label">最高価格 (円)</label>
+          <input type="number" id="maxPrice" value="30000" min="0" step="1000" />
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Brand selection -->
+    <div style="flex:1;">
+      <div class="brand-actions">
+        <div class="sec-label" style="margin:0;">対象ブランド</div>
+        <div style="display:flex;gap:5px;">
+          <button class="btn btn-outline btn-xs" id="selectAllBrands">全選択</button>
+          <button class="btn btn-outline btn-xs" id="clearAllBrands">解除</button>
+        </div>
+      </div>
+      <div class="brand-grid" id="brandGrid"></div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Search button -->
+    <div>
+      <button class="btn btn-primary" id="searchBtn">🔍 検索開始</button>
+      <div class="progress-wrap" id="progressWrap" style="margin-top:8px;">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="progress-text" id="progressText"></div>
+      </div>
+    </div>
+
+    <!-- Fallback links (shown when API fails) -->
+    <div id="fallbackSection" style="display:none;">
+      <hr class="divider" />
+      <div class="sec-label">ヤフオク検索リンク（手動用）</div>
+      <div class="fallback-links show" id="fallbackLinks"></div>
+    </div>
+
+  </aside>
+
+  <!-- ===== MIDDLE PANEL: RESULTS ===== -->
+  <main class="panel-middle">
+
+    <div class="results-hd">
+      <div class="results-count" id="resultsCount">結果: 0件</div>
+      <div class="sort-actions" id="sortActions">
+        <button class="btn btn-outline btn-sm" id="sortProfitBtn">利益率順</button>
+        <button class="btn btn-outline btn-sm" id="sortPriceBtn">価格順</button>
+        <button class="btn btn-outline btn-sm" id="sortDaysBtn">残り日数順</button>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-pill active" data-filter="all">すべて</button>
+      <button class="filter-pill" data-filter="pick">ピック対象 (8%+)</button>
+      <button class="filter-pill" data-filter="borderline">要確認 (5-8%)</button>
+      <button class="filter-pill" data-filter="unchecked">未チェック</button>
+      <button class="filter-pill" data-filter="ng">対象外</button>
+    </div>
+
+    <div id="statusMsg"></div>
+
+    <div class="results-grid" id="resultsGrid">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">検索を開始してください</div>
+        <div class="empty-sub">
+          左パネルでYahoo App IDを入力し<br>
+          ブランドを選択して「検索開始」を押してください
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== RIGHT PANEL: DETAIL ===== -->
+  <aside class="panel-right">
+
+    <div class="sec-label">商品詳細・利益計算</div>
+
+    <!-- Placeholder -->
+    <div class="detail-placeholder" id="detailPlaceholder">
+      <div style="font-size:30px;margin-bottom:8px;">📦</div>
+      <div style="font-size:12px;">商品カードをクリックしてください</div>
+    </div>
+
+    <!-- Item detail (filled dynamically) -->
+    <div id="itemDetail"></div>
+
+    <!-- Pick list -->
+    <div class="pick-section" id="pickSection">
+      <div class="pick-section-hd">
+        <div class="sec-label" style="margin:0;">ピックリスト</div>
+        <span id="pickListCount" style="font-size:10px;color:var(--muted);">0件</span>
+      </div>
+      <div id="pickList">
+        <div style="font-size:11px;color:var(--muted);text-align:center;padding:12px;">
+          ピックした商品がここに表示されます
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</div><!-- .app -->
+
+<script>
+// =====================================================
+// CONSTANTS
+// =====================================================
+const BRANDS = [
+  { id:'panasonic',   name:'Panasonic',    query:'Panasonic'    },
+  { id:'iris_ohyama', name:'アイリスオーヤマ', query:'アイリスオーヤマ' },
+  { id:'iris',        name:'アイリス',      query:'アイリス'      },
+  { id:'sony',        name:'ソニー',        query:'ソニー'        },
+  { id:'tiger',       name:'タイガー',      query:'タイガー'      },
+  { id:'yamazen',     name:'山善',          query:'山善'          },
+  { id:'zojirushi',   name:'象印',          query:'象印'          },
+  { id:'sharp',       name:'シャープ',      query:'シャープ'      },
+  { id:'toshiba',     name:'東芝',          query:'東芝'          },
+  { id:'threeup',     name:'スリーアップ',   query:'スリーアップ'   },
+  { id:'tefal',       name:'ティファール',   query:'ティファール'   },
+  { id:'twinbird',    name:'ツインバード',   query:'ツインバード'   },
+  { id:'koizumi',     name:'コイズミ',      query:'コイズミ'      },
+  { id:'hori',        name:'ホリ',          query:'ホリ'          },
+  { id:'elecom',      name:'エレコム',      query:'エレコム'      },
+  { id:'hitachi',     name:'日立',          query:'日立'          },
+  { id:'thermos',     name:'サーモス',      query:'サーモス'      },
+];
+
+const JUNK_WORDS = [
+  'ジャンク','現状品','現状渡','現状渡し','故障','破損','パーツ取り',
+  'ジャンク品','ジャンク扱い','不動品','動作未確認','難あり','訳あり',
+  'わけあり','要修理','動作不良','電源入らず','部品取り',
+];
+
+const PROHIBITED_WORDS = [
+  'パソコン','ノートpc','ノートパソコン','デスクトップ','laptop',
+  'リモコン','テレビリモコン','エアコンリモコン','赤外線リモコン',
+  'remote control',
+];
+
+const YAHOO_SEARCH_BASE = 'https://auctions.yahooapis.jp/AuctionWebService/V2/json/search';
+const MIN_DAYS = 3;
+const PROFIT_PICK_RATE = 8;   // % → ピック対象
+const PROFIT_MIN_RATE  = 5;   // % → 要確認 (表示はするが登録非推奨)
+
+// =====================================================
+// STATE
+// =====================================================
+let allItems     = [];   // all fetched & base-filtered items
+let displayItems = [];   // after UI filter
+let selectedItem = null;
+let pickList     = [];
+let currentFilter = 'all';
+
+// =====================================================
+// INIT
+// =====================================================
+function init() {
+  buildBrandGrid();
+
+  // Restore saved App ID
+  const saved = localStorage.getItem('arb_app_id');
+  if (saved) document.getElementById('appId').value = saved;
+
+  document.getElementById('appId').addEventListener('change', e => {
+    localStorage.setItem('arb_app_id', e.target.value.trim());
+  });
+
+  document.getElementById('selectAllBrands').addEventListener('click', () => {
+    document.querySelectorAll('input[name="brand"]').forEach(c => c.checked = true);
+  });
+  document.getElementById('clearAllBrands').addEventListener('click', () => {
+    document.querySelectorAll('input[name="brand"]').forEach(c => c.checked = false);
+  });
+
+  document.getElementById('searchBtn').addEventListener('click', startSearch);
+
+  document.getElementById('filterBar').addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentFilter = pill.dataset.filter;
+    renderResults();
+  });
+
+  document.getElementById('sortProfitBtn').addEventListener('click', () => {
+    allItems.sort((a,b) => b.profitRate - a.profitRate);
+    applyFilter();
+  });
+  document.getElementById('sortPriceBtn').addEventListener('click', () => {
+    allItems.sort((a,b) => a.buyNowPrice - b.buyNowPrice);
+    applyFilter();
+  });
+  document.getElementById('sortDaysBtn').addEventListener('click', () => {
+    allItems.sort((a,b) => a.daysLeft - b.daysLeft);
+    applyFilter();
+  });
+
+  document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+
+  // Fee/price input re-calculate on change
+  ['feeRate','fbaFee','perItemFee'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      // Recalculate all items that have amazon price set
+      allItems.forEach(item => {
+        if (item.amazonUsedPrice || item.amazonNewPrice) {
+          const c = calcProfit(item);
+          Object.assign(item, c);
+        }
+      });
+      applyFilter();
+      if (selectedItem) renderDetail(selectedItem);
+    });
+  });
+}
+
+function buildBrandGrid() {
+  const grid = document.getElementById('brandGrid');
+  grid.innerHTML = BRANDS.map(b => `
+    <label class="brand-check">
+      <input type="checkbox" name="brand" value="${b.id}" checked />
+      <span>${esc(b.name)}</span>
+    </label>
+  `).join('');
+}
+
+// =====================================================
+// YAHOO AUCTION API (JSONP)
+// =====================================================
+function jsonpCall(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = '_yaj_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    const script = document.createElement('script');
+    let settled = false;
+
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('タイムアウト(15s)'));
+    }, 15000);
+
+    window[cbName] = data => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error('スクリプト読み込みエラー'));
+    };
+
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+
+    script.src = url + '&callback=' + cbName;
+    document.head.appendChild(script);
+  });
+}
+
+async function fetchBrand(brand, appId, minPrice, maxPrice) {
+  const params = new URLSearchParams({
+    appid:  appId,
+    query:  brand.query,
+    hits:   100,
+    buynow: 1,       // 即決価格あり
+    output: 'json',
+    min:    minPrice,
+    max:    maxPrice,
+  });
+
+  const url = `${YAHOO_SEARCH_BASE}?${params}`;
+  const data = await jsonpCall(url);
+  return parseItems(data, brand.name);
+}
+
+function parseItems(data, brandName) {
+  try {
+    // Handle API error
+    if (data?.Error || data?.error) return [];
+
+    const rs = data?.ResultSet;
+    if (!rs) return [];
+
+    const result = rs.Result;
+    if (!result) return [];
+
+    const raw = result.Item;
+    if (!raw) return [];
+
+    const arr = Array.isArray(raw) ? raw : [raw];
+
+    return arr.map(item => {
+      const buyNowPrice = parsePrice(item.BuyItNowPrice);
+      const endTime     = item.EndTime || '';
+      const daysLeft    = calcDaysLeft(endTime);
+
+      return {
+        id:           item.AuctionID || '',
+        title:        item.Title     || '',
+        buyNowPrice,
+        currentPrice: parsePrice(item.Price),
+        endTime,
+        daysLeft,
+        imageUrl:     item.ImageUrl         || '',
+        auctionUrl:   item.AuctionItemUrl   || `https://page.auctions.yahoo.co.jp/jp/auction/${item.AuctionID}`,
+        sellerId:     item.Seller?.Id       || '',
+        sellerRating: parseInt(item.Seller?.Rating || 0),
+        shippingCode: item.Shipping?.Code   || item.Shipping?.Type || '',
+        brand:        brandName,
+        // Derived flags
+        isJunk:       checkWords(item.Title, JUNK_WORDS),
+        isProhibited: checkWords(item.Title, PROHIBITED_WORDS),
+        isCOD:        checkCOD(item),
+        // Amazon / user inputs
+        asin:             '',
+        amazonUsedPrice:  0,
+        amazonNewPrice:   0,
+        shippingCost:     0,
+        // Calculated profit
+        suggestedPrice: 0,
+        amazonFee:      0,
+        profit:         0,
+        profitRate:     0,
+        status:         'unchecked',  // unchecked / pick / borderline / ng
+      };
+    }).filter(i => i.buyNowPrice > 0 && i.id);
+
+  } catch (e) {
+    console.warn('parseItems error:', e);
+    return [];
+  }
+}
+
+function parsePrice(v) {
+  if (!v) return 0;
+  if (typeof v === 'number') return v;
+  if (typeof v === 'object') return parseInt(v._value || v.value || 0) || 0;
+  return parseInt(String(v).replace(/[^\d]/g,'')) || 0;
+}
+
+function calcDaysLeft(endTimeStr) {
+  if (!endTimeStr) return 0;
+  const diff = new Date(endTimeStr) - Date.now();
+  return diff / (86400 * 1000);
+}
+
+function checkWords(title, words) {
+  if (!title) return false;
+  const lower = title.toLowerCase();
+  return words.some(w => lower.includes(w.toLowerCase()));
+}
+
+function checkCOD(item) {
+  // 着払い detection from shipping info (may not always be available in search result)
+  const code = String(item.Shipping?.Code || item.Shipping?.Type || '');
+  if (!code) return null;  // unknown
+  // Code "2" typically means 着払い in Yahoo Auction API
+  return code === '2' || code.includes('着払');
+}
+
+// =====================================================
+// BASE FILTERING
+// =====================================================
+function baseFilter(items) {
+  return items.filter(i => {
+    if (i.daysLeft < MIN_DAYS) return false;
+    if (i.isJunk)       return false;
+    if (i.isProhibited) return false;
+    if (i.isCOD === true) return false;
+    return true;
+  });
+}
+
+// =====================================================
+// PROFIT CALCULATION
+// =====================================================
+function calcProfit(item) {
+  const feeRate    = parseFloat(document.getElementById('feeRate').value)    / 100 || 0.08;
+  const fbaFee     = parseFloat(document.getElementById('fbaFee').value)     || 0;
+  const perItemFee = parseFloat(document.getElementById('perItemFee').value) || 0;
+
+  const purchaseCost = item.buyNowPrice + (item.shippingCost || 0);
+
+  if (!item.amazonUsedPrice && !item.amazonNewPrice) {
+    return { suggestedPrice:0, amazonFee:0, profit:0, profitRate:0, status:'unchecked' };
+  }
+
+  let suggestedPrice;
+  if (item.amazonUsedPrice > 0) {
+    // 中古最安 - 100円
+    suggestedPrice = item.amazonUsedPrice - 100;
+  } else {
+    // 新品最安 × 0.9
+    suggestedPrice = Math.floor(item.amazonNewPrice * 0.9);
+  }
+
+  if (suggestedPrice <= 0) {
+    return { suggestedPrice:0, amazonFee:0, profit:0, profitRate:0, status:'ng' };
+  }
+
+  const amazonFee   = Math.floor(suggestedPrice * feeRate);
+  const totalFees   = amazonFee + fbaFee + perItemFee;
+  const profit      = suggestedPrice - totalFees - purchaseCost;
+  const profitRate  = Math.round((profit / suggestedPrice) * 1000) / 10;  // 1 decimal
+
+  let status;
+  if      (profitRate >= PROFIT_PICK_RATE) status = 'pick';
+  else if (profitRate >= PROFIT_MIN_RATE)  status = 'borderline';
+  else                                     status = 'ng';
+
+  return { suggestedPrice, amazonFee, profit: Math.round(profit), profitRate, status };
+}
+
+// =====================================================
+// SEARCH ORCHESTRATION
+// =====================================================
+async function startSearch() {
+  const appId = document.getElementById('appId').value.trim();
+  if (!appId) { showStatus('Yahoo Japan App IDを入力してください', 'error'); return; }
+
+  const selectedBrands = BRANDS.filter(b => {
+    const cb = document.querySelector(`input[name="brand"][value="${b.id}"]`);
+    return cb?.checked;
+  });
+  if (selectedBrands.length === 0) { showStatus('ブランドを1つ以上選択してください', 'error'); return; }
+
+  const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+  const maxPrice = parseInt(document.getElementById('maxPrice').value) || 999999;
+
+  // Reset
+  allItems = [];
+  displayItems = [];
+  selectedItem = null;
+  document.getElementById('itemDetail').style.display  = 'none';
+  document.getElementById('detailPlaceholder').style.display = 'flex';
+  document.getElementById('filterBar').classList.remove('show');
+  document.getElementById('sortActions').classList.remove('show');
+  showStatus('', '');
+  renderResults();
+
+  const btn = document.getElementById('searchBtn');
+  btn.disabled = true;
+  btn.textContent = '検索中…';
+
+  const pw = document.getElementById('progressWrap');
+  pw.classList.add('show');
+
+  let errorCount = 0;
+  let totalFetched = 0;
+
+  for (let i = 0; i < selectedBrands.length; i++) {
+    const brand = selectedBrands[i];
+    const pct = Math.round(i / selectedBrands.length * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent =
+      `${brand.name} を検索中… (${i+1}/${selectedBrands.length})`;
+
+    try {
+      const items = await fetchBrand(brand, appId, minPrice, maxPrice);
+      // Deduplicate by auction ID
+      items.forEach(item => {
+        if (!allItems.find(x => x.id === item.id)) {
+          allItems.push(item);
+          totalFetched++;
+        }
+      });
+    } catch (e) {
+      console.warn(`Error fetching ${brand.name}:`, e);
+      errorCount++;
+    }
+
+    // Partial render after each brand
+    const filtered = baseFilter(allItems);
+    displayItems = filtered;
+    applyFilter(false);
+
+    // Rate-limit delay
+    if (i < selectedBrands.length - 1) {
+      await delay(350);
+    }
+  }
+
+  document.getElementById('progressFill').style.width = '100%';
+  const filtered = baseFilter(allItems);
+  displayItems = filtered;
+
+  setTimeout(() => pw.classList.remove('show'), 2000);
+
+  btn.disabled = false;
+  btn.textContent = '🔍 再検索';
+
+  document.getElementById('filterBar').classList.add('show');
+  document.getElementById('sortActions').classList.add('show');
+  applyFilter();
+
+  // Show status
+  if (errorCount === selectedBrands.length) {
+    showStatus(
+      `APIエラー: 全ブランドで取得に失敗しました。App IDが正しいか確認してください。下の手動検索リンクをご利用ください。`,
+      'error'
+    );
+    showFallbackLinks(selectedBrands);
+  } else {
+    if (errorCount > 0) {
+      showStatus(`注意: ${errorCount}/${selectedBrands.length}ブランドで取得エラーが発生しました。`, 'warn');
+    }
+    if (filtered.length === 0) {
+      showStatus('条件に合う商品が見つかりませんでした。価格範囲を広げるか他のブランドをお試しください。', 'info');
+    } else {
+      showStatus(`${filtered.length}件の商品が見つかりました（フィルター済み・合計取得: ${totalFetched}件）`, 'success');
+    }
+  }
+}
+
+function showFallbackLinks(brands) {
+  const sec = document.getElementById('fallbackSection');
+  const links = document.getElementById('fallbackLinks');
+  sec.style.display = 'block';
+  links.innerHTML = brands.slice(0, 12).map(b => {
+    const params = new URLSearchParams({ p: b.query, va: b.query, select: 'buynow' });
+    const url = `https://auctions.yahoo.co.jp/search/search?${params}`;
+    return `<a class="fallback-link" href="${url}" target="_blank" rel="noopener">
+      ${esc(b.name)} <span>↗</span>
+    </a>`;
+  }).join('');
+}
+
+// =====================================================
+// FILTER & RENDER
+// =====================================================
+function applyFilter(doRender = true) {
+  switch (currentFilter) {
+    case 'pick':        displayItems = allItems.filter(i => baseFilter([i]).length && i.status === 'pick');       break;
+    case 'borderline':  displayItems = allItems.filter(i => baseFilter([i]).length && i.status === 'borderline'); break;
+    case 'unchecked':   displayItems = allItems.filter(i => baseFilter([i]).length && i.status === 'unchecked');  break;
+    case 'ng':          displayItems = allItems.filter(i => baseFilter([i]).length && i.status === 'ng');         break;
+    default:            displayItems = baseFilter(allItems);
+  }
+  if (doRender) renderResults();
+}
+
+function renderResults() {
+  const grid = document.getElementById('resultsGrid');
+  const countEl = document.getElementById('resultsCount');
+  const total = baseFilter(allItems).length;
+
+  countEl.textContent = `結果: ${displayItems.length}件 / ${total}件`;
+
+  if (displayItems.length === 0 && allItems.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">検索を開始してください</div>
+        <div class="empty-sub">左パネルでApp IDを入力し<br>ブランドを選択して「検索開始」を押してください</div>
+      </div>`;
+    return;
+  }
+
+  if (displayItems.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">該当商品なし</div>
+        <div class="empty-sub">このフィルターで条件に合う商品が見つかりませんでした</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = displayItems.map(item => renderCard(item)).join('');
+
+  grid.querySelectorAll('.result-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const item = allItems.find(i => i.id === card.dataset.id);
+      if (item) selectItem(item);
+    });
+  });
+}
+
+function renderCard(item) {
+  const isPicked = pickList.some(p => p.id === item.id);
+  const days = Math.floor(item.daysLeft);
+
+  const daysCls = days >= 7 ? 'tag-blue' : days >= 3 ? 'tag-yellow' : 'tag-red';
+
+  let statusTag = '';
+  if (isPicked) {
+    statusTag = '<span class="tag tag-green">ピック済</span>';
+  } else if (item.status === 'pick') {
+    statusTag = '<span class="tag tag-green">ピック対象</span>';
+  } else if (item.status === 'borderline') {
+    statusTag = '<span class="tag tag-yellow">要確認</span>';
+  } else if (item.status === 'ng') {
+    statusTag = '<span class="tag tag-red">対象外</span>';
+  }
+
+  let profitTag = '';
+  if (item.profitRate !== 0 && item.status !== 'unchecked') {
+    const cls = item.profitRate >= 8 ? 'tag-green' : item.profitRate >= 5 ? 'tag-yellow' : 'tag-red';
+    profitTag = `<span class="tag ${cls}">${item.profitRate}%</span>`;
+  }
+
+  const thumb = item.imageUrl
+    ? `<img class="result-thumb" src="${esc(item.imageUrl)}" alt="" loading="lazy"
+           onerror="this.parentNode.innerHTML='<div class=result-thumb-placeholder>📦</div>'" />`
+    : `<div class="result-thumb-placeholder">📦</div>`;
+
+  const selCls = selectedItem?.id === item.id ? 'is-selected' : '';
+  const pickCls = isPicked ? 'is-picked' : '';
+  const ngCls   = item.status === 'ng' && !isPicked ? 'is-ng' : '';
+
+  return `
+    <div class="result-card ${selCls} ${pickCls} ${ngCls}" data-id="${esc(item.id)}">
+      ${thumb}
+      <div class="result-body">
+        <div class="result-title">${esc(item.title)}</div>
+        <div class="result-tags">
+          <span class="tag tag-gray">${esc(item.brand)}</span>
+          <span class="tag ${daysCls}">残${days}日</span>
+          ${item.isCOD === null ? '<span class="tag tag-orange">送料要確認</span>' : ''}
+          ${statusTag}
+          ${profitTag}
+        </div>
+      </div>
+      <div class="result-price-col">
+        <div class="result-price">¥${item.buyNowPrice.toLocaleString()}</div>
+        <div class="result-price-label">即決価格</div>
+        ${item.suggestedPrice > 0 ? `<div class="result-profit" style="color:${item.profitRate>=8?'var(--green)':item.profitRate>=5?'var(--yellow)':'var(--red)'}">¥${item.suggestedPrice.toLocaleString()}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// =====================================================
+// ITEM DETAIL
+// =====================================================
+function selectItem(item) {
+  selectedItem = item;
+
+  // Update selection styling in grid
+  document.querySelectorAll('.result-card').forEach(c => {
+    c.classList.toggle('is-selected', c.dataset.id === item.id);
+  });
+
+  document.getElementById('detailPlaceholder').style.display = 'none';
+  document.getElementById('itemDetail').style.display = 'block';
+  renderDetail(item);
+}
+
+function renderDetail(item) {
+  const el = document.getElementById('itemDetail');
+  const isPicked = pickList.some(p => p.id === item.id);
+  const calc = { suggestedPrice: item.suggestedPrice, amazonFee: item.amazonFee,
+                 profit: item.profit, profitRate: item.profitRate, status: item.status };
+
+  const endStr = item.endTime
+    ? new Date(item.endTime).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' })
+    : '-';
+
+  const amazonSearchUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(item.title)}`;
+
+  let actionBtn = '';
+  if (isPicked) {
+    actionBtn = `<button class="btn btn-danger-outline" onclick="removeFromPick()">ピックリストから削除</button>`;
+  } else if (item.status === 'pick') {
+    actionBtn = `<button class="btn btn-success" onclick="addToPick()">✓ ピックリストに追加</button>`;
+  } else if (item.status === 'borderline') {
+    actionBtn = `<button class="btn btn-warn" onclick="addToPick()">要確認でピックに追加</button>`;
+  }
+
+  el.innerHTML = `
+    ${item.imageUrl ? `<img class="detail-thumb-img" src="${esc(item.imageUrl)}" alt=""
+       onerror="this.style.display='none'" />` : ''}
+
+    <div class="detail-title">${esc(item.title)}</div>
+
+    <div class="detail-link-row">
+      <a href="${esc(item.auctionUrl)}" target="_blank" rel="noopener"
+         class="btn btn-outline btn-sm">ヤフオクで見る ↗</a>
+      <a href="${amazonSearchUrl}" target="_blank" rel="noopener"
+         class="btn btn-outline btn-sm">Amazonで検索 ↗</a>
+    </div>
+
+    <div class="detail-row">
+      <span class="detail-key">即決価格</span>
+      <span class="detail-val" style="color:var(--yellow);">¥${item.buyNowPrice.toLocaleString()}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">終了日時</span>
+      <span class="detail-val">${esc(endStr)}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">残り日数</span>
+      <span class="detail-val">${Math.floor(item.daysLeft)}日</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">出品者</span>
+      <span class="detail-val">${esc(item.sellerId)} (評価${item.sellerRating})</span>
+    </div>
+    ${item.isCOD === null ? `
+    <div class="detail-row">
+      <span class="detail-key">着払い</span>
+      <span class="detail-val" style="color:var(--orange);">ヤフオクページで要確認<br>
+        <small style="font-size:10px;font-weight:400;color:var(--muted);">
+          ※北海道に設定して送料も確認</small>
+      </span>
+    </div>` : ''}
+
+    <hr class="divider" />
+    <div class="sec-label">仕入情報</div>
+
+    <div class="input-wrap">
+      <label class="input-label">仕入送料（円）※北海道送料を入力</label>
+      <input type="number" id="d_shipping" value="${item.shippingCost}"
+             min="0" step="100" oninput="updateField('shippingCost', this.value)" />
+    </div>
+
+    <hr class="divider" />
+    <div class="sec-label">Amazon情報</div>
+
+    <div class="input-wrap">
+      <label class="input-label">ASINコード</label>
+      <input type="text" id="d_asin" value="${esc(item.asin)}" placeholder="B0XXXXXXXXX"
+             onchange="updateField('asin', this.value)" />
+    </div>
+
+    <div class="input-wrap">
+      <label class="input-label">中古最安値（送料込み合計）※なければ0</label>
+      <input type="number" id="d_used" value="${item.amazonUsedPrice}"
+             min="0" step="100" oninput="updateField('amazonUsedPrice', this.value)" />
+    </div>
+
+    <div class="input-wrap">
+      <label class="input-label">新品最安値（送料込み合計）</label>
+      <input type="number" id="d_new" value="${item.amazonNewPrice}"
+             min="0" step="100" oninput="updateField('amazonNewPrice', this.value)" />
+    </div>
+
+    <hr class="divider" />
+    <div class="sec-label">利益計算</div>
+
+    ${renderProfitBox(calc)}
+
+    ${calc.suggestedPrice > 0 ? `
+    <div class="detail-row">
+      <span class="detail-key">推奨販売価格</span>
+      <span class="detail-val" style="color:var(--blue);">¥${calc.suggestedPrice.toLocaleString()}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">Amazon手数料 (${document.getElementById('feeRate').value}%)</span>
+      <span class="detail-val">¥${calc.amazonFee.toLocaleString()}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">総仕入コスト</span>
+      <span class="detail-val">¥${(item.buyNowPrice + (item.shippingCost||0)).toLocaleString()}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-key">純利益</span>
+      <span class="detail-val" style="color:${calc.profit>=0?'var(--green)':'var(--red)'};">
+        ¥${calc.profit.toLocaleString()}
+      </span>
+    </div>
+    <div style="margin-top:10px; font-size:10px; color:var(--muted); line-height:1.6;">
+      ${item.amazonUsedPrice > 0
+        ? '価格ルール: 中古最安値 ‐ 100円'
+        : '価格ルール: 新品最安値 × 90%（中古出品なし）'}
+      <br>利益率8%以上でピック対象、8%未満は登録不可
+    </div>
+    ` : ''}
+
+    ${actionBtn ? `<div style="margin-top:12px;">${actionBtn}</div>` : ''}
+  `;
+}
+
+function renderProfitBox(calc) {
+  if (!calc.suggestedPrice) {
+    return `<div class="profit-box empty">
+      <div style="color:var(--muted);font-size:12px;">Amazon価格を入力してください</div>
+    </div>`;
+  }
+  const cls = calc.status === 'pick' ? 'good' : calc.status === 'borderline' ? 'warn' : 'bad';
+  const labels = { pick:'ピック対象 ✓', borderline:'要確認（8%未満）', ng:'対象外', unchecked:'-' };
+  return `<div class="profit-box ${cls}">
+    <div class="profit-rate ${cls}">${calc.profitRate}%</div>
+    <div class="profit-sub">利益率</div>
+    <div class="profit-label ${cls}">${labels[calc.status] || '-'}</div>
+  </div>`;
+}
+
+// =====================================================
+// FIELD UPDATE (from detail inputs)
+// =====================================================
+function updateField(field, rawVal) {
+  if (!selectedItem) return;
+
+  const val = field === 'asin' ? rawVal.trim() : (parseFloat(rawVal) || 0);
+
+  const idx = allItems.findIndex(i => i.id === selectedItem.id);
+  if (idx === -1) return;
+
+  allItems[idx][field] = val;
+  selectedItem = allItems[idx];
+
+  // Recalculate
+  const c = calcProfit(selectedItem);
+  allItems[idx].suggestedPrice = c.suggestedPrice;
+  allItems[idx].amazonFee      = c.amazonFee;
+  allItems[idx].profit         = c.profit;
+  allItems[idx].profitRate     = c.profitRate;
+  allItems[idx].status         = c.status;
+  selectedItem = allItems[idx];
+
+  // Update card in grid without full re-render
+  const card = document.querySelector(`.result-card[data-id="${selectedItem.id}"]`);
+  if (card) {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = renderCard(selectedItem);
+    const newCard = tmp.firstElementChild;
+    card.replaceWith(newCard);
+    newCard.addEventListener('click', () => selectItem(selectedItem));
+  }
+
+  // Update pick list entry if exists
+  const pi = pickList.findIndex(p => p.id === selectedItem.id);
+  if (pi !== -1) {
+    pickList[pi] = { ...selectedItem };
+    renderPickList();
+    updatePickBadge();
+  }
+
+  // Re-render detail
+  renderDetail(selectedItem);
+}
+
+// =====================================================
+// PICK LIST
+// =====================================================
+function addToPick() {
+  if (!selectedItem) return;
+  if (pickList.some(p => p.id === selectedItem.id)) return;
+  pickList.push({ ...selectedItem });
+  renderPickList();
+  updatePickBadge();
+  renderDetail(selectedItem);
+  // Update card
+  const card = document.querySelector(`.result-card[data-id="${selectedItem.id}"]`);
+  if (card) card.classList.add('is-picked');
+}
+
+function removeFromPick() {
+  if (!selectedItem) return;
+  pickList = pickList.filter(p => p.id !== selectedItem.id);
+  renderPickList();
+  updatePickBadge();
+  renderDetail(selectedItem);
+  const card = document.querySelector(`.result-card[data-id="${selectedItem.id}"]`);
+  if (card) card.classList.remove('is-picked');
+}
+
+function removePickById(id) {
+  pickList = pickList.filter(p => p.id !== id);
+  renderPickList();
+  updatePickBadge();
+  if (selectedItem?.id === id) renderDetail(selectedItem);
+  const card = document.querySelector(`.result-card[data-id="${id}"]`);
+  if (card) card.classList.remove('is-picked');
+}
+
+function renderPickList() {
+  const el = document.getElementById('pickList');
+  const cnt = document.getElementById('pickListCount');
+  cnt.textContent = `${pickList.length}件`;
+
+  if (pickList.length === 0) {
+    el.innerHTML = `<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px;">
+      ピックした商品がここに表示されます</div>`;
+    return;
+  }
+
+  el.innerHTML = pickList.map(item => `
+    <div class="pick-item">
+      <div style="flex:1;min-width:0;">
+        <div class="pick-item-name" title="${esc(item.title)}">${esc(item.title)}</div>
+        <div style="display:flex;gap:6px;margin-top:3px;">
+          <span class="pick-item-price">¥${item.buyNowPrice.toLocaleString()}</span>
+          ${item.asin ? `<span class="tag tag-blue" style="padding:1px 5px;font-size:9px;">${esc(item.asin)}</span>` : ''}
+        </div>
+      </div>
+      <div class="pick-item-rate">${item.profitRate}%</div>
+      <button class="btn btn-outline btn-xs" onclick="removePickById('${esc(item.id)}')" title="削除">×</button>
+    </div>
+  `).join('');
+}
+
+function updatePickBadge() {
+  const badge = document.getElementById('headerPickBadge');
+  const exportBtn = document.getElementById('exportCsvBtn');
+  if (pickList.length > 0) {
+    badge.style.display = 'inline-flex';
+    badge.textContent = `ピック: ${pickList.length}件`;
+    exportBtn.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+    exportBtn.style.display = 'none';
+  }
+}
+
+// =====================================================
+// CSV EXPORT
+// =====================================================
+function exportCsv() {
+  if (pickList.length === 0) return;
+
+  const header = ['商品名','ASIN','ヤフオク即決価格','仕入送料','総仕入コスト',
+                  'Amazon推奨販売価格','Amazon手数料','純利益','利益率','YahooオークションURL'];
+
+  const rows = pickList.map(item => [
+    `"${(item.title||'').replace(/"/g,'""')}"`,
+    item.asin || '',
+    item.buyNowPrice,
+    item.shippingCost || 0,
+    (item.buyNowPrice + (item.shippingCost||0)),
+    item.suggestedPrice || 0,
+    item.amazonFee || 0,
+    item.profit || 0,
+    (item.profitRate || 0) + '%',
+    `"${item.auctionUrl}"`,
+  ]);
+
+  const csv = '﻿' + [header, ...rows].map(r => r.join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `picklist_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// =====================================================
+// UTILS
+// =====================================================
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById('statusMsg');
+  el.innerHTML = msg ? `<div class="status-msg ${type}">${esc(msg)}</div>` : '';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// =====================================================
+// BOOT
+// =====================================================
+init();
+</script>
+</body>
+</html>
